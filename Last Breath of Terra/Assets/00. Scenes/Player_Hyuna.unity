@@ -408,7 +408,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 023e7d8d4e55e4158bd3aa552b4c7531, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
+  baseSpeed: 1
+  maxSpeed: 5
+  accelerationTime: 3
+  jumpForce: 5
+  currentSpeed: 0
 --- !u!95 &1345965229
 Animator:
   serializedVersion: 5
@@ -555,7 +559,7 @@ GameObject:
   - component: {fileID: 2056494199}
   m_Layer: 0
   m_Name: Floor
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

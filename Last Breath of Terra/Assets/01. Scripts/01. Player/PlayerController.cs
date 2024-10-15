@@ -12,10 +12,12 @@ public class PlayerController : MonoBehaviour
     public float baseSpeed = 1f;
     public float maxSpeed = 5f;
     public float accelerationTime = 3f;
+    public float jumpForce = 5f;
 
     private Rigidbody2D rb;
     private Animator _animator;
     private Vector2 moveDirection;
+    private bool isGrounded = true;
 
     [SerializeField] private float currentSpeed;
     private float accelerationTimer;
@@ -65,13 +67,24 @@ public class PlayerController : MonoBehaviour
             if(input != null)
             {
                 moveDirection = new Vector2(input.x, 0f);
-                //_animator.SetFloat("MoveSpeed", input.magnitude);
             }
         }
 
         void OnJump()
         {
-
+            if (isGrounded)
+            {
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                isGrounded = false;
+            }
         }
     #endregion
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
 }

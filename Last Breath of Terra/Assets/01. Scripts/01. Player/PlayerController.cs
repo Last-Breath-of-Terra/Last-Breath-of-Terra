@@ -13,11 +13,14 @@ public class PlayerController : MonoBehaviour
     public float maxSpeed = 5f;
     public float accelerationTime = 3f;
     public float jumpForce = 5f;
+    public float dashForce = 10f;
 
     private Rigidbody2D rb;
     private Animator _animator;
     private Vector2 moveDirection;
+    private float jumpStartHeight;
     private bool isGrounded = true;
+    private bool canDash = false;
 
     [SerializeField] private float currentSpeed;
     private float accelerationTimer;
@@ -43,7 +46,14 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        rb.velocity = new Vector2(moveDirection.x * currentSpeed, rb.velocity.y);
+        if (moveDirection != Vector2.zero)
+        {
+            rb.velocity = new Vector2(moveDirection.x * currentSpeed, rb.velocity.y);
+        }
+        else if (isGrounded)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+        }
     }
 
     void HandleAcceleration()
@@ -75,7 +85,32 @@ public class PlayerController : MonoBehaviour
             if (isGrounded)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                jumpStartHeight = transform.position.y;
                 isGrounded = false;
+                canDash = true;
+            }
+        }
+
+        void OnSlam()
+        {
+            if (!isGrounded)
+            {
+                float fallHeight = transform.position.y - jumpStartHeight;
+                float dynamicSlamForce = Mathf.Clamp(fallHeight * 10f, 10f, 50f);
+                rb.velocity = new Vector2(rb.velocity.x, 0);
+                rb.AddForce(Vector2.down * dynamicSlamForce, ForceMode2D.Impulse);
+            }
+        }
+
+        void OnDash()
+        {
+            if (canDash)
+            {
+                Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+                Vector2 dashDirection = (mousePosition - (Vector2)transform.position).normalized;
+                rb.velocity = Vector2.zero;
+                rb.AddForce(dashDirection * dashForce, ForceMode2D.Impulse);
+                canDash = false;
             }
         }
     #endregion
@@ -85,6 +120,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+            canDash = false;
         }
     }
 }

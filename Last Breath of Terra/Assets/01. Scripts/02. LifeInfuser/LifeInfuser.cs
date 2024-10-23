@@ -9,7 +9,8 @@ public class LifeInfuser : MonoBehaviour
 {
     public Slider infusionSlider;
     public LifeInfuserSO lifeInfuserData;
-
+    public GameObject[] obstacleSprites;
+    
     [SerializeField]
     private bool canInfusion;
 
@@ -28,6 +29,7 @@ public class LifeInfuser : MonoBehaviour
     {
         Debug.Log("starting infusion");
         lifeInfuserData.StartInfusion(infusionSlider, ref canInfusion);
+        lifeInfuserData.SpawnObstacle(obstacleSprites);
     }
 
     private void OnTriggerExit2D(Collider2D other)

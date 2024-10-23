@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEditor.Timeline.Actions;
 
 
@@ -45,7 +46,18 @@ public class LifeInfuserSO : ScriptableObject
         }
     }
 
-    private void InfusionCooldown(bool canInfusion)
+    public void SpawnObstacle(GameObject[] obstacleSprites)
+    {
+        foreach (GameObject obstacle in obstacleSprites)
+        {
+            obstacle.SetActive(true); // 각 GameObject 활성화
+        }
+    }
+
+    /*
+     * canInfusion이 활성화 되는 부분에 대해 좀 더 구체적인 계획이 필요할 것 같아요.
+     */
+    private void InfusionCooldown(ref bool canInfusion)
     {
         canInfusion = true;
     }

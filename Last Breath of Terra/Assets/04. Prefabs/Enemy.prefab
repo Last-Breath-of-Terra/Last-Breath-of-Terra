@@ -199,13 +199,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyData: {fileID: 11400000, guid: 8bc7ab49ee7b34f4da13345bcf6d5dfe, type: 2}
-  whiteCircles:
+  attackPoints:
   - {fileID: 3544274121468092378}
   - {fileID: 6719746487878657740}
   - {fileID: 4082392446713929217}
-  redCircle: {fileID: 1333905242434506353}
-  activeGroup: {fileID: 930854790461874204}
-  redCircleRotationSpeed: 100
+  timingIndicator: {fileID: 1333905242434506353}
+  attackGroup: {fileID: 930854790461874204}
+  timingRotationSpeed: 100
 --- !u!1 &4468284405698314292
 GameObject:
   m_ObjectHideFlags: 0

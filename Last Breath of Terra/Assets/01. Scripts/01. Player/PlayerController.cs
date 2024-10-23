@@ -62,10 +62,12 @@ public class PlayerController : MonoBehaviour
         if (moveDirection != Vector2.zero)
         {
             rb.velocity = new Vector2(moveDirection.x * currentSpeed, rb.velocity.y);
+            _animator.SetBool("Move", true);
         }
         else if (isGrounded)
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
+            _animator.SetBool("Move", false);
         }
     }
 

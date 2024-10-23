@@ -324,11 +324,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 359020033995537949, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.71
+      value: 6.7
       objectReference: {fileID: 0}
     - target: {fileID: 359020033995537949, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.8610625
+      value: 3.2
       objectReference: {fileID: 0}
     - target: {fileID: 359020033995537949, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_LocalPosition.z
@@ -368,7 +368,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2380780527199600930, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7578914277012739383, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_SortingOrder
@@ -389,11 +389,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 359020033995537949, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.049893
+      value: -6.7
       objectReference: {fileID: 0}
     - target: {fileID: 359020033995537949, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.36
+      value: 2.4
       objectReference: {fileID: 0}
     - target: {fileID: 359020033995537949, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_LocalPosition.z
@@ -534,8 +534,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
-  m_Color: {r: 1, g: 0.39999998, b: 0.4922634, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 2b93a7503e0f542869dbcf96d4da659a, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -554,7 +554,7 @@ Transform:
   m_GameObject: {fileID: 1345965221}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 4.9, y: -1.5, z: 0}
   m_LocalScale: {x: 0.61993, y: 0.61993, z: 0.61993}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -619,8 +619,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 2}
+  m_Offset: {x: -8.03472, y: 2.1653857}
+  m_Size: {x: 1.3419036, y: 7.040286}
   m_Direction: 0
 --- !u!114 &1345965227
 MonoBehaviour:

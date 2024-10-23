@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce44423cc1ee96f448f59b6a35759ef3, type: 3}
   m_Name: SO_LifeInfuser
   m_EditorClassIdentifier: 
-  infusionSlider: {fileID: 5545116515542536465, guid: fd5b7889508a6a94a8d3f2bb9e0bb442, type: 3}
-  infusionDuration: 5
-  infusedLifeCount: 0
+  infusionDuration: 10
+  infusionWaitTime: 0
+  CooldownTimer: 0
+  infusedLifeCount: 8

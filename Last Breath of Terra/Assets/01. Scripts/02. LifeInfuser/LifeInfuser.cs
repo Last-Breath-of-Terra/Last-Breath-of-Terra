@@ -9,13 +9,25 @@ public class LifeInfuser : MonoBehaviour
 {
     public Slider infusionSlider;
     public LifeInfuserSO lifeInfuserData;
-    
+
+    [SerializeField]
+    private bool canInfusion;
+
+    private void Start()
+    {
+        canInfusion = true;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.transform.CompareTag("Player"))
+        if (collision.transform.CompareTag("Player") && canInfusion)
         {
-          lifeInfuserData.StartInfusion(infusionSlider);
+            Invoke("PrepareInfusion", lifeInfuserData.infusionWaitTime);
         }
+    }
+    private void PrepareInfusion()
+    {
+        Debug.Log("starting infusion");
+        lifeInfuserData.StartInfusion(infusionSlider, ref canInfusion);
     }
 
     private void OnTriggerExit2D(Collider2D other)

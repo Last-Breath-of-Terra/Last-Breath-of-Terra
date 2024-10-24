@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator _animator;
     private InputAction attackAction;
+    private Vector3 originalScale;
     private Vector2 moveDirection;
     private float jumpStartHeight;
     private bool isGrounded = true;
@@ -33,6 +34,7 @@ public class PlayerController : MonoBehaviour
         _animator = this.GetComponent<Animator>();
 
         currentSpeed = baseSpeed;
+        originalScale = transform.localScale;
     }
 
     private void OnEnable()
@@ -62,12 +64,20 @@ public class PlayerController : MonoBehaviour
         if (moveDirection != Vector2.zero)
         {
             rb.velocity = new Vector2(moveDirection.x * currentSpeed, rb.velocity.y);
-            _animator.SetBool("Move", true);
+            if(moveDirection.x < 0)
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
+            }
+            else if(moveDirection.x > 0)
+            {
+                transform.localScale = new Vector3(Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
+            }
+            _animator.SetBool("Walk", true);
         }
         else if (isGrounded)
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
-            _animator.SetBool("Move", false);
+            _animator.SetBool("Walk", false);
         }
     }
 

@@ -10,10 +10,12 @@ using UnityEditor.Timeline.Actions;
 [CreateAssetMenu(fileName = "LifeInfuser", menuName = "ScriptableObject/Life Infuser")]
 public class LifeInfuserSO : ScriptableObject
 {
+    public PlayerController playerController;
     public float infusionDuration;
     public float infusionWaitTime;
     public float CooldownTimer;
-
+    public bool canInfusion;
+    
     private Tween currentTween;
     [SerializeField]
     private int infusedLifeCount;
@@ -23,19 +25,25 @@ public class LifeInfuserSO : ScriptableObject
     }
 
     
-    public void StartInfusion(Slider infusionSlider,ref bool canInfusion)
+    public void StartInfusion(Slider infusionSlider)
     {
         infusionSlider.gameObject.SetActive(true);
-        canInfusion = false;
-        currentTween = infusionSlider.DOValue(1, infusionDuration).OnComplete(() =>
-        {
-            infusedLifeCount++;
-            infusionSlider.gameObject.SetActive(false);
-            infusionSlider.value = 0;
-            // Invoker.Invoke<>("StartInfusionCooldown", CooldownTimer);
-        });
-
+        currentTween = infusionSlider.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infusionSlider));
     }
+
+    private void CompleteInfusion(Slider infusionSlider)
+    {
+        Debug.Log("infusion completed");
+        if (playerController != null)
+        {
+            playerController.SetCanMove(true);
+        }
+        infusedLifeCount++;
+        infusionSlider.gameObject.SetActive(false);
+        infusionSlider.value = 0;
+        canInfusion = false; // 상태 업데이트
+    }
+
 
     public void StopInfusion(Slider infusionSlider)
     {

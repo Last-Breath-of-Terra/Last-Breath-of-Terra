@@ -16,16 +16,19 @@ public class Enemy : MonoBehaviour
     public GameObject attackGroup;
     public float timingRotationSpeed = 100f;
 
+    private Rigidbody2D rb;
     private Transform player;
     private Vector3 initialTimingIndicatorPos;
     private int currentHitCount = 0;
     private float currentSpeed;
+    private float stopDistance = 0.3f;
     private bool isHovered = false;
     private bool isActive = true;
     private bool isTimingCorrect = false;
 
     private void Start()
     {
+        rb = this.GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         EnemyManager.Instance.RegisterEnemy(this);
         currentSpeed = enemyData.speed;
@@ -48,7 +51,13 @@ public class Enemy : MonoBehaviour
         if (player != null)
         {
             Vector3 direction = (player.position - transform.position).normalized;
-            transform.position += direction * currentSpeed * Time.deltaTime;
+            // transform.position += direction * currentSpeed * Time.deltaTime;
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+            
+            if (distanceToPlayer > stopDistance)
+            {
+                transform.position += direction * currentSpeed * Time.deltaTime;
+            }
         }
     }
     #endregion

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8489069158998335810}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: check
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: 1727361869467118593}
   - component: {fileID: 6743859117064608632}
   - component: {fileID: 1128684005527789153}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -167,7 +167,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2380780527199600930}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -216,7 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4082392446713929217}
   - component: {fileID: 3382241820734015374}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: WhiteCircle3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300,7 +300,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1333905242434506353}
   - component: {fileID: 8822870850566517347}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RedCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -384,7 +384,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4718206703394412707}
   - component: {fileID: 3050202122221649306}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -468,7 +468,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6719746487878657740}
   - component: {fileID: 8291063921469204423}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: WhiteCircle2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -552,7 +552,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3544274121468092378}
   - component: {fileID: 7213453475444935674}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: WhiteCircle1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

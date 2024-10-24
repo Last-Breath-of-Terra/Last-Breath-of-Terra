@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator _animator;
+    private InputAction attackAction;
+    private Vector3 originalScale;
     private Vector2 moveDirection;
     private float jumpStartHeight;
     private bool isGrounded = true;
@@ -32,6 +34,19 @@ public class PlayerController : MonoBehaviour
         _animator = this.GetComponent<Animator>();
 
         currentSpeed = baseSpeed;
+        originalScale = transform.localScale;
+    }
+
+    private void OnEnable()
+    {
+        var playerInput = GetComponent<PlayerInput>();
+        attackAction = playerInput.actions["Attack"];
+        attackAction.performed += PerformAttack;
+    }
+
+    private void OnDisable()
+    {
+        attackAction.performed -= PerformAttack;
     }
 
     void Update()
@@ -49,10 +64,20 @@ public class PlayerController : MonoBehaviour
         if (moveDirection != Vector2.zero)
         {
             rb.velocity = new Vector2(moveDirection.x * currentSpeed, rb.velocity.y);
+            if(moveDirection.x < 0)
+            {
+                transform.localScale = new Vector3(-Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
+            }
+            else if(moveDirection.x > 0)
+            {
+                transform.localScale = new Vector3(Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
+            }
+            _animator.SetBool("Walk", true);
         }
         else if (isGrounded)
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
+            _animator.SetBool("Walk", false);
         }
     }
 
@@ -91,28 +116,47 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        void OnSlam()
+        private void PerformAttack(InputAction.CallbackContext context)
         {
-            if (!isGrounded)
+            if (context.performed)
             {
-                float fallHeight = transform.position.y - jumpStartHeight;
-                float dynamicSlamForce = Mathf.Clamp(fallHeight * 10f, 10f, 50f);
-                rb.velocity = new Vector2(rb.velocity.x, 0);
-                rb.AddForce(Vector2.down * dynamicSlamForce, ForceMode2D.Impulse);
+                Vector2 mousePosition = Mouse.current.position.ReadValue();
+                Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+                RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
+                if (hit.collider != null)
+                {
+                    Enemy enemy = hit.collider.GetComponent<Enemy>();
+                    if (enemy != null)
+                    {
+                        enemy.OnPlayerAttack();
+                    }
+                }
             }
         }
 
-        void OnDash()
-        {
-            if (canDash)
-            {
-                Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-                Vector2 dashDirection = (mousePosition - (Vector2)transform.position).normalized;
-                rb.velocity = Vector2.zero;
-                rb.AddForce(dashDirection * dashForce, ForceMode2D.Impulse);
-                canDash = false;
-            }
-        }
+        // void OnSlam()
+        // {
+        //     if (!isGrounded)
+        //     {
+        //         float fallHeight = transform.position.y - jumpStartHeight;
+        //         float dynamicSlamForce = Mathf.Clamp(fallHeight * 10f, 10f, 50f);
+        //         rb.velocity = new Vector2(rb.velocity.x, 0);
+        //         rb.AddForce(Vector2.down * dynamicSlamForce, ForceMode2D.Impulse);
+        //     }
+        // }
+
+        // void OnDash()
+        // {
+        //     if (canDash)
+        //     {
+        //         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        //         Vector2 dashDirection = (mousePosition - (Vector2)transform.position).normalized;
+        //         rb.velocity = Vector2.zero;
+        //         rb.AddForce(dashDirection * dashForce, ForceMode2D.Impulse);
+        //         canDash = false;
+        //     }
+        // }
     #endregion
 
     private void OnCollisionEnter2D(Collision2D collision)

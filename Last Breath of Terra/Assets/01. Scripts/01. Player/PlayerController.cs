@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float currentSpeed;
     private float accelerationTimer;
+    [SerializeField] private bool canMove = true;
 
 
     void Start()
@@ -56,7 +57,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        Move();
+        if (canMove)
+        {
+            Move();
+        }
     }
 
     void Move()
@@ -107,7 +111,7 @@ public class PlayerController : MonoBehaviour
 
         void OnJump()
         {
-            if (isGrounded)
+            if (isGrounded && canMove)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 jumpStartHeight = transform.position.y;
@@ -158,6 +162,15 @@ public class PlayerController : MonoBehaviour
         //     }
         // }
     #endregion
+
+    public void SetCanMove(bool value)
+    {
+        if(!value)
+        {
+            _animator.SetBool("Walk", false);
+        }
+        canMove = value;
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

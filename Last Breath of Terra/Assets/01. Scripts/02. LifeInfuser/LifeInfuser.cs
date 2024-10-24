@@ -16,25 +16,23 @@ public class LifeInfuser : MonoBehaviour
 
     private void Start()
     {
-        canInfusion = true;
+        lifeInfuserData.canInfusion = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.transform.CompareTag("Player") && canInfusion)
+        if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion)
         {
-            PlayerController playerController = collision.GetComponent<PlayerController>();
-            if (playerController != null)
-            {
-                playerController.SetCanMove(false);
-            }
-            
+            lifeInfuserData.playerController = collision.GetComponent<PlayerController>();
             Invoke("PrepareInfusion", lifeInfuserData.infusionWaitTime);
         }
     }
     private void PrepareInfusion()
     {
-        Debug.Log("starting infusion");
-        lifeInfuserData.StartInfusion(infusionSlider, ref canInfusion);
+        if (lifeInfuserData.playerController != null)
+        {
+            lifeInfuserData.playerController.SetCanMove(false);
+        }
+        lifeInfuserData.StartInfusion(infusionSlider);
         lifeInfuserData.SpawnObstacle(obstacleSprites);
 
     }

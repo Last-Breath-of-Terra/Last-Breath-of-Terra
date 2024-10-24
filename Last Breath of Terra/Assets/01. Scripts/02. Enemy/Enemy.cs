@@ -117,7 +117,8 @@ public class Enemy : MonoBehaviour
         isTimingCorrect = false;
         foreach (Transform point in attackPoints)
         {
-            if (Vector3.Distance(timingIndicator.position, point.position) < 0.5f)
+            //이부분은 적의 오브젝트 크기에 따라 체크 범위가 달라지는 문제가 있어서 코드 수정이 필요함
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f)
             {
                 isTimingCorrect = true;
                 break;

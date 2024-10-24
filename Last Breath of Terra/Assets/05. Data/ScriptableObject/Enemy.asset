@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d29bb8a7358954850a161ed21c33bdf8, type: 3}
   m_Name: Enemy
   m_EditorClassIdentifier: 
-  speed: 2
-  detectionRadius: 5
+  speed: 0.5
   clicksToDestroy: 3

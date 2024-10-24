@@ -22,6 +22,12 @@ public class LifeInfuser : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.transform.CompareTag("Player") && canInfusion)
         {
+            PlayerController playerController = collision.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.SetCanMove(false);
+            }
+            
             Invoke("PrepareInfusion", lifeInfuserData.infusionWaitTime);
         }
     }
@@ -30,6 +36,7 @@ public class LifeInfuser : MonoBehaviour
         Debug.Log("starting infusion");
         lifeInfuserData.StartInfusion(infusionSlider, ref canInfusion);
         lifeInfuserData.SpawnObstacle(obstacleSprites);
+
     }
 
     private void OnTriggerExit2D(Collider2D other)

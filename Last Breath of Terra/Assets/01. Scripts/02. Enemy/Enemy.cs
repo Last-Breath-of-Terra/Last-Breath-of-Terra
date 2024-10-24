@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
     private Vector3 initialTimingIndicatorPos;
     private int currentHitCount = 0;
     private float currentSpeed;
-    private float stopDistance = 1.5f;
+    private float stopDistance = 0.3f;
     private bool isHovered = false;
     private bool isActive = true;
     private bool isTimingCorrect = false;

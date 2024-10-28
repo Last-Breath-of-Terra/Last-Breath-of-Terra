@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -15,8 +16,11 @@ public class LifeInfuserSO : ScriptableObject
     public float infusionWaitTime;
     public float CooldownTimer;
     public bool canInfusion;
+    public float defaultLensSize;
+    public float targetLensSize;
+    public Tween currentTween;
+    public CinemachineVirtualCamera virtualCamera;
     
-    private Tween currentTween;
     [SerializeField]
     private int infusedLifeCount;
     void Awake()
@@ -34,6 +38,7 @@ public class LifeInfuserSO : ScriptableObject
     private void CompleteInfusion(Slider infusionSlider)
     {
         Debug.Log("infusion completed");
+        DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
         if (playerController != null)
         {
             playerController.SetCanMove(true);
@@ -41,7 +46,7 @@ public class LifeInfuserSO : ScriptableObject
         infusedLifeCount++;
         infusionSlider.gameObject.SetActive(false);
         infusionSlider.value = 0;
-        canInfusion = false; // 상태 업데이트
+        //canInfusion = false; // 상태 업데이트
     }
 
 
@@ -51,6 +56,9 @@ public class LifeInfuserSO : ScriptableObject
         {
             currentTween.Kill();
             infusionSlider.value = 0;
+            DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
+
+            Debug.Log("infusion stopped");
         }
     }
 

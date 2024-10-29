@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce44423cc1ee96f448f59b6a35759ef3, type: 3}
   m_Name: SO_LifeInfuser
   m_EditorClassIdentifier: 
+  playerController: {fileID: 0}
   infusionDuration: 10
   infusionWaitTime: 2
   CooldownTimer: 0
-  infusedLifeCount: 8
+  canInfusion: 1
+  defaultLensSize: 1
+  targetLensSize: 1.65
+  virtualCamera: {fileID: 0}
+  infusedLifeCount: 30

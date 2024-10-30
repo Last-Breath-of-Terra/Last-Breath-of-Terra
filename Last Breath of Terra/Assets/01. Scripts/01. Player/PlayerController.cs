@@ -9,163 +9,164 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float baseSpeed = 1f;
-    public float maxSpeed = 5f;
-    public float accelerationTime = 3f;
-    public float jumpForce = 5f;
-    public float dashForce = 10f;
+    public PlayerSO data;
+    public GameObject clickIndicator;
 
-    private Rigidbody2D rb;
+    private Rigidbody2D _rb;
     private Animator _animator;
-    private InputAction attackAction;
     private Vector3 originalScale;
-    private Vector2 moveDirection;
-    private float jumpStartHeight;
+    private Vector2 targetPosition;
+    private float accelerationTimer;
     private bool isGrounded = true;
-    private bool canDash = false;
+    private bool isMoving = false;
+    private bool canMove = true;
 
     [SerializeField] private float currentSpeed;
-    private float accelerationTimer;
-    [SerializeField] private bool canMove = true;
 
+    void Awake()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
+    }
 
     void Start()
     {
-        rb = this.GetComponent<Rigidbody2D>();
-        _animator = this.GetComponent<Animator>();
-
-        currentSpeed = baseSpeed;
+        currentSpeed = data.baseSpeed;
         originalScale = transform.localScale;
-    }
-
-    private void OnEnable()
-    {
-        var playerInput = GetComponent<PlayerInput>();
-        attackAction = playerInput.actions["Attack"];
-        attackAction.performed += PerformAttack;
-    }
-
-    private void OnDisable()
-    {
-        attackAction.performed -= PerformAttack;
     }
 
     void Update()
     {
         HandleAcceleration();
-    }
 
-    void FixedUpdate()
-    {
-        if (canMove)
+        if (isMoving && canMove)
         {
             Move();
         }
     }
-
-    void Move()
+    
+    private void OnEnable()
     {
-        if (moveDirection != Vector2.zero)
+        var playerInput = GetComponent<PlayerInput>();
+        playerInput.actions["Move"].performed += OnMovePerformed;
+        playerInput.actions["Move"].canceled += OnMoveCanceled;
+        playerInput.actions["Jump"].performed += OnJumpPerformed;
+        playerInput.actions["Attack"].performed += OnAttackPerformed;
+    }
+
+    private void OnDisable()
+    {
+        var playerInput = GetComponent<PlayerInput>();
+        playerInput.actions["Move"].performed -= OnMovePerformed;
+        playerInput.actions["Move"].canceled -= OnMoveCanceled;
+        playerInput.actions["Jump"].performed -= OnJumpPerformed;
+        playerInput.actions["Attack"].performed -= OnAttackPerformed;
+    }
+
+    private void Move()
+    {
+        float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
+
+        if (distanceX > 0.1f)
         {
-            rb.velocity = new Vector2(moveDirection.x * currentSpeed, rb.velocity.y);
-            if(moveDirection.x < 0)
-            {
-                transform.localScale = new Vector3(-Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
-            }
-            else if(moveDirection.x > 0)
-            {
-                transform.localScale = new Vector3(Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
-            }
-            _animator.SetBool("Walk", true);
+            float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
+            _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
+
+            transform.localScale = new Vector3(direction * Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
         }
-        else if (isGrounded)
+        else
         {
-            rb.velocity = new Vector2(0, rb.velocity.y);
-            _animator.SetBool("Walk", false);
+            StopMoving();
         }
     }
 
-    void HandleAcceleration()
+    private void StopMoving()
     {
-        if (moveDirection != Vector2.zero)
+        isMoving = false;
+        _rb.velocity = new Vector2(0, _rb.velocity.y);
+        _animator.SetBool("Walk", false);
+
+        if (clickIndicator != null)
+        {
+            clickIndicator.SetActive(false);
+        }
+    }
+
+
+    private void HandleAcceleration()
+    {
+        if (isMoving)
         {
             accelerationTimer += Time.deltaTime;
-            currentSpeed = Mathf.Lerp(baseSpeed, maxSpeed, accelerationTimer / accelerationTime);
+            currentSpeed = Mathf.Lerp(data.baseSpeed, data.maxSpeed, accelerationTimer / data.accelerationTime);
         }
         else
         {
             accelerationTimer = 0f;
-            currentSpeed = baseSpeed;
+            currentSpeed = data.baseSpeed;
         }
     }
 
-    #region InpuySystem
-        void OnMove(InputValue value)
+    #region InputSystem
+    private void OnMovePerformed(InputAction.CallbackContext context)
+    {
+        if (context.performed)
         {
-            Vector2 input = value.Get<Vector2>();
-            if(input != null)
-            {
-                moveDirection = new Vector2(input.x, 0f);
-            }
-        }
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            targetPosition = new Vector2(worldPosition.x, transform.position.y);
 
-        void OnJump()
-        {
-            if (isGrounded && canMove)
+            if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
             {
-                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                jumpStartHeight = transform.position.y;
-                isGrounded = false;
-                canDash = true;
-            }
-        }
+                isMoving = true;
+                _animator.SetBool("Walk", true);
 
-        private void PerformAttack(InputAction.CallbackContext context)
-        {
-            if (context.performed)
-            {
-                Vector2 mousePosition = Mouse.current.position.ReadValue();
-                Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-
-                RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
-                if (hit.collider != null)
+                if (clickIndicator != null)
                 {
-                    Enemy enemy = hit.collider.GetComponent<Enemy>();
-                    if (enemy != null)
-                    {
-                        enemy.OnPlayerAttack();
-                    }
+                    clickIndicator.transform.position = worldPosition;
+                    clickIndicator.SetActive(true);
                 }
             }
         }
+    }
 
-        // void OnSlam()
-        // {
-        //     if (!isGrounded)
-        //     {
-        //         float fallHeight = transform.position.y - jumpStartHeight;
-        //         float dynamicSlamForce = Mathf.Clamp(fallHeight * 10f, 10f, 50f);
-        //         rb.velocity = new Vector2(rb.velocity.x, 0);
-        //         rb.AddForce(Vector2.down * dynamicSlamForce, ForceMode2D.Impulse);
-        //     }
-        // }
+    private void OnMoveCanceled(InputAction.CallbackContext context)
+    {
+        StopMoving();
+    }
 
-        // void OnDash()
-        // {
-        //     if (canDash)
-        //     {
-        //         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        //         Vector2 dashDirection = (mousePosition - (Vector2)transform.position).normalized;
-        //         rb.velocity = Vector2.zero;
-        //         rb.AddForce(dashDirection * dashForce, ForceMode2D.Impulse);
-        //         canDash = false;
-        //     }
-        // }
+    private void OnJumpPerformed(InputAction.CallbackContext context)
+    {
+        if (isMoving && isGrounded && canMove)
+        {
+            _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
+            isGrounded = false;
+        }
+    }
+
+    private void OnAttackPerformed(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+            RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
+            if (hit.collider != null)
+            {
+                Enemy enemy = hit.collider.GetComponent<Enemy>();
+                if (enemy != null)
+                {
+                    enemy.OnPlayerAttack();
+                }
+            }
+        }
+    }
     #endregion
 
     public void SetCanMove(bool value)
     {
-        if(!value)
+        if (!value)
         {
             _animator.SetBool("Walk", false);
         }
@@ -177,7 +178,6 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
-            canDash = false;
         }
     }
 }

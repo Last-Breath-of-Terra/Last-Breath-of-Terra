@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: 6743859117064608632}
   - component: {fileID: 1128684005527789153}
   m_Layer: 6
-  m_Name: Enemy
+  m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

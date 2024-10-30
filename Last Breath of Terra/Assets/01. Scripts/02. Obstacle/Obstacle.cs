@@ -14,25 +14,37 @@ public class Obstacle : MonoBehaviour
     public Transform[] attackPoints;
     public Transform timingIndicator;
     public GameObject attackGroup;
-    public float timingRotationSpeed = 100f;
 
-    private Rigidbody2D rb;
-    private Transform player;
+    private Rigidbody2D _rb;
+    private Transform player; //플레이어 변수는 GameManager에서 가져오는 등 할 예정
     private Vector3 initialTimingIndicatorPos;
     private int currentHitCount = 0;
     private float currentSpeed;
-    private float stopDistance = 0.3f;
     private bool isHovered = false;
     private bool isActive = true;
     private bool isTimingCorrect = false;
+    private bool hasCompletedFullRotation = false;
 
     private void Start()
     {
-        rb = this.GetComponent<Rigidbody2D>();
+        _rb = this.GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        ObstacleManager.Instance.RegisterObstacle(this);
-        currentSpeed = data.speed;
         initialTimingIndicatorPos = timingIndicator.localPosition;
+    }
+
+    private void OnEnable()
+    {
+        isActive = true;
+        ObstacleManager.Instance.RegisterObstacle(this);
+
+        currentHitCount = 0;
+        currentSpeed = data.speed;
+    }
+
+    private void OnDisable()
+    {
+        isActive = false;
+        ObstacleManager.Instance.UnregisterObstacle(this);
     }
 
     private void Update()
@@ -41,7 +53,6 @@ public class Obstacle : MonoBehaviour
         {
             MoveTowardsPlayer();
             HandleMouseHover();
-            HandleHoverEffect();
         }
     }
 
@@ -51,10 +62,9 @@ public class Obstacle : MonoBehaviour
         if (player != null)
         {
             Vector3 direction = (player.position - transform.position).normalized;
-            // transform.position += direction * currentSpeed * Time.deltaTime;
             float distanceToPlayer = Vector3.Distance(transform.position, player.position);
             
-            if (distanceToPlayer > stopDistance)
+            if (distanceToPlayer > data.stopDistance)
             {
                 transform.position += direction * currentSpeed * Time.deltaTime;
             }
@@ -70,36 +80,34 @@ public class Obstacle : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
 
-        if (hit.collider != null && hit.collider.gameObject == gameObject)
+        bool isCurrentlyHovered = hit.collider != null && hit.collider.gameObject == gameObject;
+        if (isHovered != isCurrentlyHovered)
         {
-            if(!isHovered)
-            {
-                isHovered = true;
-                ObstacleManager.Instance.SlowDownAllObstacles();
-            }
-        }
-        else
-        {
+            isHovered = isCurrentlyHovered;
             if (isHovered)
             {
-                isHovered = false;
+                ObstacleManager.Instance.SlowDownAllObstacles();
+            }
+            else
+            {
                 ObstacleManager.Instance.ResetAllObstaclesSpeed();
             }
         }
+
+        HandleHoverEffect();
     }
 
     private void HandleHoverEffect()
     {
+        attackGroup.SetActive(isHovered);
+
         if (isHovered)
         {
-            attackGroup.SetActive(true);
             RotateTimingIndicator();
         }
         else
         {
-            attackGroup.SetActive(false);
             ResetAttackState();
-
         }
     }
 
@@ -107,7 +115,20 @@ public class Obstacle : MonoBehaviour
     {
         if (timingIndicator != null)
         {
-            timingIndicator.RotateAround(transform.position, Vector3.back, timingRotationSpeed * Time.deltaTime);
+            timingIndicator.RotateAround(transform.position, Vector3.back, data.timingRotationSpeed * Time.deltaTime);
+            if (Vector3.Distance(timingIndicator.localPosition, initialTimingIndicatorPos) < 0.1f && hasCompletedFullRotation)
+            {
+                if (currentHitCount < 3)
+                {
+                    ResetAttackState();
+                }
+                hasCompletedFullRotation = false;
+            }
+            else if (Vector3.Distance(timingIndicator.localPosition, initialTimingIndicatorPos) > 0.1f)
+            {
+                hasCompletedFullRotation = true;
+            }
+
             CheckTiming();
         }
     }
@@ -128,13 +149,16 @@ public class Obstacle : MonoBehaviour
 
     public void OnPlayerAttack()
     {
-        if (isTimingCorrect && isHovered)
+        if (isHovered)
         {
-            HandleSuccessfulAttack();
-        }
-        else if (isHovered)
-        {
-            ResetAttackState();
+            if (isTimingCorrect)
+            {
+                HandleSuccessfulAttack();
+            }
+            else
+            {
+                ResetAttackState();
+            }
         }
     }
     #endregion
@@ -143,6 +167,16 @@ public class Obstacle : MonoBehaviour
     private void HandleSuccessfulAttack()
     {
         currentHitCount++;
+
+        foreach (Transform point in attackPoints)
+        {
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f)
+            {
+                point.GetComponent<SpriteRenderer>().color = Color.green;
+                break;
+            }
+        }
+
         if (currentHitCount >= data.clicksToDestroy)
         {
             DeactivateObstacle();
@@ -156,25 +190,24 @@ public class Obstacle : MonoBehaviour
         }
 
         currentHitCount = 0;
+
+        foreach (Transform point in attackPoints)
+        {
+            point.GetComponent<SpriteRenderer>().color = Color.white;
+        }
     }
     #endregion
 
     #region Obstacle Management Methods
     private void DeactivateObstacle()
     {
-        isActive = false;
         gameObject.SetActive(false);
-        ObstacleManager.Instance.UnregisterObstacle(this);
     }
 
     public void ReactivateObstacle(Vector3 newPosition)
     {
         gameObject.SetActive(true);
-        isActive = true;
-
         transform.position = newPosition;
-        currentHitCount = 0;
-        currentSpeed = data.speed;
     }
 
     public void SlowSpeed()

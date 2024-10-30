@@ -8,5 +8,7 @@ using UnityEngine;
 public class ObstacleSO : ScriptableObject
 {
     public float speed = 3f;
+    public float timingRotationSpeed = 150f;
+    public float stopDistance = 0.3f;
     public int clicksToDestroy = 3;
 }

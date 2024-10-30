@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb7d6c33ab5864155956664bfc28cfbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyData: {fileID: 11400000, guid: 8bc7ab49ee7b34f4da13345bcf6d5dfe, type: 2}
+  data: {fileID: 11400000, guid: 8bc7ab49ee7b34f4da13345bcf6d5dfe, type: 2}
   attackPoints:
   - {fileID: 3544274121468092378}
   - {fileID: 6719746487878657740}

@@ -165,10 +165,10 @@ public class PlayerController : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
             if (hit.collider != null)
             {
-                Enemy enemy = hit.collider.GetComponent<Enemy>();
-                if (enemy != null)
+                Obstacle obstacle = hit.collider.GetComponent<Obstacle>();
+                if (obstacle != null)
                 {
-                    enemy.OnPlayerAttack();
+                    obstacle.OnPlayerAttack();
                 }
             }
         }

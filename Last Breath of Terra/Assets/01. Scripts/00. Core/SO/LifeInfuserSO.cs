@@ -67,10 +67,10 @@ public class LifeInfuserSO : ScriptableObject
         foreach (GameObject obstacle in obstacleSprites)
         {
             obstacle.SetActive(true); // 각 GameObject 활성화
-            Enemy enemyComponent = obstacle.GetComponent<Enemy>();
-            if (enemyComponent != null)
+            Obstacle obstacleComponent = obstacle.GetComponent<Obstacle>();
+            if (obstacleComponent != null)
             {
-                enemyComponent.ReactivateEnemy(obstacle.transform.position);
+                obstacleComponent.ReactivateObstacle(obstacle.transform.position);
             }
         }
     }

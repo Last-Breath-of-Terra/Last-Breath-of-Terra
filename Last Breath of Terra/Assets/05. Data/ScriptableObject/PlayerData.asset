@@ -15,5 +15,5 @@ MonoBehaviour:
   baseSpeed: 1
   maxSpeed: 6
   accelerationTime: 3
-  jumpForce: 5
+  jumpForce: 3
   dashForce: 10

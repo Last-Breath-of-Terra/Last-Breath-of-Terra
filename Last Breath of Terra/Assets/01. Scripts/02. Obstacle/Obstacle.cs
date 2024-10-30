@@ -5,34 +5,46 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// 적의 기능을 담당하고 있는 클래스
+/// 장애물의 기능을 담당하고 있는 클래스
 /// </summary>
 
-public class Enemy : MonoBehaviour
+public class Obstacle : MonoBehaviour
 {
-    public EnemySO enemyData;
+    public ObstacleSO data;
     public Transform[] attackPoints;
     public Transform timingIndicator;
     public GameObject attackGroup;
-    public float timingRotationSpeed = 100f;
 
-    private Rigidbody2D rb;
-    private Transform player;
+    private Rigidbody2D _rb;
+    private Transform player; //플레이어 변수는 GameManager에서 가져오는 등 할 예정
     private Vector3 initialTimingIndicatorPos;
     private int currentHitCount = 0;
     private float currentSpeed;
-    private float stopDistance = 0.3f;
     private bool isHovered = false;
     private bool isActive = true;
     private bool isTimingCorrect = false;
+    private bool hasCompletedFullRotation = false;
 
     private void Start()
     {
-        rb = this.GetComponent<Rigidbody2D>();
+        _rb = this.GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        EnemyManager.Instance.RegisterEnemy(this);
-        currentSpeed = enemyData.speed;
         initialTimingIndicatorPos = timingIndicator.localPosition;
+    }
+
+    private void OnEnable()
+    {
+        isActive = true;
+        ObstacleManager.Instance.RegisterObstacle(this);
+
+        currentHitCount = 0;
+        currentSpeed = data.speed;
+    }
+
+    private void OnDisable()
+    {
+        isActive = false;
+        ObstacleManager.Instance.UnregisterObstacle(this);
     }
 
     private void Update()
@@ -41,7 +53,6 @@ public class Enemy : MonoBehaviour
         {
             MoveTowardsPlayer();
             HandleMouseHover();
-            HandleHoverEffect();
         }
     }
 
@@ -51,10 +62,9 @@ public class Enemy : MonoBehaviour
         if (player != null)
         {
             Vector3 direction = (player.position - transform.position).normalized;
-            // transform.position += direction * currentSpeed * Time.deltaTime;
             float distanceToPlayer = Vector3.Distance(transform.position, player.position);
             
-            if (distanceToPlayer > stopDistance)
+            if (distanceToPlayer > data.stopDistance)
             {
                 transform.position += direction * currentSpeed * Time.deltaTime;
             }
@@ -70,36 +80,34 @@ public class Enemy : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
 
-        if (hit.collider != null && hit.collider.gameObject == gameObject)
+        bool isCurrentlyHovered = hit.collider != null && hit.collider.gameObject == gameObject;
+        if (isHovered != isCurrentlyHovered)
         {
-            if(!isHovered)
-            {
-                isHovered = true;
-                EnemyManager.Instance.SlowDownAllEnemies();
-            }
-        }
-        else
-        {
+            isHovered = isCurrentlyHovered;
             if (isHovered)
             {
-                isHovered = false;
-                EnemyManager.Instance.ResetAllEnemiesSpeed();
+                ObstacleManager.Instance.SlowDownAllObstacles();
+            }
+            else
+            {
+                ObstacleManager.Instance.ResetAllObstaclesSpeed();
             }
         }
+
+        HandleHoverEffect();
     }
 
     private void HandleHoverEffect()
     {
+        attackGroup.SetActive(isHovered);
+
         if (isHovered)
         {
-            attackGroup.SetActive(true);
             RotateTimingIndicator();
         }
         else
         {
-            attackGroup.SetActive(false);
             ResetAttackState();
-
         }
     }
 
@@ -107,7 +115,20 @@ public class Enemy : MonoBehaviour
     {
         if (timingIndicator != null)
         {
-            timingIndicator.RotateAround(transform.position, Vector3.back, timingRotationSpeed * Time.deltaTime);
+            timingIndicator.RotateAround(transform.position, Vector3.back, data.timingRotationSpeed * Time.deltaTime);
+            if (Vector3.Distance(timingIndicator.localPosition, initialTimingIndicatorPos) < 0.1f && hasCompletedFullRotation)
+            {
+                if (currentHitCount < 3)
+                {
+                    ResetAttackState();
+                }
+                hasCompletedFullRotation = false;
+            }
+            else if (Vector3.Distance(timingIndicator.localPosition, initialTimingIndicatorPos) > 0.1f)
+            {
+                hasCompletedFullRotation = true;
+            }
+
             CheckTiming();
         }
     }
@@ -117,7 +138,7 @@ public class Enemy : MonoBehaviour
         isTimingCorrect = false;
         foreach (Transform point in attackPoints)
         {
-            //이부분은 적의 오브젝트 크기에 따라 체크 범위가 달라지는 문제가 있어서 코드 수정이 필요함
+            //이부분은 장애물의 오브젝트 크기에 따라 체크 범위가 달라지는 문제가 있어서 코드 수정이 필요함
             if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f)
             {
                 isTimingCorrect = true;
@@ -128,13 +149,16 @@ public class Enemy : MonoBehaviour
 
     public void OnPlayerAttack()
     {
-        if (isTimingCorrect && isHovered)
+        if (isHovered)
         {
-            HandleSuccessfulAttack();
-        }
-        else if (isHovered)
-        {
-            ResetAttackState();
+            if (isTimingCorrect)
+            {
+                HandleSuccessfulAttack();
+            }
+            else
+            {
+                ResetAttackState();
+            }
         }
     }
     #endregion
@@ -143,9 +167,19 @@ public class Enemy : MonoBehaviour
     private void HandleSuccessfulAttack()
     {
         currentHitCount++;
-        if (currentHitCount >= enemyData.clicksToDestroy)
+
+        foreach (Transform point in attackPoints)
         {
-            DeactivateEnemy();
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f)
+            {
+                point.GetComponent<SpriteRenderer>().color = Color.green;
+                break;
+            }
+        }
+
+        if (currentHitCount >= data.clicksToDestroy)
+        {
+            DeactivateObstacle();
         }
     }
     private void ResetAttackState()
@@ -156,25 +190,24 @@ public class Enemy : MonoBehaviour
         }
 
         currentHitCount = 0;
+
+        foreach (Transform point in attackPoints)
+        {
+            point.GetComponent<SpriteRenderer>().color = Color.white;
+        }
     }
     #endregion
 
-    #region Enemy Management Methods
-    private void DeactivateEnemy()
+    #region Obstacle Management Methods
+    private void DeactivateObstacle()
     {
-        isActive = false;
         gameObject.SetActive(false);
-        EnemyManager.Instance.UnregisterEnemy(this);
     }
 
-    public void ReactivateEnemy(Vector3 newPosition)
+    public void ReactivateObstacle(Vector3 newPosition)
     {
         gameObject.SetActive(true);
-        isActive = true;
-
         transform.position = newPosition;
-        currentHitCount = 0;
-        currentSpeed = enemyData.speed;
     }
 
     public void SlowSpeed()
@@ -184,7 +217,7 @@ public class Enemy : MonoBehaviour
 
     public void ResetSpeed()
     {
-        currentSpeed = enemyData.speed;
+        currentSpeed = data.speed;
     }
     #endregion
 }

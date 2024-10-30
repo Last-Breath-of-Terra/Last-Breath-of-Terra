@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Experimental.Rendering.Universal;
+using UnityEngine.Rendering.Universal;
+using DG.Tweening;
 
 /// <summary>
 /// 플레이어의 움직임을 관리하는 스크립트
@@ -14,6 +17,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D _rb;
     private Animator _animator;
+    private Light2D clickLight;
     private Vector3 originalScale;
     private Vector2 targetPosition;
     private float accelerationTimer;
@@ -27,6 +31,7 @@ public class PlayerController : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+        clickLight = clickIndicator.GetComponent<Light2D>();
     }
 
     void Start()
@@ -139,6 +144,12 @@ public class PlayerController : MonoBehaviour
     {
         if (isMoving && isGrounded && canMove)
         {
+            DOTween.To(() => clickLight.intensity, x => clickLight.intensity = x, 4.0f, 0.3f);
+            DOTween.To(() => clickLight.color, x => clickLight.color = x, Color.red, 0.3f).OnComplete(() =>
+            {
+                DOTween.To(() => clickLight.intensity, x => clickLight.intensity = x, 1.5f, 0.3f);
+                DOTween.To(() => clickLight.color, x => clickLight.color = x, Color.white, 0.3f);
+            });
             _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
             isGrounded = false;
         }

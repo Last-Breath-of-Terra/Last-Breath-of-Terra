@@ -22,8 +22,7 @@ public class Obstacle : MonoBehaviour
     private float currentSpeed;
     private bool isHovered = false;
     private bool isActive = true;
-    private bool isTimingCorrect = false;
-    private bool hasCompletedFullRotation = false;
+    private List<Transform> clickedPoints = new List<Transform>();
 
     private void Start()
     {
@@ -39,6 +38,7 @@ public class Obstacle : MonoBehaviour
 
         currentHitCount = 0;
         currentSpeed = data.speed;
+        clickedPoints.Clear();
     }
 
     private void OnDisable()
@@ -105,10 +105,6 @@ public class Obstacle : MonoBehaviour
         {
             RotateTimingIndicator();
         }
-        else
-        {
-            ResetAttackState();
-        }
     }
 
     private void RotateTimingIndicator()
@@ -116,49 +112,27 @@ public class Obstacle : MonoBehaviour
         if (timingIndicator != null)
         {
             timingIndicator.RotateAround(transform.position, Vector3.back, data.timingRotationSpeed * Time.deltaTime);
-            if (Vector3.Distance(timingIndicator.localPosition, initialTimingIndicatorPos) < 0.1f && hasCompletedFullRotation)
-            {
-                if (currentHitCount < 3)
-                {
-                    ResetAttackState();
-                }
-                hasCompletedFullRotation = false;
-            }
-            else if (Vector3.Distance(timingIndicator.localPosition, initialTimingIndicatorPos) > 0.1f)
-            {
-                hasCompletedFullRotation = true;
-            }
-
             CheckTiming();
         }
     }
 
-    private void CheckTiming()
+    private bool CheckTiming()
     {
-        isTimingCorrect = false;
         foreach (Transform point in attackPoints)
         {
-            //이부분은 장애물의 오브젝트 크기에 따라 체크 범위가 달라지는 문제가 있어서 코드 수정이 필요함
-            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f)
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && !clickedPoints.Contains(point))
             {
-                isTimingCorrect = true;
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     public void OnPlayerAttack()
     {
-        if (isHovered)
+        if (isHovered && CheckTiming())
         {
-            if (isTimingCorrect)
-            {
-                HandleSuccessfulAttack();
-            }
-            else
-            {
-                ResetAttackState();
-            }
+            HandleSuccessfulAttack();
         }
     }
     #endregion
@@ -166,13 +140,13 @@ public class Obstacle : MonoBehaviour
     #region Attack Handling Methods
     private void HandleSuccessfulAttack()
     {
-        currentHitCount++;
-
         foreach (Transform point in attackPoints)
         {
-            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f)
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && !clickedPoints.Contains(point))
             {
                 point.GetComponent<SpriteRenderer>().color = Color.green;
+                clickedPoints.Add(point);
+                currentHitCount++;
                 break;
             }
         }
@@ -182,6 +156,7 @@ public class Obstacle : MonoBehaviour
             DeactivateObstacle();
         }
     }
+
     private void ResetAttackState()
     {
         if (timingIndicator != null)
@@ -190,11 +165,6 @@ public class Obstacle : MonoBehaviour
         }
 
         currentHitCount = 0;
-
-        foreach (Transform point in attackPoints)
-        {
-            point.GetComponent<SpriteRenderer>().color = Color.white;
-        }
     }
     #endregion
 

@@ -13,22 +13,20 @@ public class LifeInfuser : MonoBehaviour
     public GameObject camera;
 
     public Slider infusionSlider;
-    public LifeInfuserSO lifeInfuserData;
+    public StageLifeInfuserSO lifeInfuserData;
     public GameObject[] obstacleSprites;
+    public int infuserNumber;
     
     private Tween startTween;
-
     
-    [SerializeField]
-    private bool canInfusion;
-
+    //나중에 삭제 필요
     private void Start()
     {
-        lifeInfuserData.canInfusion = true;
+        lifeInfuserData.canInfusion[infuserNumber] = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion)
+        if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion[infuserNumber])
         {
             lifeInfuserData.playerController = collision.GetComponent<PlayerController>();
             //Invoke("PrepareInfusion", lifeInfuserData.infusionWaitTime);
@@ -47,7 +45,7 @@ public class LifeInfuser : MonoBehaviour
         }
         lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
         DOTween.To(() => lifeInfuserData.defaultLensSize, x => lifeInfuserData.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
-        lifeInfuserData.StartInfusion(infusionSlider);
+        lifeInfuserData.StartInfusion(infusionSlider, infuserNumber);
         lifeInfuserData.SpawnObstacle(obstacleSprites);
 
     }

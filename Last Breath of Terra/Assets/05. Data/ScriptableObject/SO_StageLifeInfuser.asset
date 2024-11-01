@@ -18,11 +18,16 @@ MonoBehaviour:
   defaultLensSize: 1
   targetLensSize: 1.65
   virtualCamera: {fileID: 0}
-  infusedLifeCount: 9
+  infusedLifeCount: 10
   stageName: stage1
   infuserStatusUI:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  canInfusion: 000000
+  canInfusion: 010101
+  infuser:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  totalInfuser: 2
   isInfuser: 010101

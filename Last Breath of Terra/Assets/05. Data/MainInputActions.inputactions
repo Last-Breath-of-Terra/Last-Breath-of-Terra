@@ -108,6 +108,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Select",
+            "id": "6d264bd8-f575-46cc-a345-984a5bb966a5",
+            "actions": [
+                {
+                    "name": "LeftSelect",
+                    "type": "Button",
+                    "id": "b9645343-6b85-4511-be97-2ac04b681c02",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightSelect",
+                    "type": "Button",
+                    "id": "45a2cc4d-1878-48db-8460-b0fb6fcce79d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "3feb825c-8ce8-4283-b983-b3abcec45d0e",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftSelect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "19967bca-1643-40d1-ab65-f1becc54f583",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightSelect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

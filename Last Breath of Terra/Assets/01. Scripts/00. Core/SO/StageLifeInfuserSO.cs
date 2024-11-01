@@ -10,7 +10,9 @@ public class StageLifeInfuserSO : LifeInfuserSO
     public string stageName;
     public Image[] infuserStatusUI;
     public bool[] canInfusion;
-
+    public GameObject[] infuser;
+    public int totalInfuser;
+    
     [SerializeField]
     private bool[] isInfuser;
 
@@ -21,4 +23,5 @@ public class StageLifeInfuserSO : LifeInfuserSO
         canInfusion[infuserNumber] = false;
         infuserStatusUI[infuserNumber].color = Color.white;
     }
+    
 }

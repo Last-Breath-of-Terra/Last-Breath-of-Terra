@@ -10,7 +10,7 @@ using DG.Tweening;
 
 public class LifeInfuser : MonoBehaviour
 {
-    public GameObject camera;
+    //public GameObject camera;
 
     public Slider infusionSlider;
     public StageLifeInfuserSO lifeInfuserData;
@@ -19,10 +19,12 @@ public class LifeInfuser : MonoBehaviour
     
     private Tween startTween;
     
-    //나중에 삭제 필요
     private void Start()
     {
+        //나중에 삭제 필요
         lifeInfuserData.canInfusion[infuserNumber] = true;
+        
+        lifeInfuserData.infuser[infuserNumber] = gameObject;
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
@@ -43,7 +45,7 @@ public class LifeInfuser : MonoBehaviour
         {
             lifeInfuserData.playerController.SetCanMove(false);
         }
-        lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
+        //lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
         DOTween.To(() => lifeInfuserData.defaultLensSize, x => lifeInfuserData.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
         lifeInfuserData.StartInfusion(infusionSlider, infuserNumber);
         lifeInfuserData.SpawnObstacle(obstacleSprites);

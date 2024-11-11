@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
     private Vector2 targetPosition;
     private float accelerationTimer;
     private bool isGrounded = true;
-    private bool isMoving = false;
     private bool canMove = true;
     private bool isHoldingClick = false;
 
@@ -40,7 +39,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleAcceleration();
 
-        if (isMoving && canMove)
+        if (isHoldingClick && canMove)
         {
             Move();
         }
@@ -91,19 +90,15 @@ public class PlayerController : MonoBehaviour
 
     private void StopMoving()
     {
-        isMoving = false;
         isHoldingClick = false;
         _rb.velocity = new Vector2(0, _rb.velocity.y);
         _animator.SetBool("Walk", false);
-
-        UIManager.Instance.ReactivateCursor();
-        UIManager.Instance.DeactivateClickLight();
     }
 
 
     private void HandleAcceleration()
     {
-        if (isMoving)
+        if (isHoldingClick)
         {
             accelerationTimer += Time.deltaTime;
             currentSpeed = Mathf.Lerp(data.baseSpeed, data.maxSpeed, accelerationTimer / data.accelerationTime);
@@ -120,11 +115,16 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
-            isHoldingClick = true;
-
+            Invoke("StartMoving", 0.3f);
             UpdateTargetPosition();
+        }
+    }
 
-            isMoving = true;
+    private void StartMoving()
+    {
+        if (canMove)
+        {
+            isHoldingClick = true;
             _animator.SetBool("Walk", true);
         }
     }
@@ -132,6 +132,7 @@ public class PlayerController : MonoBehaviour
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         StopMoving();
+        UIManager.Instance.ReleaseClick();
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
@@ -176,9 +177,6 @@ public class PlayerController : MonoBehaviour
 
         if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
         {
-            isMoving = true;
-            _animator.SetBool("Walk", true);
-
             UIManager.Instance.HandleClickLight(worldPosition);
         }
     }

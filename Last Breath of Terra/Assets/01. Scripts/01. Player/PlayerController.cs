@@ -91,10 +91,10 @@ public class PlayerController : MonoBehaviour
         _rb.velocity = new Vector2(0, _rb.velocity.y);
         _animator.SetBool("Walk", false);
 
-        if (clickIndicator != null)
-        {
-            clickIndicator.SetActive(false);
-        }
+        // if (clickIndicator != null)
+        // {
+        //     clickIndicator.SetActive(false);
+        // }
     }
 
 
@@ -126,11 +126,13 @@ public class PlayerController : MonoBehaviour
                 isMoving = true;
                 _animator.SetBool("Walk", true);
 
-                if (clickIndicator != null)
-                {
-                    clickIndicator.transform.position = worldPosition;
-                    clickIndicator.SetActive(true);
-                }
+                UIManager.Instance.HandleClickLight(worldPosition);
+
+                // if (clickIndicator != null)
+                // {
+                //     clickIndicator.transform.position = worldPosition;
+                //     clickIndicator.SetActive(true);
+                // }
             }
         }
     }
@@ -142,17 +144,28 @@ public class PlayerController : MonoBehaviour
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
     {
-        if (isMoving && isGrounded && canMove)
+        if (isGrounded && canMove)
         {
-            DOTween.To(() => clickLight.intensity, x => clickLight.intensity = x, 4.0f, 0.3f);
-            DOTween.To(() => clickLight.color, x => clickLight.color = x, Color.red, 0.3f).OnComplete(() =>
-            {
-                DOTween.To(() => clickLight.intensity, x => clickLight.intensity = x, 1.5f, 0.3f);
-                DOTween.To(() => clickLight.color, x => clickLight.color = x, Color.white, 0.3f);
-            });
+            // 점프 로직
             _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
             isGrounded = false;
+
+            // 점프 시 빛 제어
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            UIManager.Instance.HandleJumpLight(worldPosition);
         }
+        // if (isMoving && isGrounded && canMove)
+        // {
+        //     DOTween.To(() => clickLight.intensity, x => clickLight.intensity = x, 4.0f, 0.3f);
+        //     DOTween.To(() => clickLight.color, x => clickLight.color = x, Color.red, 0.3f).OnComplete(() =>
+        //     {
+        //         DOTween.To(() => clickLight.intensity, x => clickLight.intensity = x, 1.5f, 0.3f);
+        //         DOTween.To(() => clickLight.color, x => clickLight.color = x, Color.white, 0.3f);
+        //     });
+        //     _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
+        //     isGrounded = false;
+        // }
     }
 
     private void OnAttackPerformed(InputAction.CallbackContext context)

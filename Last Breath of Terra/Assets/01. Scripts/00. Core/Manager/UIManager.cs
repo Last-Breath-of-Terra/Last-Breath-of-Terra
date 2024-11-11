@@ -42,36 +42,34 @@ public class UIManager : MonoBehaviour
 
     public void HandleClickLight(Vector2 position)
     {
-        // 커서 오브젝트 비활성화
         cursorIndicator.SetActive(false);
 
-        // ClickLight 및 이동 효과 스프라이트 활성화 및 위치 설정
-        clickLight.transform.position = position;
+        clickLight.transform.position = new Vector3(position.x, position.y, 0);
         clickLight.gameObject.SetActive(true);
-        movingLightEffect.transform.position = position;
-        movingLightEffect.SetActive(true);
 
-        // 짧은 시간 후 커서를 다시 활성화하고, 빛 효과 비활성화
-        Invoke("ReactivateCursor", 0.5f);
-        Invoke("DeactivateClickLight", 1.0f); // 클릭 빛 효과 1초 후 비활성화
+        movingLightEffect.transform.position = new Vector3(position.x, position.y, 0);
+        movingLightEffect.SetActive(true);
     }
 
     public void HandleJumpLight(Vector2 position)
     {
-        // 점프 효과 스프라이트 활성화 및 위치 설정
+        cursorIndicator.SetActive(false);
+
+        clickLight.transform.position = position;
+        clickLight.gameObject.SetActive(true);
+
         jumpLightEffect.transform.position = position;
         jumpLightEffect.SetActive(true);
 
-        // 짧은 시간 후 점프 빛 효과 비활성화
-        Invoke("DeactivateJumpLight", 1.0f); // 점프 빛 효과 1초 후 비활성화
+        Invoke("DeactivateJumpLight", 0.5f);
     }
 
-    private void ReactivateCursor()
+    public void ReactivateCursor()
     {
         cursorIndicator.SetActive(true);
     }
 
-    private void DeactivateClickLight()
+    public void DeactivateClickLight()
     {
         clickLight.gameObject.SetActive(false);
         movingLightEffect.SetActive(false);
@@ -79,6 +77,7 @@ public class UIManager : MonoBehaviour
 
     private void DeactivateJumpLight()
     {
+        clickLight.gameObject.SetActive(false);
         jumpLightEffect.SetActive(false);
     }
 }

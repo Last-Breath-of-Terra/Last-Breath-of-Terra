@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlayerData", menuName = "ScriptableObject/PlayerData")]
 public class PlayerSO : ScriptableObject
 {
+    public float hp = 100f;
     public float baseSpeed = 1f;
     public float maxSpeed = 6f;
     public float accelerationTime = 5f;

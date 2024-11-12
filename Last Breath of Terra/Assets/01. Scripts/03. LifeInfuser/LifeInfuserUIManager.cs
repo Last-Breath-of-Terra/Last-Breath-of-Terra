@@ -36,28 +36,34 @@ public class LifeInfuserUIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        playerInput.actions["Select/LeftSelect"].performed += OnLeftSelect;
-        playerInput.actions["Select/RightSelect"].performed += OnRightSelect;
+        playerInput.actions["Select/Left"].performed += OnLeftSelect;
+        playerInput.actions["Select/Right"].performed += OnRightSelect;
+        playerInput.actions["Select/Select"].performed += OnSelect;
+
     }
 
     private void OnDisable()
     {
-        playerInput.actions["Select/LeftSelect"].performed += OnLeftSelect;
-        playerInput.actions["Select/RightSelect"].performed += OnRightSelect;
+        playerInput.actions["Select/Left"].performed += OnLeftSelect;
+        playerInput.actions["Select/Right"].performed += OnRightSelect;
+        playerInput.actions["Select/Select"].performed += OnSelect;
+
     }
     
     public void OnLeftSelect(InputAction.CallbackContext context)
     {
+        infuserStatusUI[currentIndex].color = Color.gray;
         currentIndex = Mathf.Clamp(currentIndex - 1, 0, lifeInfuserData.totalInfuser);
+        infuserStatusUI[currentIndex].color = Color.cyan;
         camera.Follow = lifeInfuserData.infuser[currentIndex].transform;
         Debug.Log("현재 infuser은? " + infuserStatusUI[currentIndex].name);
     }
 
     public void OnRightSelect(InputAction.CallbackContext context)
     {
-        
-
+        infuserStatusUI[currentIndex].color = Color.gray;
         currentIndex = Mathf.Clamp(currentIndex + 1, 0, lifeInfuserData.totalInfuser);
+        infuserStatusUI[currentIndex].color = Color.cyan;
         camera.Follow = lifeInfuserData.infuser[currentIndex].transform;
         Debug.Log("현재 infuser은? " + infuserStatusUI[currentIndex].name);
     }

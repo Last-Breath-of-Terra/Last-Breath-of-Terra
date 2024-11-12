@@ -20,7 +20,9 @@ public class LifeInfuserSO : ScriptableObject
     public Sprite infusionActiveUI;
     public Sprite infusionInactiveUI;
     public CinemachineVirtualCamera virtualCamera;
-
+    public Canvas infuserActivationCanvas;
+    public Image infuserActivationUI;
+    
     [SerializeField] private int infusedLifeCount;
 
     void Awake()
@@ -31,10 +33,12 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 활성화 시작 시 호출
      */
-    public void StartInfusion(Slider infusionSlider, int infuserNumber)
+    public void StartInfusion(int infuserNumber)
     {
-        infusionSlider.gameObject.SetActive(true);
-        currentTween = infusionSlider.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infusionSlider, infuserNumber));
+        infuserActivationCanvas.gameObject.SetActive(true);
+        currentTween = DOTween.To(() => 0.126f, x => infuserActivationUI.GetComponent<Image>().fillAmount = x, 0.875f, infusionDuration).OnComplete(() => CompleteInfusion(infuserNumber));
+
+        //infuserActivationUI.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infuserActivationUI, infuserNumber));
     }
     public void SpawnObstacle(GameObject[] obstacleSprites)
     {
@@ -52,9 +56,10 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 활성화 완료 시 호출
      */
-    public virtual void CompleteInfusion(Slider infusionSlider, int infuserNumber)
+    public virtual void CompleteInfusion(int infuserNumber)
     {
         Debug.Log("infusion completed");
+        
         //state 복귀
         DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
         if (playerController != null)
@@ -62,20 +67,20 @@ public class LifeInfuserSO : ScriptableObject
             playerController.SetCanMove(true);
         }
         infusedLifeCount++;
-        infusionSlider.gameObject.SetActive(false);
-        infusionSlider.value = 0;
+        infuserActivationUI.gameObject.SetActive(false);
+        infuserActivationUI.GetComponent<Image>().fillAmount = 0;
     }
 
 
     /*
      * 활성화 중지 시 호출
      */
-    public void StopInfusion(Slider infusionSlider)
+    public void StopInfusion()
     {
         if (currentTween != null && currentTween.IsActive())
         {
             currentTween.Kill();
-            infusionSlider.value = 0;
+            infuserActivationUI.GetComponent<Image>().fillAmount = 0;
             DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
 
             Debug.Log("infusion stopped");

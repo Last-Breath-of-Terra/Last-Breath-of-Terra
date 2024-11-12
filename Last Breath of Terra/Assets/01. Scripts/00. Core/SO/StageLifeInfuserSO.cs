@@ -19,13 +19,14 @@ public class StageLifeInfuserSO : LifeInfuserSO
     [SerializeField]
     private bool[] isInfuser;
 
-    public override void CompleteInfusion(Slider infusionSlider, int infuserNumber)
+    public override void CompleteInfusion(int infuserNumber)
     {
-        base.CompleteInfusion(infusionSlider, infuserNumber);
-        isInfuser[infuserNumber] = true;
-        canInfusion[infuserNumber] = false;
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
         infuserStatusUI[infuserNumber].sprite = infusionActiveUI;
+        base.CompleteInfusion(infuserNumber);
+        isInfuser[infuserNumber] = true;
+        canInfusion[infuserNumber] = false;
+        
     }
-    
+
 }

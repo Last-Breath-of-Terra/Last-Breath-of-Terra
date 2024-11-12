@@ -13,8 +13,9 @@ public class LifeInfuserUIManager : MonoBehaviour
     public GameObject infuserStatus;
     public GameObject player;
     public CinemachineVirtualCamera camera;
-
-
+    public Canvas infuserActivationCanvas;
+    public Image infuserActivationUI;
+    
     private PlayerInput playerInput;
 
     //private Image[] infuserStatusUI;
@@ -27,6 +28,8 @@ public class LifeInfuserUIManager : MonoBehaviour
 
     private void Start()
     {
+        lifeInfuserData.infuserActivationUI = infuserActivationUI;
+        lifeInfuserData.infuserActivationCanvas = infuserActivationCanvas;
         lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
         lifeInfuserData.infuserStatusUI = new Image[infuserStatus.transform.childCount];
         for (int i = 0; i < infuserStatus.transform.childCount; i++)

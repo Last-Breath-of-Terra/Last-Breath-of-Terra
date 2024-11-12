@@ -6,13 +6,15 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
 
 public class LifeInfuser : MonoBehaviour
 {
     //public GameObject camera;
 
-    public Slider infusionSlider;
+    //public Image infuserActivationUI;
+    //[FormerlySerializedAs("infusionSlider")] public Image infuserActivationUI;
     public StageLifeInfuserSO lifeInfuserData;
     public GameObject[] obstacleSprites;
     public int infuserNumber;
@@ -30,6 +32,8 @@ public class LifeInfuser : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion[infuserNumber])
         {
+            gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
+
             lifeInfuserData.targetInfuser = gameObject;
             lifeInfuserData.playerController = collision.GetComponent<PlayerController>();
             //Invoke("PrepareInfusion", lifeInfuserData.infusionWaitTime);
@@ -48,7 +52,7 @@ public class LifeInfuser : MonoBehaviour
         }
         //lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
         DOTween.To(() => lifeInfuserData.defaultLensSize, x => lifeInfuserData.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
-        lifeInfuserData.StartInfusion(infusionSlider, infuserNumber);
+        lifeInfuserData.StartInfusion(infuserNumber);
         lifeInfuserData.SpawnObstacle(obstacleSprites);
 
     }
@@ -59,7 +63,7 @@ public class LifeInfuser : MonoBehaviour
         {
             startTween.Kill();
         }
-        lifeInfuserData.StopInfusion(infusionSlider);
+        lifeInfuserData.StopInfusion();
 
     }
 }

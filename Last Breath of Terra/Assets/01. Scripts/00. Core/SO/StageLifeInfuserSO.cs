@@ -9,6 +9,9 @@ public class StageLifeInfuserSO : LifeInfuserSO
 {
     public string stageName;
     public Image[] infuserStatusUI;
+    public GameObject targetInfuser;
+    public Sprite InfuserActiveImage;
+    public Sprite InfuserInactiveImage;
     public bool[] canInfusion;
     public GameObject[] infuser;
     public int totalInfuser;
@@ -21,7 +24,8 @@ public class StageLifeInfuserSO : LifeInfuserSO
         base.CompleteInfusion(infusionSlider, infuserNumber);
         isInfuser[infuserNumber] = true;
         canInfusion[infuserNumber] = false;
-        infuserStatusUI[infuserNumber].color = Color.white;
+        targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
+        infuserStatusUI[infuserNumber].sprite = infusionActiveUI;
     }
     
 }

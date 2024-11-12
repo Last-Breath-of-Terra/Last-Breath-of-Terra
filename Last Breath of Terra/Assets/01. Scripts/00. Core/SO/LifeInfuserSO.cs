@@ -17,6 +17,8 @@ public class LifeInfuserSO : ScriptableObject
     public float defaultLensSize;
     public float targetLensSize;
     public Tween currentTween;
+    public Sprite infusionActiveUI;
+    public Sprite infusionInactiveUI;
     public CinemachineVirtualCamera virtualCamera;
 
     [SerializeField] private int infusedLifeCount;

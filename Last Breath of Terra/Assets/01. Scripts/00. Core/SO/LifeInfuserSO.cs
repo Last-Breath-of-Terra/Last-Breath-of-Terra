@@ -98,17 +98,17 @@ public class LifeInfuserSO : ScriptableObject
     private void SetUIForInfuserStatus(bool isStarted)
     {
         Debug.Log("setting UI for Infuser");
-        int transparency;
+        float transparency;
         Transform transform = InfuserStatusUI.transform;
         Vector3 canvasScale = transform.lossyScale;
         if (isStarted)
         {
-            transparency = 255;
+            transparency = 1f;
             canvasScale = new Vector3(1.5f, 1.5f, 1.5f);
         }
         else
         {
-            transparency = 50;
+            transparency = 0.2f;
             canvasScale = new Vector3(1f, 1f, 1f);
 
         }
@@ -117,7 +117,7 @@ public class LifeInfuserSO : ScriptableObject
         SetUITransparency(transform, transparency);
 
     }
-    void SetUITransparency(Transform parent, int transparency)
+    void SetUITransparency(Transform parent, float transparency)
     {
         // 부모가 null이 아니면 진행
         if (parent == null)
@@ -126,10 +126,10 @@ public class LifeInfuserSO : ScriptableObject
         // 자식 오브젝트들을 모두 탐색
         foreach (Transform child in parent)
         {
-            SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
+            Image image = child.GetComponent<Image>();
+            if (image != null)
             {
-                child.gameObject.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, transparency);
+                child.gameObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, transparency);
             }
             // 자식의 자식들까지 재귀적으로 탐색
             SetUITransparency(child, transparency);

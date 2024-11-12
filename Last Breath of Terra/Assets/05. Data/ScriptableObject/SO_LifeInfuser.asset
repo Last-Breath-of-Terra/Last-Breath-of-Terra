@@ -15,9 +15,12 @@ MonoBehaviour:
   playerController: {fileID: 0}
   infusionDuration: 10
   infusionWaitTime: 2
-  CooldownTimer: 0
-  canInfusion: 1
   defaultLensSize: 1
   targetLensSize: 1.65
+  infusionActiveUI: {fileID: 21300000, guid: cea2f2249a6912740a590516732f6d64, type: 3}
+  infusionInactiveUI: {fileID: 21300000, guid: 80f0eab198b8a134bab36bdd001436fa, type: 3}
   virtualCamera: {fileID: 0}
+  infuserActivationCanvas: {fileID: 0}
+  InfuserStatusUI: {fileID: 0}
+  infuserActivationUI: {fileID: 0}
   infusedLifeCount: 30

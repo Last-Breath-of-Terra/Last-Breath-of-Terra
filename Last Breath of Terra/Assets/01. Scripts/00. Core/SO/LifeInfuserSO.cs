@@ -21,6 +21,7 @@ public class LifeInfuserSO : ScriptableObject
     public Sprite infusionInactiveUI;
     public CinemachineVirtualCamera virtualCamera;
     public Canvas infuserActivationCanvas;
+    public GameObject InfuserStatusUI;
     public Image infuserActivationUI;
     
     [SerializeField] private int infusedLifeCount;
@@ -35,6 +36,8 @@ public class LifeInfuserSO : ScriptableObject
      */
     public void StartInfusion(int infuserNumber)
     {
+        SetUIForInfuserStatus(true);
+
         infuserActivationCanvas.gameObject.SetActive(true);
         currentTween = DOTween.To(() => 0.126f, x => infuserActivationUI.GetComponent<Image>().fillAmount = x, 0.875f, infusionDuration).OnComplete(() => CompleteInfusion(infuserNumber));
 
@@ -69,6 +72,7 @@ public class LifeInfuserSO : ScriptableObject
         infusedLifeCount++;
         infuserActivationUI.gameObject.SetActive(false);
         infuserActivationUI.GetComponent<Image>().fillAmount = 0;
+        SetUIForInfuserStatus(false);
     }
 
 
@@ -82,8 +86,53 @@ public class LifeInfuserSO : ScriptableObject
             currentTween.Kill();
             infuserActivationUI.GetComponent<Image>().fillAmount = 0;
             DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
+            SetUIForInfuserStatus(false);
 
             Debug.Log("infusion stopped");
+        }
+    }
+    
+    /*
+     * 자식 오브젝트 투명도 설정
+     */
+    private void SetUIForInfuserStatus(bool isStarted)
+    {
+        Debug.Log("setting UI for Infuser");
+        int transparency;
+        Transform transform = InfuserStatusUI.transform;
+        Vector3 canvasScale = transform.lossyScale;
+        if (isStarted)
+        {
+            transparency = 255;
+            canvasScale = new Vector3(1.5f, 1.5f, 1.5f);
+        }
+        else
+        {
+            transparency = 50;
+            canvasScale = new Vector3(1f, 1f, 1f);
+
+        }
+        
+        InfuserStatusUI.GetComponent<RectTransform>().localScale = canvasScale;
+        SetUITransparency(transform, transparency);
+
+    }
+    void SetUITransparency(Transform parent, int transparency)
+    {
+        // 부모가 null이 아니면 진행
+        if (parent == null)
+            return;
+
+        // 자식 오브젝트들을 모두 탐색
+        foreach (Transform child in parent)
+        {
+            SpriteRenderer spriteRenderer = child.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                child.gameObject.GetComponent<SpriteRenderer>().color = new Color(255, 255, 255, transparency);
+            }
+            // 자식의 자식들까지 재귀적으로 탐색
+            SetUITransparency(child, transparency);
         }
     }
 

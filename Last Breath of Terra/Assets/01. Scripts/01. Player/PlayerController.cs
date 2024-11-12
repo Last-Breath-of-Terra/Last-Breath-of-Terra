@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Experimental.Rendering.Universal;
-using UnityEngine.Rendering.Universal;
 using DG.Tweening;
 
 /// <summary>
@@ -13,17 +11,15 @@ using DG.Tweening;
 public class PlayerController : MonoBehaviour
 {
     public PlayerSO data;
-    public GameObject clickIndicator;
 
     private Rigidbody2D _rb;
     private Animator _animator;
-    private Light2D clickLight;
     private Vector3 originalScale;
     private Vector2 targetPosition;
     private float accelerationTimer;
     private bool isGrounded = true;
-    private bool isMoving = false;
     private bool canMove = true;
+    private bool isHoldingClick = false;
 
     [SerializeField] private float currentSpeed;
 
@@ -31,7 +27,6 @@ public class PlayerController : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
-        clickLight = clickIndicator.GetComponent<Light2D>();
     }
 
     void Start()
@@ -44,9 +39,17 @@ public class PlayerController : MonoBehaviour
     {
         HandleAcceleration();
 
-        if (isMoving && canMove)
+        if (isHoldingClick && canMove)
         {
             Move();
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (isHoldingClick)
+        {
+            UpdateTargetPosition();
         }
     }
     
@@ -87,20 +90,15 @@ public class PlayerController : MonoBehaviour
 
     private void StopMoving()
     {
-        isMoving = false;
+        isHoldingClick = false;
         _rb.velocity = new Vector2(0, _rb.velocity.y);
         _animator.SetBool("Walk", false);
-
-        if (clickIndicator != null)
-        {
-            clickIndicator.SetActive(false);
-        }
     }
 
 
     private void HandleAcceleration()
     {
-        if (isMoving)
+        if (isHoldingClick)
         {
             accelerationTimer += Time.deltaTime;
             currentSpeed = Mathf.Lerp(data.baseSpeed, data.maxSpeed, accelerationTimer / data.accelerationTime);
@@ -117,41 +115,36 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            targetPosition = new Vector2(worldPosition.x, transform.position.y);
+            Invoke("StartMoving", 0.3f);
+            UpdateTargetPosition();
+        }
+    }
 
-            if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
-            {
-                isMoving = true;
-                _animator.SetBool("Walk", true);
-
-                if (clickIndicator != null)
-                {
-                    clickIndicator.transform.position = worldPosition;
-                    clickIndicator.SetActive(true);
-                }
-            }
+    private void StartMoving()
+    {
+        if (canMove)
+        {
+            isHoldingClick = true;
+            _animator.SetBool("Walk", true);
         }
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         StopMoving();
+        UIManager.Instance.ReleaseClick();
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
     {
-        if (isMoving && isGrounded && canMove)
+        if (isGrounded && canMove)
         {
-            DOTween.To(() => clickLight.intensity, x => clickLight.intensity = x, 4.0f, 0.3f);
-            DOTween.To(() => clickLight.color, x => clickLight.color = x, Color.red, 0.3f).OnComplete(() =>
-            {
-                DOTween.To(() => clickLight.intensity, x => clickLight.intensity = x, 1.5f, 0.3f);
-                DOTween.To(() => clickLight.color, x => clickLight.color = x, Color.white, 0.3f);
-            });
             _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
             isGrounded = false;
+
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            UIManager.Instance.HandleJumpLight(worldPosition);
         }
     }
 
@@ -174,6 +167,19 @@ public class PlayerController : MonoBehaviour
         }
     }
     #endregion
+
+    private void UpdateTargetPosition()
+    {
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        targetPosition = worldPosition;
+
+        if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
+        {
+            UIManager.Instance.HandleClickLight(worldPosition);
+        }
+    }
 
     public void SetCanMove(bool value)
     {

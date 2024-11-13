@@ -11,6 +11,7 @@ using UnityEngine.InputSystem;
 public class Obstacle : MonoBehaviour
 {
     public ObstacleSO data;
+    public StageLifeInfuserSO lifeInfuserSO;
     public Transform[] attackPoints;
     public Transform timingIndicator;
     public GameObject attackGroup;
@@ -23,12 +24,18 @@ public class Obstacle : MonoBehaviour
     private bool isHovered = false;
     private bool isActive = true;
     private List<Transform> clickedPoints = new List<Transform>();
+    private Dictionary<Transform, bool> attackPointStates = new Dictionary<Transform, bool>();
 
     private void Start()
     {
         _rb = this.GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         initialTimingIndicatorPos = timingIndicator.localPosition;
+
+        foreach (Transform point in attackPoints)
+        {
+            attackPointStates[point] = true;
+        }
     }
 
     private void OnEnable()
@@ -39,6 +46,11 @@ public class Obstacle : MonoBehaviour
         currentHitCount = 0;
         currentSpeed = data.speed;
         clickedPoints.Clear();
+
+        foreach (Transform point in attackPoints)
+        {
+            attackPointStates[point] = true;
+        }
     }
 
     private void OnDisable()
@@ -134,6 +146,28 @@ public class Obstacle : MonoBehaviour
         {
             HandleSuccessfulAttack();
         }
+        else
+        {
+            StartCoroutine(DeactivateAllPointsTemporarily(2f));
+        }
+    }
+
+    private IEnumerator DeactivateAllPointsTemporarily(float delay)
+    {
+        foreach (Transform point in attackPoints)
+        {
+            attackPointStates[point] = false;
+        }
+
+        yield return new WaitForSeconds(delay);
+
+        foreach (Transform point in attackPoints)
+        {
+            if (!clickedPoints.Contains(point))
+            {
+                attackPointStates[point] = true;
+            }
+        }
     }
     #endregion
 
@@ -142,7 +176,7 @@ public class Obstacle : MonoBehaviour
     {
         foreach (Transform point in attackPoints)
         {
-            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && !clickedPoints.Contains(point))
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && attackPointStates[point])
             {
                 point.GetComponent<SpriteRenderer>().color = Color.green;
                 clickedPoints.Add(point);
@@ -165,6 +199,11 @@ public class Obstacle : MonoBehaviour
         }
 
         currentHitCount = 0;
+
+        foreach (Transform point in attackPoints)
+        {
+            attackPointStates[point] = true;
+        }
     }
     #endregion
 
@@ -190,4 +229,25 @@ public class Obstacle : MonoBehaviour
         currentSpeed = data.speed;
     }
     #endregion
+
+    private void OnTriggerEnter2D(Collider2D collision) {
+        if (collision.transform.CompareTag("Player"))
+        {
+            lifeInfuserSO.StopInfusion();
+            player.GetComponent<PlayerController>().data.hp -= 10f;
+
+            Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
+            Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
+            playerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
+
+            Invoke(nameof(ReactivatePlayerMovement), 1f);
+
+            DeactivateObstacle();
+        }
+    }
+
+    private void ReactivatePlayerMovement()
+    {
+        player.GetComponent<PlayerController>().SetCanMove(true);
+    }
 }

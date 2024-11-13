@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isHoldingClick)
+        if (isHoldingClick && canMove)
         {
             UpdateTargetPosition();
         }
@@ -113,7 +113,7 @@ public class PlayerController : MonoBehaviour
     #region InputSystem
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && canMove)
         {
             Invoke("StartMoving", 0.3f);
             UpdateTargetPosition();
@@ -186,6 +186,7 @@ public class PlayerController : MonoBehaviour
         if (!value)
         {
             _animator.SetBool("Walk", false);
+            UIManager.Instance.ReleaseClick();
         }
         canMove = value;
     }

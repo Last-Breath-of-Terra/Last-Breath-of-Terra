@@ -159,11 +159,7 @@ public class Obstacle : MonoBehaviour
             attackPointStates[point] = false;
         }
 
-        Debug.Log("N0");
-
         yield return new WaitForSeconds(delay);
-
-        Debug.Log("Yes");
 
         foreach (Transform point in attackPoints)
         {
@@ -180,7 +176,7 @@ public class Obstacle : MonoBehaviour
     {
         foreach (Transform point in attackPoints)
         {
-            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && !clickedPoints.Contains(point))
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && attackPointStates[point])
             {
                 point.GetComponent<SpriteRenderer>().color = Color.green;
                 clickedPoints.Add(point);
@@ -234,13 +230,24 @@ public class Obstacle : MonoBehaviour
     }
     #endregion
 
-    // private void OnTriggerEnter2D(Collider2D collision) {
-    //     if (collision.transform.CompareTag("Player"))
-    //     {
-    //         lifeInfuserSO.StopInfusion();
-    //         player.GetComponent<PlayerController>().SetCanMove(true);
-    //         player.GetComponent<PlayerController>().data.hp -= 10f;
-    //         DeactivateObstacle();
-    //     }
-    // }
+    private void OnTriggerEnter2D(Collider2D collision) {
+        if (collision.transform.CompareTag("Player"))
+        {
+            lifeInfuserSO.StopInfusion();
+            player.GetComponent<PlayerController>().data.hp -= 10f;
+
+            Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
+            Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
+            playerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
+
+            Invoke(nameof(ReactivatePlayerMovement), 1f);
+
+            DeactivateObstacle();
+        }
+    }
+
+    private void ReactivatePlayerMovement()
+    {
+        player.GetComponent<PlayerController>().SetCanMove(true);
+    }
 }

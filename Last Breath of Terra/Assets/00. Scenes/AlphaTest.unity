@@ -7311,7 +7311,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 359020033995537949, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.06
+      value: 6.24
       objectReference: {fileID: 0}
     - target: {fileID: 359020033995537949, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7345,6 +7345,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1128684005527789153, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
+      propertyPath: lifeInfuserSO
+      value: 
+      objectReference: {fileID: 11400000, guid: 16e2f725b91c66142bb0654d826a5b39, type: 2}
     - target: {fileID: 2380780527199600930, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_Name
       value: Enemy1
@@ -11426,6 +11430,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1128684005527789153, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
+      propertyPath: lifeInfuserSO
+      value: 
+      objectReference: {fileID: 11400000, guid: 16e2f725b91c66142bb0654d826a5b39, type: 2}
     - target: {fileID: 2380780527199600930, guid: a838d860e3247418b9fdb053bd0c3848, type: 3}
       propertyPath: m_Name
       value: Enemy2

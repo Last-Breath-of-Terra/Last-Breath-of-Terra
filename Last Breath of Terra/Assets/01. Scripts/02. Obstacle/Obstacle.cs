@@ -178,7 +178,9 @@ public class Obstacle : MonoBehaviour
         {
             if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && attackPointStates[point])
             {
-                point.GetComponent<SpriteRenderer>().color = Color.green;
+                Color color = point.GetComponent<SpriteRenderer>().color;
+                color.a = 100f;
+                point.GetComponent<SpriteRenderer>().color = color;
                 clickedPoints.Add(point);
                 currentHitCount++;
                 break;

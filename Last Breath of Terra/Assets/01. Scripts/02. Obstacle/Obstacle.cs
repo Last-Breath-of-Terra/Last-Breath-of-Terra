@@ -238,9 +238,12 @@ public class Obstacle : MonoBehaviour
             lifeInfuserSO.StopInfusion();
             player.GetComponent<PlayerController>().data.hp -= 10f;
 
-            Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
+            float playerFacingDirection = player.transform.localScale.x;
+
+            Vector2 knockbackDirection = playerFacingDirection > 0 ? Vector2.left : Vector2.right;
+
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
-            playerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
+            playerRb.AddForce(knockbackDirection * 2f, ForceMode2D.Impulse);
 
             Invoke(nameof(ReactivatePlayerMovement), 1f);
 

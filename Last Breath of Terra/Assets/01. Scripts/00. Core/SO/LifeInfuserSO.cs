@@ -95,13 +95,13 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 자식 오브젝트 투명도 설정
      */
-    private void SetUIForInfuserStatus(bool isStarted)
+    private void SetUIForInfuserStatus(bool isStart)
     {
         Debug.Log("setting UI for Infuser");
         float transparency;
         Transform transform = InfuserStatusUI.transform;
         Vector3 canvasScale = transform.lossyScale;
-        if (isStarted)
+        if (isStart)
         {
             transparency = 1f;
             canvasScale = new Vector3(1.5f, 1.5f, 1.5f);
@@ -112,8 +112,8 @@ public class LifeInfuserSO : ScriptableObject
             canvasScale = new Vector3(1f, 1f, 1f);
 
         }
-        
-        InfuserStatusUI.GetComponent<RectTransform>().localScale = canvasScale;
+        DOTween.To(() => InfuserStatusUI.GetComponent<RectTransform>().localScale, x => InfuserStatusUI.GetComponent<RectTransform>().localScale = x, canvasScale, 0.1f);
+        //InfuserStatusUI.GetComponent<RectTransform>().localScale = canvasScale;
         SetUITransparency(transform, transparency);
 
     }

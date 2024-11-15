@@ -178,7 +178,9 @@ public class Obstacle : MonoBehaviour
         {
             if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && attackPointStates[point])
             {
-                point.GetComponent<SpriteRenderer>().color = Color.green;
+                Color color = point.GetComponent<SpriteRenderer>().color;
+                color.a = 100f;
+                point.GetComponent<SpriteRenderer>().color = color;
                 clickedPoints.Add(point);
                 currentHitCount++;
                 break;
@@ -236,9 +238,12 @@ public class Obstacle : MonoBehaviour
             lifeInfuserSO.StopInfusion();
             player.GetComponent<PlayerController>().data.hp -= 10f;
 
-            Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
+            float playerFacingDirection = player.transform.localScale.x;
+
+            Vector2 knockbackDirection = playerFacingDirection > 0 ? Vector2.left : Vector2.right;
+
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
-            playerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
+            playerRb.AddForce(knockbackDirection * 2f, ForceMode2D.Impulse);
 
             Invoke(nameof(ReactivatePlayerMovement), 1f);
 

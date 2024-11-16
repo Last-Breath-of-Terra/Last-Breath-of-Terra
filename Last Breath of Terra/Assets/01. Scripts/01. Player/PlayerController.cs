@@ -126,7 +126,6 @@ public class PlayerController : MonoBehaviour
         {
             footstepTimer = 0f;
             AudioManager.instance.PlayFootstepSFX(currentMapType, gameObject.GetComponent<AudioSource>(), false);
-            
         }
     }
 
@@ -159,6 +158,7 @@ public class PlayerController : MonoBehaviour
     {
         StopMoving();
         UIManager.Instance.ReleaseClick();
+        AudioManager.instance.StopLight(gameObject.GetComponent<AudioSource>(), transform);
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)

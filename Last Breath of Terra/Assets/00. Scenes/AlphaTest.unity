@@ -1031,8 +1031,8 @@ Transform:
   m_GameObject: {fileID: 121372075}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.32, y: 4.88, z: 0}
-  m_LocalScale: {x: 7.2325196, y: 0.2, z: 1}
+  m_LocalPosition: {x: 0.97, y: 4.88, z: 0}
+  m_LocalScale: {x: 16.634794, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1274711521}
@@ -2244,7 +2244,7 @@ Transform:
   m_GameObject: {fileID: 243389116}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.13, y: 3.2, z: 0}
+  m_LocalPosition: {x: 1.13, y: 5.38, z: 0}
   m_LocalScale: {x: 0.07262694, y: 0.07262694, z: 0.07262694}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3679,7 +3679,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 1
+  orthographic size: 2
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3704,7 +3704,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.13, y: 3.2, z: -10}
+  m_LocalPosition: {x: 1.13, y: 5.38, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4536,7 +4536,7 @@ MonoBehaviour:
   m_Follow: {fileID: 243389123}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 1
+    OrthographicSize: 2
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -4562,7 +4562,7 @@ Transform:
   m_GameObject: {fileID: 651167933}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.13, y: 3.2, z: -10}
+  m_LocalPosition: {x: 1.13, y: 5.38, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10588,8 +10588,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee765b3733ff514ca49c1268e08cc9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 243389116}
   sfxSources:
   - {fileID: 0}
+  ObstacleSources: []
 --- !u!1 &1643053552
 GameObject:
   m_ObjectHideFlags: 0

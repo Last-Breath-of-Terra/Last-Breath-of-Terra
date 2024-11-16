@@ -113,6 +113,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayAmbience(string ambienceName)
     {
+        Debug.Log(ambienceName);
         if (ambienceAudioClips.ContainsKey(ambienceName))
         {
             ambienceSource.clip = ambienceAudioClips[ambienceName];
@@ -127,6 +128,21 @@ public class AudioManager : MonoBehaviour
         Debug.Log(SFXAudioClips.Count);
         if (SFXAudioClips.ContainsKey(sfxName))
         {
+            audioSource.volume = sfxVolume;
+            audioSource.PlayOneShot(SFXAudioClips[sfxName]);
+        }
+    }
+
+    public void PlaySpatialSFX(string sfxName, AudioSource audioSource, Transform soundTransform)
+    {
+        if (SFXAudioClips.ContainsKey(sfxName))
+        {
+            Vector3 playerPosition = GameManager.Instance.player.position;
+            Vector3 objectPosition = soundTransform.position;
+
+            float panValue = Mathf.Clamp((objectPosition.x - playerPosition.x) / 2.0f, -1.0f, 1.0f);
+
+            audioSource.panStereo = panValue;
             audioSource.volume = sfxVolume;
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
         }

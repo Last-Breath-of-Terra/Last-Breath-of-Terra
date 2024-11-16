@@ -61,6 +61,11 @@ public class UIManager : MonoBehaviour
         movingLightEffect.transform.position = new Vector3(position.x, position.y, movingLightEffect.transform.position.z);
         movingLightEffect.SetActive(true);
 
+        if (!isHoldingClick)
+        {
+            AudioManager.instance.PlaySpatialSFX("light_on", gameObject.GetComponent<AudioSource>(), clickLight.transform);
+        }
+
         isHoldingClick = true;
     }
 

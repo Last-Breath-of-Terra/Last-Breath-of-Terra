@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 
 /// <summary>
@@ -20,8 +21,11 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded = true;
     private bool canMove = true;
     private bool isHoldingClick = false;
+    private string currentMapType;
 
     [SerializeField] private float currentSpeed;
+    private float footstepInterval = 0.5f;
+    private float footstepTimer = 0f;
 
     void Awake()
     {
@@ -33,6 +37,8 @@ public class PlayerController : MonoBehaviour
     {
         currentSpeed = data.baseSpeed;
         originalScale = transform.localScale;
+
+        currentMapType = GetCurrentMapType();
     }
 
     void Update()
@@ -42,6 +48,7 @@ public class PlayerController : MonoBehaviour
         if (isHoldingClick && canMove)
         {
             Move();
+            HandleFootstepSound();
         }
     }
 
@@ -93,6 +100,7 @@ public class PlayerController : MonoBehaviour
         isHoldingClick = false;
         _rb.velocity = new Vector2(0, _rb.velocity.y);
         _animator.SetBool("Walk", false);
+        PlayStoppingFootstepSound();
     }
 
 
@@ -109,6 +117,23 @@ public class PlayerController : MonoBehaviour
             currentSpeed = data.baseSpeed;
         }
     }
+
+    private void HandleFootstepSound()
+    {
+        footstepTimer += Time.deltaTime;
+
+        if (footstepTimer >= footstepInterval)
+        {
+            footstepTimer = 0f;
+            AudioManager.instance.PlayFootstepSFX(currentMapType, gameObject.GetComponent<AudioSource>(), false);
+        }
+    }
+
+    private void PlayStoppingFootstepSound()
+    {
+        AudioManager.instance.PlayFootstepSFX(currentMapType, gameObject.GetComponent<AudioSource>(), true);
+    }
+
 
     #region InputSystem
     private void OnMovePerformed(InputAction.CallbackContext context)
@@ -189,6 +214,28 @@ public class PlayerController : MonoBehaviour
             UIManager.Instance.ReleaseClick();
         }
         canMove = value;
+    }
+
+
+    //따로 나중에 스크립트 빼는게 나을 것 같음.
+    private string GetCurrentMapType()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        if (sceneName.Contains("AlphaTest"))
+        {
+            return "AlphaTest";
+        }
+        else if (sceneName.Contains("sand"))
+        {
+            return "sand";
+        }
+        else if (sceneName.Contains("wood"))
+        {
+            return "wood";
+        }
+
+        return "default";
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

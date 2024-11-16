@@ -8,6 +8,7 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
 
+    public GameObject player;
     //Ambience BGM Foley SFX
 
     [Header("BGM")] 
@@ -36,7 +37,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("Footstep SFX")] 
     private Dictionary<string, AudioClip[]> footstepClipsByMap;
-
+    
 
     private void Awake()
     {
@@ -101,18 +102,7 @@ public class AudioManager : MonoBehaviour
         }
 
         #endregion
-
-        #region Obstacle Init
         
-        ObstacleInitClips = Resources.LoadAll<AudioClip>("Audio/Obstacle");
-        ObstacleAudioClips = new Dictionary<string, AudioClip>();
-        foreach (var clip in ObstacleInitClips)
-        {
-            Debug.Log(clip.name);
-            ObstacleAudioClips[clip.name] = clip;
-        }
-
-        #endregion
 
         #region FootStep Init
 
@@ -157,27 +147,26 @@ public class AudioManager : MonoBehaviour
     }
 
 
-    public void PlaySFX(string sfxName, AudioSource audioSource)
+    public void PlaySFX(string sfxName, AudioSource audioSource, Transform soundTransform)
     {
-        int randomIndex = UnityEngine.Random.Range(0, SFXAudioClips.Count);
-        sfxName += randomIndex;
         if (SFXAudioClips.ContainsKey(sfxName))
         {
+            float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            audioSource.panStereo = panValue;
             audioSource.volume = sfxVolume;
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
         }
     }
-    public void PlayObstacle(string obstacleName, AudioSource audioSource)
+    public void PlayRandomSFX(string sfxName, AudioSource audioSource, Transform soundTransform)
     {
         int randomIndex = UnityEngine.Random.Range(1, 3);
-        obstacleName += randomIndex;
-        if (ObstacleAudioClips.ContainsKey(obstacleName))
+        sfxName += randomIndex;
+        if (SFXAudioClips.ContainsKey(sfxName))
         {
-            Debug.Log(audioSource.gameObject.name);
-            audioSource.volume = ObstacleVolume;
-            audioSource.clip = ObstacleAudioClips[obstacleName];
-            audioSource.Play();
-            //audioSource.PlayOneShot(ObstacleAudioClips[obstacleName]);
+            float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            audioSource.panStereo = panValue;
+            audioSource.volume = sfxVolume;
+            audioSource.PlayOneShot(SFXAudioClips[sfxName]);
         }
     }
 

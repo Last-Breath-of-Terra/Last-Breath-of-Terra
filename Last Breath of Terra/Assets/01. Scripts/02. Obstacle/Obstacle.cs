@@ -42,7 +42,7 @@ public class Obstacle : MonoBehaviour
     {
         isActive = true;
         ObstacleManager.Instance.RegisterObstacle(this);
-        AudioManager.instance.PlayObstacle("obstacle_dark_move_", GetComponent<AudioSource>());
+        AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", GetComponent<AudioSource>(), transform);
         
         currentHitCount = 0;
         currentSpeed = data.speed;
@@ -179,6 +179,9 @@ public class Obstacle : MonoBehaviour
         {
             if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && attackPointStates[point])
             {
+                string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
+                Debug.Log("audioName : " + audioName);
+                AudioManager.instance.PlaySFX(audioName, GetComponent<AudioSource>(), transform);
                 Color color = point.GetComponent<SpriteRenderer>().color;
                 color.a = 100f;
                 point.GetComponent<SpriteRenderer>().color = color;

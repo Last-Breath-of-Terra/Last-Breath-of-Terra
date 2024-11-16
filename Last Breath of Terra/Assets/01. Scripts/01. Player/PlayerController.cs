@@ -126,6 +126,7 @@ public class PlayerController : MonoBehaviour
         {
             footstepTimer = 0f;
             AudioManager.instance.PlayFootstepSFX(currentMapType, gameObject.GetComponent<AudioSource>(), false);
+            
         }
     }
 

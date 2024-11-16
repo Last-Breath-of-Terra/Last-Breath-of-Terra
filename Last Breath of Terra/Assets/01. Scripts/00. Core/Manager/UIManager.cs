@@ -63,8 +63,7 @@ public class UIManager : MonoBehaviour
 
         if (!isHoldingClick)
         {
-            AudioManager.instance.PlaySFX("light_on", GetComponent<AudioSource>());
-            //AudioManager.instance.PlaySpatialSFX("light_on", gameObject.GetComponent<AudioSource>(), clickLight.transform);
+            AudioManager.instance.PlaySFX("light_on", gameObject.GetComponent<AudioSource>(), clickLight.transform);
         }
 
         isHoldingClick = true;

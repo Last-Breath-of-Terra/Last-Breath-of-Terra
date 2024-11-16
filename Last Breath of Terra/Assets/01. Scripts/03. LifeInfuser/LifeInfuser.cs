@@ -30,7 +30,7 @@ public class LifeInfuser : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        AudioManager.instance.PlaySFX("sfx_keyboardcorrect", gameObject.GetComponent<AudioSource>());
+        //AudioManager.instance.PlaySFX("sfx_keyboardcorrect", gameObject.GetComponent<AudioSource>());
         if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion[infuserNumber])
         {
             gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;

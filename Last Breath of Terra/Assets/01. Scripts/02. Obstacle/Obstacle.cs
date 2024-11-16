@@ -42,7 +42,8 @@ public class Obstacle : MonoBehaviour
     {
         isActive = true;
         ObstacleManager.Instance.RegisterObstacle(this);
-
+        AudioManager.instance.PlayObstacle("obstacle_dark_move_", GetComponent<AudioSource>());
+        
         currentHitCount = 0;
         currentSpeed = data.speed;
         clickedPoints.Clear();

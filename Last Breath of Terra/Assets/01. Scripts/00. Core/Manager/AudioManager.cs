@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class AudioManager : MonoBehaviour
 {
@@ -26,6 +27,12 @@ public class AudioManager : MonoBehaviour
     private Dictionary<string, AudioClip> SFXAudioClips;
     public AudioSource[] sfxSources;
     private float sfxVolume = 1.0f;
+    
+    [Header("Obstacle")] 
+    private AudioClip[] ObstacleInitClips;
+    private Dictionary<string, AudioClip> ObstacleAudioClips;
+    public AudioSource[] ObstacleSources;
+    private float ObstacleVolume = 1.0f;
 
 
     private void Awake()
@@ -87,8 +94,18 @@ public class AudioManager : MonoBehaviour
         SFXAudioClips = new Dictionary<string, AudioClip>();
         foreach (var clip in SFXInitClips)
         {
-            Debug.Log(clip.name);
             SFXAudioClips[clip.name] = clip;
+        }
+
+        #endregion
+        #region Obstacle Init
+        
+        ObstacleInitClips = Resources.LoadAll<AudioClip>("Audio/Obstacle");
+        ObstacleAudioClips = new Dictionary<string, AudioClip>();
+        foreach (var clip in ObstacleInitClips)
+        {
+            Debug.Log(clip.name);
+            ObstacleAudioClips[clip.name] = clip;
         }
 
         #endregion
@@ -96,7 +113,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-      //  PlayBGM("bgm_opening");
+       PlayBGM("BGM1");
       //  PlayAmbience("ambi_livingroom");
     }
 
@@ -125,11 +142,25 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySFX(string sfxName, AudioSource audioSource)
     {
-        Debug.Log(SFXAudioClips.Count);
+        int randomIndex = UnityEngine.Random.Range(0, SFXAudioClips.Count);
+        sfxName += randomIndex;
         if (SFXAudioClips.ContainsKey(sfxName))
         {
             audioSource.volume = sfxVolume;
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
+        }
+    }
+    public void PlayObstacle(string obstacleName, AudioSource audioSource)
+    {
+        int randomIndex = UnityEngine.Random.Range(1, 3);
+        obstacleName += randomIndex;
+        if (ObstacleAudioClips.ContainsKey(obstacleName))
+        {
+            Debug.Log(audioSource.gameObject.name);
+            audioSource.volume = ObstacleVolume;
+            audioSource.clip = ObstacleAudioClips[obstacleName];
+            audioSource.Play();
+            //audioSource.PlayOneShot(ObstacleAudioClips[obstacleName]);
         }
     }
 

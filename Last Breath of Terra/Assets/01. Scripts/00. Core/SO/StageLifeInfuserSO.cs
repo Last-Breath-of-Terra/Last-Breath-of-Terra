@@ -29,4 +29,13 @@ public class StageLifeInfuserSO : LifeInfuserSO
         
     }
 
+    /*
+    public override void StartInfusion(int infuserNumber)
+    {
+        base.CompleteInfusion(infuserNumber);
+        AudioManager.instance.PlaySFX("breath_action_start", targetInfuser.GetComponent<AudioSource>(), targetInfuser.GetComponent<Transform>());
+
+    }
+    */
+
 }

@@ -158,6 +158,7 @@ public class PlayerController : MonoBehaviour
     {
         StopMoving();
         UIManager.Instance.ReleaseClick();
+        AudioManager.instance.StopLight(gameObject.GetComponent<AudioSource>(), transform);
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)

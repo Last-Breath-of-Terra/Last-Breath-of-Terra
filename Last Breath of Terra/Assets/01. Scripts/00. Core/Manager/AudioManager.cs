@@ -2,33 +2,36 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
 
+    public GameObject player;
     //Ambience BGM Foley SFX
 
-    [Header("BGM")] 
-    private AudioClip[] BGMInitClips;
+    [Header("BGM")] private AudioClip[] BGMInitClips;
     private Dictionary<string, AudioClip> BGMAudioClips;
     private AudioSource bgmSource;
     private float bgmVolume = 1.0f;
 
-    [Header("Ambience")] 
-    private AudioClip[] ambienceInitClips;
+    [Header("Ambience")] private AudioClip[] ambienceInitClips;
     private Dictionary<string, AudioClip> ambienceAudioClips;
     private AudioSource ambienceSource;
     private float ambienceVolume = 1.0f;
 
-    [Header("SFX")] 
-    private AudioClip[] SFXInitClips;
+    [Header("SFX")] private AudioClip[] SFXInitClips;
     private Dictionary<string, AudioClip> SFXAudioClips;
     public AudioSource[] sfxSources;
     private float sfxVolume = 1.0f;
 
-    [Header("Footstep SFX")] 
-    private Dictionary<string, AudioClip[]> footstepClipsByMap;
+    [Header("Obstacle")] private AudioClip[] ObstacleInitClips;
+    private Dictionary<string, AudioClip> ObstacleAudioClips;
+    public AudioSource[] ObstacleSources;
+    private float ObstacleVolume = 1.0f;
+
+    [Header("Footstep SFX")] private Dictionary<string, AudioClip[]> footstepClipsByMap;
 
 
     private void Awake()
@@ -67,7 +70,7 @@ public class AudioManager : MonoBehaviour
         #endregion
 
         #region Ambience Init
-        
+
         ambienceInitClips = Resources.LoadAll<AudioClip>("Audio/Ambience");
         ambienceAudioClips = new Dictionary<string, AudioClip>();
         foreach (var clip in ambienceInitClips)
@@ -83,18 +86,18 @@ public class AudioManager : MonoBehaviour
         ambienceSource.playOnAwake = false;
 
         #endregion
-        
+
         #region SFX Init
-        
+
         SFXInitClips = Resources.LoadAll<AudioClip>("Audio/SFX");
         SFXAudioClips = new Dictionary<string, AudioClip>();
         foreach (var clip in SFXInitClips)
         {
-            Debug.Log(clip.name);
             SFXAudioClips[clip.name] = clip;
         }
 
         #endregion
+
 
         #region FootStep Init
 
@@ -112,8 +115,8 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-      //  PlayBGM("bgm_opening");
-      //  PlayAmbience("ambi_livingroom");
+        PlayBGM("BGM1");
+        //  PlayAmbience("ambi_livingroom");
     }
 
     public void PlayBGM(string bgmName)
@@ -139,11 +142,25 @@ public class AudioManager : MonoBehaviour
     }
 
 
-    public void PlaySFX(string sfxName, AudioSource audioSource)
+    public void PlaySFX(string sfxName, AudioSource audioSource, Transform soundTransform)
     {
-        Debug.Log(SFXAudioClips.Count);
         if (SFXAudioClips.ContainsKey(sfxName))
         {
+            float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            audioSource.panStereo = panValue;
+            audioSource.volume = sfxVolume;
+            audioSource.PlayOneShot(SFXAudioClips[sfxName]);
+        }
+    }
+
+    public void PlayRandomSFX(string sfxName, AudioSource audioSource, Transform soundTransform)
+    {
+        int randomIndex = UnityEngine.Random.Range(1, 3);
+        sfxName += randomIndex;
+        if (SFXAudioClips.ContainsKey(sfxName))
+        {
+            float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            audioSource.panStereo = panValue;
             audioSource.volume = sfxVolume;
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
         }
@@ -164,7 +181,25 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void PlayLight(AudioSource audioSource, Transform soundTransform)
+    {
+        if (SFXAudioClips.ContainsKey("light_being"))
+        {
+            audioSource.clip = SFXAudioClips["light_being"];
+            float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            audioSource.panStereo = panValue;
+            audioSource.Play();
+        }
+    }
+
+    public void StopLight(AudioSource audioSource, Transform soundTransform)
+    {
+        audioSource.Stop();
+        PlaySFX("footstep_gravel_004", audioSource, soundTransform);
+    }
+
     #region Custom Sound
+
     public void PlayFootstepSFX(string mapType, AudioSource audioSource, bool isStopping)
     {
         AudioClip clip;
@@ -192,6 +227,7 @@ public class AudioManager : MonoBehaviour
             int randomIndex = UnityEngine.Random.Range(0, clips.Length - 1);
             return clips[randomIndex];
         }
+
         return null;
     }
 
@@ -202,8 +238,10 @@ public class AudioManager : MonoBehaviour
             AudioClip[] clips = footstepClipsByMap[mapType];
             return clips[clips.Length - 1];
         }
+
         return null;
     }
+
     #endregion
 
     public void StopAudio()

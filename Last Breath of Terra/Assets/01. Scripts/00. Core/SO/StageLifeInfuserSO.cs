@@ -18,9 +18,17 @@ public class StageLifeInfuserSO : LifeInfuserSO
     
     [SerializeField]
     private bool[] isInfuser;
-
+    
+    public override void StartInfusion(int infuserNumber)
+    {
+        base.StartInfusion(infuserNumber);
+        AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
+        
+    }
     public override void CompleteInfusion(int infuserNumber)
     {
+        GameObject player = AudioManager.instance.player;
+        AudioManager.instance.PlayPlayer("breath_action_end", 0f);
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
         infuserStatusUI[infuserNumber].sprite = infusionActiveUI;
         base.CompleteInfusion(infuserNumber);
@@ -29,13 +37,5 @@ public class StageLifeInfuserSO : LifeInfuserSO
         
     }
 
-    /*
-    public override void StartInfusion(int infuserNumber)
-    {
-        base.CompleteInfusion(infuserNumber);
-        AudioManager.instance.PlaySFX("breath_action_start", targetInfuser.GetComponent<AudioSource>(), targetInfuser.GetComponent<Transform>());
-
-    }
-    */
-
+    
 }

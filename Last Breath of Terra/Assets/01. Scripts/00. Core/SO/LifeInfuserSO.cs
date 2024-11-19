@@ -34,11 +34,11 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 활성화 시작 시 호출
      */
-    public void StartInfusion(int infuserNumber)
+    public virtual void StartInfusion(int infuserNumber)
     {
         SetUIForInfuserStatus(true);
-
         infuserActivationCanvas.gameObject.SetActive(true);
+        
         currentTween = DOTween.To(() => 0.126f, x => infuserActivationUI.GetComponent<Image>().fillAmount = x, 0.875f, infusionDuration).OnComplete(() => CompleteInfusion(infuserNumber));
 
         //infuserActivationUI.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infuserActivationUI, infuserNumber));
@@ -87,7 +87,7 @@ public class LifeInfuserSO : ScriptableObject
             infuserActivationUI.GetComponent<Image>().fillAmount = 0;
             DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
             SetUIForInfuserStatus(false);
-
+            
             Debug.Log("infusion stopped");
         }
     }

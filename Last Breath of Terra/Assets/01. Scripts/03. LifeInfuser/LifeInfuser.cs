@@ -34,6 +34,7 @@ public class LifeInfuser : MonoBehaviour
         if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion[infuserNumber])
         {
             gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
+            AudioManager.instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(), gameObject.transform);
 
             lifeInfuserData.targetInfuser = gameObject;
             lifeInfuserData.playerController = collision.GetComponent<PlayerController>();
@@ -47,6 +48,7 @@ public class LifeInfuser : MonoBehaviour
     private void PrepareInfusion()
     {
         Debug.Log("Prepare Infusion");
+
         if (lifeInfuserData.playerController != null)
         {
             lifeInfuserData.playerController.SetCanMove(false);
@@ -65,6 +67,7 @@ public class LifeInfuser : MonoBehaviour
             startTween.Kill();
         }
         lifeInfuserData.StopInfusion();
+        AudioManager.instance.StopCancelable("light_on", lifeInfuserData.targetInfuser.GetComponent<AudioSource>(), transform);
 
     }
 }

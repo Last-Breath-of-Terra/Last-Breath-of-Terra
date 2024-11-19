@@ -64,7 +64,7 @@ public class UIManager : MonoBehaviour
         if (!isHoldingClick)
         {
             AudioManager.instance.PlaySFX("light_on", gameObject.GetComponent<AudioSource>(), clickLight.transform);
-            AudioManager.instance.PlayLight(gameObject.GetComponent<AudioSource>(), clickLight.transform);
+            AudioManager.instance.PlayCancelable("light_being", gameObject.GetComponent<AudioSource>(), clickLight.transform);
         }
 
         isHoldingClick = true;

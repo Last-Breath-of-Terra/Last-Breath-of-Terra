@@ -158,7 +158,7 @@ public class PlayerController : MonoBehaviour
     {
         StopMoving();
         UIManager.Instance.ReleaseClick();
-        AudioManager.instance.StopLight(gameObject.GetComponent<AudioSource>(), transform);
+        AudioManager.instance.StopCancelable("footstep_gravel_004", gameObject.GetComponent<AudioSource>(), transform);
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)

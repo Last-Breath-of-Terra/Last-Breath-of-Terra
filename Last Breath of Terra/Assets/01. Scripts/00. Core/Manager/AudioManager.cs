@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using Random = System.Random;
 
@@ -115,7 +116,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        PlayBGM("BGM1");
+        //PlayBGM("BGM1");
         //  PlayAmbience("ambi_livingroom");
     }
 
@@ -180,23 +181,50 @@ public class AudioManager : MonoBehaviour
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
         }
     }
-
-    public void PlayLight(AudioSource audioSource, Transform soundTransform)
+    public void PanSoundLeftToRight(string sfxName, float infusionDuration)
     {
-        if (SFXAudioClips.ContainsKey("light_being"))
+        if (SFXAudioClips.ContainsKey(sfxName))
         {
-            audioSource.clip = SFXAudioClips["light_being"];
+            AudioSource audioSource = player.GetComponent<AudioSource>();
+            audioSource.panStereo = -1;
+            audioSource.volume = sfxVolume;
+            audioSource.clip = SFXAudioClips[sfxName];
+            audioSource.Play();
+            DOTween.To(() => -1f, x => audioSource.panStereo = x, 1f, infusionDuration);
+//                .onComplete(() => { audioSource.panStereo = 0; }); 
+        }
+    }
+
+    /*
+     * player 기준으로 panStereo를 결정할 때
+     */
+    public void PlayPlayer(string audioName, float panValue)
+    {
+        AudioSource audioSource = player.GetComponent<AudioSource>();
+        audioSource.panStereo = panValue;
+        Debug.Log(audioSource.panStereo + " : " + panValue);
+        audioSource.PlayOneShot(SFXAudioClips[audioName]);
+
+    }
+    public void PlayCancelable(string audioName, AudioSource audioSource, Transform soundTransform)
+    {
+        if (SFXAudioClips.ContainsKey(audioName))
+        {
+            audioSource.clip = SFXAudioClips[audioName];
             float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
             audioSource.panStereo = panValue;
             audioSource.Play();
         }
     }
 
-    public void StopLight(AudioSource audioSource, Transform soundTransform)
+    public void StopCancelable(string audioName,AudioSource audioSource, Transform soundTransform)
     {
         audioSource.Stop();
-        PlaySFX("footstep_gravel_004", audioSource, soundTransform);
+        audioSource.panStereo = 0;
+        PlaySFX(audioName, audioSource, soundTransform);
     }
+
+    
 
     #region Custom Sound
 
@@ -243,7 +271,6 @@ public class AudioManager : MonoBehaviour
     }
 
     #endregion
-
     public void StopAudio()
     {
         bgmSource.Stop();

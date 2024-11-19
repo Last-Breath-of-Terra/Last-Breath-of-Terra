@@ -34,7 +34,8 @@ public class AudioManager : MonoBehaviour
 
     [Header("Footstep SFX")] private Dictionary<string, AudioClip[]> footstepClipsByMap;
 
-
+    private Tween currentTween;
+    
     private void Awake()
     {
         if (instance == null)
@@ -190,7 +191,7 @@ public class AudioManager : MonoBehaviour
             audioSource.volume = sfxVolume;
             audioSource.clip = SFXAudioClips[sfxName];
             audioSource.Play();
-            DOTween.To(() => -1f, x => audioSource.panStereo = x, 1f, infusionDuration);
+            currentTween = DOTween.To(() => -1f, x => audioSource.panStereo = x, 1f, infusionDuration);
 //                .onComplete(() => { audioSource.panStereo = 0; }); 
         }
     }
@@ -200,9 +201,10 @@ public class AudioManager : MonoBehaviour
      */
     public void PlayPlayer(string audioName, float panValue)
     {
+        currentTween.Kill();
         AudioSource audioSource = player.GetComponent<AudioSource>();
+        audioSource.Stop();
         audioSource.panStereo = panValue;
-        Debug.Log(audioSource.panStereo + " : " + panValue);
         audioSource.PlayOneShot(SFXAudioClips[audioName]);
 
     }

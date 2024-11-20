@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
         isHoldingClick = false;
         _rb.velocity = new Vector2(0, _rb.velocity.y);
         _animator.SetBool("Walk", false);
-        PlayStoppingFootstepSound();
+        AudioManager.instance.StopCancelable("footstep_" + currentMapType + "_4", gameObject.GetComponent<AudioSource>(), transform);
     }
 
 
@@ -125,15 +125,9 @@ public class PlayerController : MonoBehaviour
         if (footstepTimer >= footstepInterval)
         {
             footstepTimer = 0f;
-            AudioManager.instance.PlayFootstepSFX(currentMapType, gameObject.GetComponent<AudioSource>(), false);
+            AudioManager.instance.PlayRandomSFX("footstep_"+ currentMapType + "_", gameObject.GetComponent<AudioSource>(), transform);
         }
     }
-
-    private void PlayStoppingFootstepSound()
-    {
-        AudioManager.instance.PlayFootstepSFX(currentMapType, gameObject.GetComponent<AudioSource>(), true);
-    }
-
 
     #region InputSystem
     private void OnMovePerformed(InputAction.CallbackContext context)
@@ -159,8 +153,6 @@ public class PlayerController : MonoBehaviour
         StopMoving();
         UIManager.Instance.ReleaseClick();
 
-        //이거 이미 위에서 체크해서 주석처리하겠습니다.
-        //AudioManager.instance.StopCancelable("footstep_gravel_004", gameObject.GetComponent<AudioSource>(), transform);
         CancelInvoke("StartMoving");
     }
 
@@ -228,7 +220,7 @@ public class PlayerController : MonoBehaviour
 
         if (sceneName.Contains("AlphaTest"))
         {
-            return "AlphaTest";
+            return "gravel";
         }
         else if (sceneName.Contains("sand"))
         {

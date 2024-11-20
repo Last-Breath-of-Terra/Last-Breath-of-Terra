@@ -26,7 +26,20 @@ public class MiniMapManager : MonoBehaviour
 
     private void ToggleMap(InputAction.CallbackContext context)
     {
-        isFullMapActive = !isFullMapActive;
+        SetMapActive(!isFullMapActive);
+    }
+
+    public void ForceCloseMap()
+    {
+        if (isFullMapActive)
+        {
+            SetMapActive(false);
+        }
+    }
+
+    private void SetMapActive(bool active)
+    {
+        isFullMapActive = active;
         fullMapUI.SetActive(isFullMapActive);
 
         GameManager.Instance.player.GetComponent<PlayerController>().SetCanMove(!isFullMapActive);

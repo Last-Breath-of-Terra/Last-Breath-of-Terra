@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-
+    public MiniMapManager miniMapManager;
+    
     public GameObject cursorIndicator;
     public Light2D clickLight;
     public GameObject movingLightEffect;

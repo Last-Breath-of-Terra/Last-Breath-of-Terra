@@ -239,7 +239,7 @@ public class Obstacle : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.transform.CompareTag("Player"))
         {
-            GameManager.Instance.miniMapManager.ForceCloseMap();
+            UIManager.Instance.miniMapManager.ForceCloseMap();
 
             lifeInfuserSO.StopInfusion();
             player.GetComponent<PlayerController>().data.hp -= 10f;

@@ -33,7 +33,7 @@ public class LifeRestorer : MonoBehaviour
         lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
         lifeInfuserData.SetUIForInfuserStatus(false);
         //defaultSize = lifeInfuserData.infuserStatusUI[0].GetComponent<RectTransform>().sizeDelta;
-        newSize = defaultSize * 1.5f;
+        newSize = defaultSize * 1.2f;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -54,7 +54,8 @@ public class LifeRestorer : MonoBehaviour
                 infuserNumber = 0;
                 UpdateRectSize(infuserNumber, newSize);
                 //UI 활성화
-                lifeInfuserData.SetUIForInfuserStatus(true);
+                //lifeInfuserData.SetUIForInfuserStatus(true);
+                lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 1.0f);
                 lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
                 //카메라 이동
                 infuserTrackedCamera.Follow = lifeInfuserData.infuser[infuserNumber].transform;
@@ -113,24 +114,28 @@ public class LifeRestorer : MonoBehaviour
 
     public void OnSelect(InputAction.CallbackContext context)
     {
+        //비활성화
+        lifeInfuserData.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage;
+        lifeInfuserData.infuserStatusUI[infuserNumber].sprite = lifeInfuserData.infusionInactiveUI;
+        lifeInfuserData.isInfuser[infuserNumber] = false;
+        lifeInfuserData.canInfusion[infuserNumber] = true;
+
+        //UI 비활성화
+        //lifeInfuserData.SetUIForInfuserStatus(false);
+        lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 0.2f);
+
+        lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
+
+        //카메라 비활성화
+        infuserTrackedCamera.gameObject.SetActive(false);
+
+        //마우스 조작 변경
+        SwitchActionMap("Player");
+        /*
         if (lifeInfuserData.isInfuser[infuserNumber])
         {
-            //비활성화
-            lifeInfuserData.targetInfuser.GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage;
-            lifeInfuserData.infuserStatusUI[infuserNumber].sprite = lifeInfuserData.infusionInactiveUI;
-            lifeInfuserData.isInfuser[infuserNumber] = false;
-            lifeInfuserData.canInfusion[infuserNumber] = true;
-
-            //UI 비활성화
-            lifeInfuserData.SetUIForInfuserStatus(false);
-            lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
-
-            //카메라 비활성화
-            infuserTrackedCamera.gameObject.SetActive(false);
-
-            //마우스 조작 변경
-            SwitchActionMap("Player");
-        }
+            나중에 추가..
+        }*/
     }
 
     public void SelectReviveLife(int setValue)
@@ -150,6 +155,7 @@ public class LifeRestorer : MonoBehaviour
 
     private void UpdateRectSize(int setValue, Vector2 changeSize)
     {
+        Debug.Log(lifeInfuserData.infuserStatusUI[setValue].name);
         RectTransform rectTransform = lifeInfuserData.infuserStatusUI[setValue].GetComponent<RectTransform>();
         rectTransform.sizeDelta = changeSize;
     }

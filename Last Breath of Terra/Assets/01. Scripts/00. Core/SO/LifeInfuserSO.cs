@@ -119,7 +119,7 @@ public class LifeInfuserSO : ScriptableObject
         SetUITransparency(transform, transparency);
 
     }
-    void SetUITransparency(Transform parent, float transparency)
+    public void SetUITransparency(Transform parent, float transparency)
     {
         // 부모가 null이 아니면 진행
         if (parent == null)

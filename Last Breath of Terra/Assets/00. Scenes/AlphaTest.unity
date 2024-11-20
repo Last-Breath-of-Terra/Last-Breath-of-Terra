@@ -4751,6 +4751,7 @@ Transform:
   m_Children:
   - {fileID: 1178979549}
   - {fileID: 206035782}
+  - {fileID: 1570863836}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &708021145
@@ -7435,7 +7436,7 @@ GameObject:
   - component: {fileID: 1178979549}
   - component: {fileID: 1178979548}
   m_Layer: 0
-  m_Name: EnemyManager
+  m_Name: ObstacleManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10507,6 +10508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 466704fc8359e4a3cae8844596e50707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  miniMapManager: {fileID: 0}
   cursorIndicator: {fileID: 1463353334}
   clickLight: {fileID: 1665720388}
   movingLightEffect: {fileID: 18424485}
@@ -10520,13 +10522,13 @@ Transform:
   m_GameObject: {fileID: 1570863834}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1.8119267, y: -4.7958946, z: -0.04002817}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1463353335}
   - {fileID: 1665720387}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 692557659}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &1570863837
 AudioSource:
@@ -11368,8 +11370,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1985b0dd023ae4b94963abb32c384a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  miniMapManager: {fileID: 757094051}
-  player: {fileID: 243389123}
+  _ui: {fileID: 0}
+  _obstacleManager: {fileID: 0}
+  playerTr: {fileID: 243389123}
 --- !u!1 &1702452968
 GameObject:
   m_ObjectHideFlags: 0
@@ -13008,7 +13011,6 @@ SceneRoots:
   - {fileID: 1454533215}
   - {fileID: 1647012398}
   - {fileID: 321634303}
-  - {fileID: 1570863836}
   - {fileID: 1619203603}
   - {fileID: 1671880363}
   - {fileID: 692557659}

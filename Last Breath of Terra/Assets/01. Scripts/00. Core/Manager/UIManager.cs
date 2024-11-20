@@ -2,30 +2,20 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// UI 관련 요소와 효과(광원, 커서, 미니맵 등)를 관리하는 클래스.
+/// </summary>
+
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance { get; private set; }
     public MiniMapManager miniMapManager;
-    
+
     public GameObject cursorIndicator;
     public Light2D clickLight;
     public GameObject movingLightEffect;
     public GameObject jumpLightEffect;
 
     private bool isHoldingClick;
-
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-    }
 
     void FixedUpdate()
     {

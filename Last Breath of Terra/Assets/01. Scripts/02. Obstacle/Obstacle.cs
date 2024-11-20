@@ -42,7 +42,7 @@ public class Obstacle : MonoBehaviour
     {
         isActive = true;
         ObstacleManager.Instance.RegisterObstacle(this);
-        AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", GetComponent<AudioSource>(), transform);
+        AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(), transform);
         
         currentHitCount = 0;
         currentSpeed = data.speed;
@@ -181,7 +181,7 @@ public class Obstacle : MonoBehaviour
             {
                 string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
                 Debug.Log("audioName : " + audioName);
-                AudioManager.instance.PlaySFX(audioName, GetComponent<AudioSource>(), transform);
+                AudioManager.instance.PlaySFX(audioName, gameObject.GetComponent<AudioSource>(), transform);
                 Color color = point.GetComponent<SpriteRenderer>().color;
                 color.a = 100f;
                 point.GetComponent<SpriteRenderer>().color = color;
@@ -247,6 +247,7 @@ public class Obstacle : MonoBehaviour
             float playerFacingDirection = player.transform.localScale.x;
             Vector2 knockbackDirection = playerFacingDirection > 0 ? Vector2.left : Vector2.right;
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
+            AudioManager.instance.PlayRandomSFX("knockback_", GetComponent<AudioSource>(), transform);
             playerRb.AddForce(knockbackDirection * 2f, ForceMode2D.Impulse);
             Invoke(nameof(ReactivatePlayerMovement), 1f);
 

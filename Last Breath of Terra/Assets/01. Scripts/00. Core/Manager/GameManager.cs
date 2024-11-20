@@ -18,12 +18,11 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-
-        player = GameObject.FindWithTag("Player").GetComponent<Transform>();
     }
 
     void Start()
     {
+        player = GameObject.FindWithTag("Player").GetComponent<Transform>();
         AudioManager.instance.PlayAmbience("map_1_stage_ambience");
     }
 

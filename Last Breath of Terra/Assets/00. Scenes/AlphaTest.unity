@@ -969,7 +969,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &121372076
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11368,6 +11368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1985b0dd023ae4b94963abb32c384a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  miniMapManager: {fileID: 757094051}
   player: {fileID: 243389123}
 --- !u!1 &1702452968
 GameObject:
@@ -12518,14 +12519,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f60cb28e0ab434066a7b0bc9bc6af81c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  miniMapRect: {fileID: 454148630}
-  mapBounds:
-    x: -10
-    y: 10
-    width: -6
-    height: 6
-  playerTr: {fileID: 0}
-  icon: {fileID: 0}
 --- !u!1 &2083617561
 GameObject:
   m_ObjectHideFlags: 0

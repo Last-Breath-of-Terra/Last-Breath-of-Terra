@@ -239,16 +239,15 @@ public class Obstacle : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.transform.CompareTag("Player"))
         {
+            GameManager.Instance.miniMapManager.ForceCloseMap();
+
             lifeInfuserSO.StopInfusion();
             player.GetComponent<PlayerController>().data.hp -= 10f;
 
             float playerFacingDirection = player.transform.localScale.x;
-
             Vector2 knockbackDirection = playerFacingDirection > 0 ? Vector2.left : Vector2.right;
-
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
             playerRb.AddForce(knockbackDirection * 2f, ForceMode2D.Impulse);
-
             Invoke(nameof(ReactivatePlayerMovement), 1f);
 
             DeactivateObstacle();

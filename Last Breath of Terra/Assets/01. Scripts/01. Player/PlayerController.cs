@@ -140,11 +140,8 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed && canMove)
         {
-            if (!isHoldingClick)
-            {
-                Invoke("StartMoving", 0.3f);
-                UpdateTargetPosition();
-            }
+            Invoke("StartMoving", 0.3f);
+            UpdateTargetPosition();
         }
     }
 
@@ -159,13 +156,10 @@ public class PlayerController : MonoBehaviour
 
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
-        if (isHoldingClick)
-        {
-            StopMoving();
-            UIManager.Instance.ReleaseClick();
-            AudioManager.instance.StopCancelable("footstep_gravel_004", gameObject.GetComponent<AudioSource>(), transform);
-            CancelInvoke("StartMoving");
-        }
+        StopMoving();
+        UIManager.Instance.ReleaseClick();
+        AudioManager.instance.StopCancelable("footstep_gravel_004", gameObject.GetComponent<AudioSource>(), transform);
+        CancelInvoke("StartMoving");
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)

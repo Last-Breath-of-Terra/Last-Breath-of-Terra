@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour
 
     private void UpdateCursorIndicator()
     {
-        if (cursorIndicator != null)
+        if (cursorIndicator != null && cursorIndicator.activeSelf)
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
@@ -45,6 +45,8 @@ public class UIManager : MonoBehaviour
     #region LightSystem
     public void HandleClickLight(Vector2 position)
     {
+        cursorIndicator.SetActive(false);
+
         RaycastHit2D hit = Physics2D.Raycast(position, Vector2.zero);
         if (hit.collider != null)
         {
@@ -64,7 +66,8 @@ public class UIManager : MonoBehaviour
         if (!isHoldingClick)
         {
             AudioManager.instance.PlaySFX("light_start", gameObject.GetComponent<AudioSource>(), clickLight.transform);
-            
+
+            gameObject.GetComponent<AudioSource>().loop = true;
             AudioManager.instance.PlayCancelable("light_being", gameObject.GetComponent<AudioSource>(), clickLight.transform);
         }
 
@@ -78,6 +81,8 @@ public class UIManager : MonoBehaviour
             clickLight.transform.position = position;
             clickLight.gameObject.SetActive(true);
         }
+
+        AudioManager.instance.PlaySFX("spark_jump", gameObject.GetComponent<AudioSource>(), clickLight.transform);
 
         jumpLightEffect.transform.position = position;
         jumpLightEffect.SetActive(true);
@@ -98,6 +103,9 @@ public class UIManager : MonoBehaviour
     public void ReleaseClick()
     {
         isHoldingClick = false;
+        cursorIndicator.SetActive(true);
         clickLight.gameObject.SetActive(false);
+        gameObject.GetComponent<AudioSource>().loop = false;
+        gameObject.GetComponent<AudioSource>().Stop();
     }
 }

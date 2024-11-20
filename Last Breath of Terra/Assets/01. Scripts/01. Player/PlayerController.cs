@@ -158,7 +158,9 @@ public class PlayerController : MonoBehaviour
     {
         StopMoving();
         UIManager.Instance.ReleaseClick();
-        AudioManager.instance.StopCancelable("footstep_gravel_004", gameObject.GetComponent<AudioSource>(), transform);
+
+        //이거 이미 위에서 체크해서 주석처리하겠습니다.
+        //AudioManager.instance.StopCancelable("footstep_gravel_004", gameObject.GetComponent<AudioSource>(), transform);
         CancelInvoke("StartMoving");
     }
 

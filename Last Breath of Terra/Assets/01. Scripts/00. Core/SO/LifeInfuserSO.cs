@@ -17,14 +17,16 @@ public class LifeInfuserSO : ScriptableObject
     public float defaultLensSize;
     public float targetLensSize;
     public Tween currentTween;
-    public Sprite infusionActiveUI;
-    public Sprite infusionInactiveUI;
+    
     public CinemachineVirtualCamera virtualCamera;
     public Canvas infuserActivationCanvas;
     public GameObject InfuserStatusUI;
+    
+    public Sprite infusionActiveUI;
+    public Sprite infusionInactiveUI;
     public Image infuserActivationUI;
     
-    [SerializeField] private int infusedLifeCount;
+    public int infusedLifeCount;
 
     void Awake()
     {
@@ -95,7 +97,7 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 자식 오브젝트 투명도 설정
      */
-    private void SetUIForInfuserStatus(bool isStart)
+    public void SetUIForInfuserStatus(bool isStart)
     {
         Debug.Log("setting UI for Infuser");
         float transparency;
@@ -117,7 +119,7 @@ public class LifeInfuserSO : ScriptableObject
         SetUITransparency(transform, transparency);
 
     }
-    void SetUITransparency(Transform parent, float transparency)
+    public void SetUITransparency(Transform parent, float transparency)
     {
         // 부모가 null이 아니면 진행
         if (parent == null)

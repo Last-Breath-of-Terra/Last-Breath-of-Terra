@@ -15,9 +15,7 @@ public class StageLifeInfuserSO : LifeInfuserSO
     public bool[] canInfusion;
     public GameObject[] infuser;
     public int totalInfuser;
-    
-    [SerializeField]
-    private bool[] isInfuser;
+    public bool[] isInfuser;
     
     public override void StartInfusion(int infuserNumber)
     {

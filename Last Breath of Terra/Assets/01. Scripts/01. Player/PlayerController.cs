@@ -49,14 +49,6 @@ public class PlayerController : MonoBehaviour
             HandleFootstepSound();
         }
     }
-
-    // void FixedUpdate()
-    // {
-    //     if (isHoldingClick && canMove)
-    //     {
-    //         UpdateTargetPosition();
-    //     }
-    // }
     
     private void OnEnable()
     {

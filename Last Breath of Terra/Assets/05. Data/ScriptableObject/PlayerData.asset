@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hp: 20
   baseSpeed: 0.5
-  maxSpeed: 4
+  maxSpeed: 3
   accelerationTime: 3
-  jumpForce: 3
+  jumpForce: 5.13
   dashForce: 10

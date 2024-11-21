@@ -509,6 +509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 466704fc8359e4a3cae8844596e50707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  miniMapManager: {fileID: 38588025}
   cursorIndicator: {fileID: 2013197846}
   clickLight: {fileID: 1587451478}
   movingLightEffect: {fileID: 1065940256}
@@ -527,7 +528,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2013197848}
-  - {fileID: 1587451477}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &38588023
@@ -7818,7 +7818,7 @@ GameObject:
   - component: {fileID: 1178979549}
   - component: {fileID: 1178979548}
   m_Layer: 0
-  m_Name: EnemyManager
+  m_Name: ObstacleManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23140,13 +23140,13 @@ Transform:
   m_GameObject: {fileID: 1587451476}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.03883265, w: 0.9992457}
-  m_LocalPosition: {x: 2.11, y: 3.8, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 21.71937, y: 21.71937, z: 21.71937}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1065940257}
   - {fileID: 348473335}
-  m_Father: {fileID: 36258544}
+  m_Father: {fileID: 2013197848}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1587451478
 MonoBehaviour:
@@ -23714,8 +23714,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1985b0dd023ae4b94963abb32c384a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  miniMapManager: {fileID: 0}
-  player: {fileID: 243389123}
+  _ui: {fileID: 36258543}
+  _obstacleManager: {fileID: 1178979548}
+  playerTr: {fileID: 243389123}
 --- !u!1 &1702452968
 GameObject:
   m_ObjectHideFlags: 0
@@ -25140,7 +25141,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 0.989954, b: 0, a: 1}
   m_FlipX: 0
@@ -25164,7 +25165,8 @@ Transform:
   m_LocalPosition: {x: 2.11, y: 3.8, z: 0}
   m_LocalScale: {x: 0.046041854, y: 0.046041854, z: 0.046041854}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1587451477}
   m_Father: {fileID: 36258544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2086210785

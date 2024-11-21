@@ -36,7 +36,9 @@ public class UIManager : MonoBehaviour
     #region LightSystem
     public void HandleClickLight(Vector2 position)
     {
-        cursorIndicator.SetActive(false);
+        Color color = cursorIndicator.GetComponent<SpriteRenderer>().color;
+        color.a = 0f;
+        cursorIndicator.GetComponent<SpriteRenderer>().color = color;
 
         RaycastHit2D hit = Physics2D.Raycast(position, Vector2.zero);
         if (hit.collider != null)
@@ -94,7 +96,9 @@ public class UIManager : MonoBehaviour
     public void ReleaseClick()
     {
         isHoldingClick = false;
-        cursorIndicator.SetActive(true);
+        Color color = cursorIndicator.GetComponent<SpriteRenderer>().color;
+        color.a = 100f;
+        cursorIndicator.GetComponent<SpriteRenderer>().color = color;
         clickLight.gameObject.SetActive(false);
         gameObject.GetComponent<AudioSource>().loop = false;
         gameObject.GetComponent<AudioSource>().Stop();

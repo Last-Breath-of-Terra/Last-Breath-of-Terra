@@ -220,6 +220,11 @@ public class Obstacle : MonoBehaviour
         transform.position = newPosition;
     }
 
+    public void SetSpeedToZero()
+    {
+        currentSpeed = 0f;
+    }
+
     public void SlowSpeed()
     {
         currentSpeed *= 0.5f;

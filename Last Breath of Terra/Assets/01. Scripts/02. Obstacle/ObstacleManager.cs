@@ -27,6 +27,17 @@ public class ObstacleManager : MonoBehaviour
         }
     }
 
+    public void StopAllObstacles()
+    {
+        foreach (Obstacle obstacle in allObstacles)
+        {
+            if (obstacle.isActiveAndEnabled)
+            {
+                obstacle.SetSpeedToZero();
+            }
+        }
+    }
+
     public void SlowDownAllObstacles()
     {
         foreach (Obstacle obstacle in allObstacles)

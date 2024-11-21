@@ -212,53 +212,6 @@ public class AudioManager : MonoBehaviour
         PlaySFX(audioName, audioSource, soundTransform);
     }
 
-    
-
-    #region Custom Sound
-
-    public void PlayFootstepSFX(string mapType, AudioSource audioSource, bool isStopping)
-    {
-        AudioClip clip;
-        if (isStopping)
-        {
-            clip = GetStoppingFootstepClipByMap(mapType);
-        }
-        else
-        {
-            clip = GetRandomFootstepClipByMap(mapType);
-        }
-
-        if (clip != null)
-        {
-            audioSource.clip = clip;
-            audioSource.Play();
-        }
-    }
-
-    public AudioClip GetRandomFootstepClipByMap(string mapType)
-    {
-        if (footstepClipsByMap.ContainsKey(mapType))
-        {
-            AudioClip[] clips = footstepClipsByMap[mapType];
-            int randomIndex = UnityEngine.Random.Range(0, clips.Length - 1);
-            return clips[randomIndex];
-        }
-
-        return null;
-    }
-
-    public AudioClip GetStoppingFootstepClipByMap(string mapType)
-    {
-        if (footstepClipsByMap.ContainsKey(mapType))
-        {
-            AudioClip[] clips = footstepClipsByMap[mapType];
-            return clips[clips.Length - 1];
-        }
-
-        return null;
-    }
-
-    #endregion
     public void StopAudio()
     {
         bgmSource.Stop();

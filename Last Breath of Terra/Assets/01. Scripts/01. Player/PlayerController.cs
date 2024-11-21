@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
 {
     public PlayerSO data;
 
+    [SerializeField] private float currentSpeed;
+    
     private Rigidbody2D _rb;
     private Animator _animator;
     private Vector3 originalScale;
@@ -21,9 +23,6 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded = true;
     private bool canMove = true;
     private bool isHoldingClick = false;
-    private string currentMapType;
-
-    [SerializeField] private float currentSpeed;
     private float footstepInterval = 0.5f;
     private float footstepTimer = 0f;
 
@@ -37,8 +36,6 @@ public class PlayerController : MonoBehaviour
     {
         currentSpeed = data.baseSpeed;
         originalScale = transform.localScale;
-
-        currentMapType = GetCurrentMapType();
     }
 
     void Update()
@@ -100,7 +97,7 @@ public class PlayerController : MonoBehaviour
         isHoldingClick = false;
         _rb.velocity = new Vector2(0, _rb.velocity.y);
         _animator.SetBool("Walk", false);
-        PlayStoppingFootstepSound();
+        AudioManager.instance.StopCancelable("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
     }
 
 
@@ -125,15 +122,9 @@ public class PlayerController : MonoBehaviour
         if (footstepTimer >= footstepInterval)
         {
             footstepTimer = 0f;
-            AudioManager.instance.PlayFootstepSFX(currentMapType, gameObject.GetComponent<AudioSource>(), false);
+            AudioManager.instance.PlayRandomSFX("footstep_"+ GameManager.Map.GetCurrentMapType() + "_", gameObject.GetComponent<AudioSource>(), transform);
         }
     }
-
-    private void PlayStoppingFootstepSound()
-    {
-        AudioManager.instance.PlayFootstepSFX(currentMapType, gameObject.GetComponent<AudioSource>(), true);
-    }
-
 
     #region InputSystem
     private void OnMovePerformed(InputAction.CallbackContext context)
@@ -157,10 +148,8 @@ public class PlayerController : MonoBehaviour
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         StopMoving();
-        UIManager.Instance.ReleaseClick();
+        GameManager.Instance._ui.ReleaseClick();
 
-        //이거 이미 위에서 체크해서 주석처리하겠습니다.
-        //AudioManager.instance.StopCancelable("footstep_gravel_004", gameObject.GetComponent<AudioSource>(), transform);
         CancelInvoke("StartMoving");
     }
 
@@ -173,7 +162,7 @@ public class PlayerController : MonoBehaviour
 
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            UIManager.Instance.HandleJumpLight(worldPosition);
+            GameManager.Instance._ui.HandleJumpLight(worldPosition);
         }
     }
 
@@ -206,7 +195,7 @@ public class PlayerController : MonoBehaviour
 
         if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
         {
-            UIManager.Instance.HandleClickLight(worldPosition);
+            GameManager.Instance._ui.HandleClickLight(worldPosition);
         }
     }
 
@@ -215,31 +204,9 @@ public class PlayerController : MonoBehaviour
         if (!value)
         {
             _animator.SetBool("Walk", false);
-            UIManager.Instance.ReleaseClick();
+            GameManager.Instance._ui.ReleaseClick();
         }
         canMove = value;
-    }
-
-
-    //따로 나중에 스크립트 빼는게 나을 것 같음.
-    private string GetCurrentMapType()
-    {
-        string sceneName = SceneManager.GetActiveScene().name;
-
-        if (sceneName.Contains("AlphaTest"))
-        {
-            return "AlphaTest";
-        }
-        else if (sceneName.Contains("sand"))
-        {
-            return "sand";
-        }
-        else if (sceneName.Contains("wood"))
-        {
-            return "wood";
-        }
-
-        return "default";
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

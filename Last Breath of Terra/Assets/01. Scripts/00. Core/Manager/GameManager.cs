@@ -1,12 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public MiniMapManager miniMapManager;
-    public Transform player;
+
+    public UIManager _ui;
+    public ObstacleManager _obstacleManager;
+    
+    public Transform playerTr;
+
+    private MapManager _map;
+
+    public static MapManager Map { get { return Instance._map; } }
+
 
     void Awake()
     {
@@ -19,12 +28,58 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
+
+        _map = new MapManager();
     }
 
     void Start()
     {
-        player = GameObject.FindWithTag("Player").GetComponent<Transform>();
+        playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
         AudioManager.instance.PlayAmbience("map_1_stage_ambience");
+
+        UpdateManagersReference();
+        UpdatePlayerReference();
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        UpdateManagersReference();
+        UpdatePlayerReference();
+    }
+
+    private void UpdateManagersReference()
+    {
+        if (_ui == null)
+        {
+            _ui = GameObject.FindObjectOfType<UIManager>();
+        }
+        if (_obstacleManager == null)
+        {
+            _obstacleManager = GameObject.FindObjectOfType<ObstacleManager>();
+        }
+    }
+
+    private void UpdatePlayerReference()
+    {
+        PlayerController playerController = GameObject.FindObjectOfType<PlayerController>();
+        if (playerController != null)
+        {
+            playerTr = playerController.transform;
+        }
+        else
+        {
+            Debug.LogWarning("Player not found in the current scene.");
+        }
     }
 
 }

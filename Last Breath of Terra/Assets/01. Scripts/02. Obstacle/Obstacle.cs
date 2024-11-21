@@ -17,7 +17,6 @@ public class Obstacle : MonoBehaviour
     public GameObject attackGroup;
 
     private Rigidbody2D _rb;
-    private Transform player; //플레이어 변수는 GameManager에서 가져오는 등 할 예정
     private Vector3 initialTimingIndicatorPos;
     private int currentHitCount = 0;
     private float currentSpeed;
@@ -29,7 +28,6 @@ public class Obstacle : MonoBehaviour
     private void Start()
     {
         _rb = this.GetComponent<Rigidbody2D>();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
         initialTimingIndicatorPos = timingIndicator.localPosition;
 
         foreach (Transform point in attackPoints)
@@ -41,7 +39,7 @@ public class Obstacle : MonoBehaviour
     private void OnEnable()
     {
         isActive = true;
-        ObstacleManager.Instance.RegisterObstacle(this);
+        GameManager.Instance._obstacleManager.RegisterObstacle(this);
         AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(), transform);
         
         currentHitCount = 0;
@@ -57,7 +55,7 @@ public class Obstacle : MonoBehaviour
     private void OnDisable()
     {
         isActive = false;
-        ObstacleManager.Instance.UnregisterObstacle(this);
+        GameManager.Instance._obstacleManager.UnregisterObstacle(this);
     }
 
     private void Update()
@@ -72,15 +70,12 @@ public class Obstacle : MonoBehaviour
     #region Movement Methods
     private void MoveTowardsPlayer()
     {
-        if (player != null)
+        Vector3 direction = (GameManager.Instance.playerTr.position - transform.position).normalized;
+        float distanceToPlayer = Vector3.Distance(transform.position, GameManager.Instance.playerTr.position);
+        
+        if (distanceToPlayer > data.stopDistance)
         {
-            Vector3 direction = (player.position - transform.position).normalized;
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-            
-            if (distanceToPlayer > data.stopDistance)
-            {
-                transform.position += direction * currentSpeed * Time.deltaTime;
-            }
+            transform.position += direction * currentSpeed * Time.deltaTime;
         }
     }
     #endregion
@@ -99,11 +94,11 @@ public class Obstacle : MonoBehaviour
             isHovered = isCurrentlyHovered;
             if (isHovered)
             {
-                ObstacleManager.Instance.SlowDownAllObstacles();
+                GameManager.Instance._obstacleManager.SlowDownAllObstacles();
             }
             else
             {
-                ObstacleManager.Instance.ResetAllObstaclesSpeed();
+                GameManager.Instance._obstacleManager.ResetAllObstaclesSpeed();
             }
         }
 
@@ -239,12 +234,12 @@ public class Obstacle : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.transform.CompareTag("Player"))
         {
-            GameManager.Instance.miniMapManager.ForceCloseMap();
+            GameManager.Instance._ui.miniMapManager.ForceCloseMap();
 
             lifeInfuserSO.StopInfusion();
-            player.GetComponent<PlayerController>().data.hp -= 10f;
+            GameManager.Instance.playerTr.GetComponent<PlayerController>().data.hp -= 10f;
 
-            float playerFacingDirection = player.transform.localScale.x;
+            float playerFacingDirection = GameManager.Instance.playerTr.localScale.x;
             Vector2 knockbackDirection = playerFacingDirection > 0 ? Vector2.left : Vector2.right;
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
             AudioManager.instance.PlayRandomSFX("knockback_", GetComponent<AudioSource>(), transform);
@@ -257,6 +252,6 @@ public class Obstacle : MonoBehaviour
 
     private void ReactivatePlayerMovement()
     {
-        player.GetComponent<PlayerController>().SetCanMove(true);
+        GameManager.Instance.playerTr.GetComponent<PlayerController>().SetCanMove(true);
     }
 }

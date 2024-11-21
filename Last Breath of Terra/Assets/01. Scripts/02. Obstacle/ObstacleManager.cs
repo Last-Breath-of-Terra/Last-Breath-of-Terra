@@ -9,21 +9,7 @@ using UnityEngine;
 
 public class ObstacleManager : MonoBehaviour
 {
-    public static ObstacleManager Instance;
-
     private List<Obstacle> allObstacles = new List<Obstacle>();
-
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     public void RegisterObstacle(Obstacle obstacle)
     {

@@ -17,9 +17,28 @@ public class UIManager : MonoBehaviour
 
     private bool isHoldingClick;
 
+    void Update()
+    {
+        if (isHoldingClick)
+        {
+            UpdateSoundPanValue();
+        }
+    }
+
     void FixedUpdate()
     {
         UpdateCursorIndicator();
+    }
+
+    private void UpdateSoundPanValue()
+    {
+        AudioSource audioSource = gameObject.GetComponent<AudioSource>();
+
+        if (audioSource.isPlaying)
+        {
+            float panValue = Mathf.Clamp((clickLight.transform.position.x - AudioManager.instance.player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            audioSource.panStereo = panValue;
+        }
     }
 
     private void UpdateCursorIndicator()

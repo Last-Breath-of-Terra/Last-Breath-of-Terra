@@ -44,18 +44,19 @@ public class PlayerController : MonoBehaviour
 
         if (isHoldingClick && canMove)
         {
+            UpdateTargetPosition();
             Move();
             HandleFootstepSound();
         }
     }
 
-    void FixedUpdate()
-    {
-        if (isHoldingClick && canMove)
-        {
-            UpdateTargetPosition();
-        }
-    }
+    // void FixedUpdate()
+    // {
+    //     if (isHoldingClick && canMove)
+    //     {
+    //         UpdateTargetPosition();
+    //     }
+    // }
     
     private void OnEnable()
     {
@@ -86,20 +87,7 @@ public class PlayerController : MonoBehaviour
 
             transform.localScale = new Vector3(direction * Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
         }
-        else
-        {
-            StopMoving();
-        }
     }
-
-    private void StopMoving()
-    {
-        isHoldingClick = false;
-        _rb.velocity = new Vector2(0, _rb.velocity.y);
-        _animator.SetBool("Walk", false);
-        AudioManager.instance.StopCancelable("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
-    }
-
 
     private void HandleAcceleration()
     {
@@ -147,7 +135,10 @@ public class PlayerController : MonoBehaviour
 
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
-        StopMoving();
+        isHoldingClick = false;
+        _rb.velocity = new Vector2(0, _rb.velocity.y);
+        _animator.SetBool("Walk", false);
+        AudioManager.instance.StopCancelable("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
         GameManager.Instance._ui.ReleaseClick();
 
         CancelInvoke("StartMoving");

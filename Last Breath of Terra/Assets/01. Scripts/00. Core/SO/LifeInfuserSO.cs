@@ -128,7 +128,7 @@ public class LifeInfuserSO : ScriptableObject
         foreach (Transform child in parent)
         {
             Image image = child.GetComponent<Image>();
-            if (image != null)
+            if (image != null && !image.gameObject.CompareTag("Cursor"))
             {
                 child.gameObject.GetComponent<Image>().color += new Color(1f, 1f, 1f, transparency);
             }

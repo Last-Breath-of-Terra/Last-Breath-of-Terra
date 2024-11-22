@@ -33,10 +33,10 @@ public class LifeInfuser : MonoBehaviour
         //AudioManager.instance.PlaySFX("sfx_keyboardcorrect", gameObject.GetComponent<AudioSource>());
         if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion[infuserNumber])
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
-            AudioManager.instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(), gameObject.transform);
+            //gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
 
             lifeInfuserData.targetInfuser = gameObject;
+            lifeInfuserData.player = collision.gameObject;
             lifeInfuserData.playerController = collision.GetComponent<PlayerController>();
             //Invoke("PrepareInfusion", lifeInfuserData.infusionWaitTime);
             startTween = DOVirtual.DelayedCall(lifeInfuserData.infusionWaitTime, () =>
@@ -51,6 +51,7 @@ public class LifeInfuser : MonoBehaviour
 
         if (lifeInfuserData.playerController != null)
         {
+            AudioManager.instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(), gameObject.transform);
             lifeInfuserData.playerController.SetCanMove(false);
         }
         //lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
@@ -67,7 +68,5 @@ public class LifeInfuser : MonoBehaviour
             startTween.Kill();
         }
         lifeInfuserData.StopInfusion();
-        AudioManager.instance.StopCancelable("light_on", lifeInfuserData.targetInfuser.GetComponent<AudioSource>(), transform);
-
     }
 }

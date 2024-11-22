@@ -9,7 +9,6 @@ public class StageLifeInfuserSO : LifeInfuserSO
 {
     public string stageName;
     public Image[] infuserStatusUI;
-    public GameObject targetInfuser;
     public Sprite InfuserActiveImage;
     public Sprite InfuserInactiveImage;
     public bool[] canInfusion;
@@ -19,16 +18,16 @@ public class StageLifeInfuserSO : LifeInfuserSO
     
     public override void StartInfusion(int infuserNumber)
     {
+        infuserActivationCanvas.gameObject.transform.position = targetInfuser.transform.position;
         base.StartInfusion(infuserNumber);
         AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
         
     }
     public override void CompleteInfusion(int infuserNumber)
     {
-        GameObject player = AudioManager.instance.player;
         AudioManager.instance.PlayPlayer("breath_action_end", 0f);
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
-        infuserStatusUI[infuserNumber].sprite = infusionActiveUI;
+        infuserStatusUI[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.8f);
         base.CompleteInfusion(infuserNumber);
         isInfuser[infuserNumber] = true;
         canInfusion[infuserNumber] = false;

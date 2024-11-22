@@ -186,11 +186,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void StopCancelable(string audioName,AudioSource audioSource, Transform soundTransform)
+    public void StopCancelable(AudioSource audioSource)
     {
         audioSource.Stop();
         audioSource.panStereo = 0;
-        PlaySFX(audioName, audioSource, soundTransform);
+        //PlaySFX(audioName, audioSource, soundTransform);
     }
 
     public void StopAudio()

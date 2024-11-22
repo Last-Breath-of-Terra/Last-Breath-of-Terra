@@ -17,13 +17,11 @@ public class LifeInfuserSO : ScriptableObject
     public float defaultLensSize;
     public float targetLensSize;
     public Tween currentTween;
-    
+    public GameObject targetInfuser;
+    public GameObject player;
     public CinemachineVirtualCamera virtualCamera;
     public Canvas infuserActivationCanvas;
     public GameObject InfuserStatusUI;
-    
-    public Sprite infusionActiveUI;
-    public Sprite infusionInactiveUI;
     public Image infuserActivationUI;
     
     public int infusedLifeCount;
@@ -72,8 +70,8 @@ public class LifeInfuserSO : ScriptableObject
             playerController.SetCanMove(true);
         }
         infusedLifeCount++;
-        infuserActivationUI.gameObject.SetActive(false);
-        infuserActivationUI.GetComponent<Image>().fillAmount = 0;
+        infuserActivationCanvas.gameObject.SetActive(false);
+        infuserActivationUI.GetComponent<Image>().fillAmount = 0.126f;
         SetUIForInfuserStatus(false);
     }
 
@@ -86,6 +84,7 @@ public class LifeInfuserSO : ScriptableObject
         if (currentTween != null && currentTween.IsActive())
         {
             currentTween.Kill();
+            AudioManager.instance.StopCancelable(player.GetComponent<AudioSource>());
             infuserActivationUI.GetComponent<Image>().fillAmount = 0;
             DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
             SetUIForInfuserStatus(false);
@@ -105,13 +104,13 @@ public class LifeInfuserSO : ScriptableObject
         Vector3 canvasScale = transform.lossyScale;
         if (isStart)
         {
-            transparency = 1f;
-            canvasScale = new Vector3(1.5f, 1.5f, 1.5f);
+            transparency = 0.3f;
+            canvasScale = new Vector3(1f, 1f, 1f);
         }
         else
         {
-            transparency = 0.2f;
-            canvasScale = new Vector3(1f, 1f, 1f);
+            transparency = -0.3f;
+            canvasScale = new Vector3(0.5f, 0.5f, 0.5f);
 
         }
         DOTween.To(() => InfuserStatusUI.GetComponent<RectTransform>().localScale, x => InfuserStatusUI.GetComponent<RectTransform>().localScale = x, canvasScale, 0.1f);
@@ -129,9 +128,9 @@ public class LifeInfuserSO : ScriptableObject
         foreach (Transform child in parent)
         {
             Image image = child.GetComponent<Image>();
-            if (image != null)
+            if (image != null && !image.gameObject.CompareTag("Cursor"))
             {
-                child.gameObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, transparency);
+                child.gameObject.GetComponent<Image>().color += new Color(1f, 1f, 1f, transparency);
             }
             // 자식의 자식들까지 재귀적으로 탐색
             SetUITransparency(child, transparency);

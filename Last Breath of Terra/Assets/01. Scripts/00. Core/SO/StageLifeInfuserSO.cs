@@ -27,7 +27,7 @@ public class StageLifeInfuserSO : LifeInfuserSO
     {
         AudioManager.instance.PlayPlayer("breath_action_end", 0f);
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
-        infuserStatusUI[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.9f);
+        infuserStatusUI[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.8f);
         base.CompleteInfusion(infuserNumber);
         isInfuser[infuserNumber] = true;
         canInfusion[infuserNumber] = false;

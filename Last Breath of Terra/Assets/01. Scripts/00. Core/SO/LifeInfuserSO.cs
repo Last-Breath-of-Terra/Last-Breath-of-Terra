@@ -104,13 +104,13 @@ public class LifeInfuserSO : ScriptableObject
         Vector3 canvasScale = transform.lossyScale;
         if (isStart)
         {
-            transparency = 0.4f;
-            canvasScale = new Vector3(1.5f, 1.5f, 1.5f);
+            transparency = 0.3f;
+            canvasScale = new Vector3(1f, 1f, 1f);
         }
         else
         {
-            transparency = -0.4f;
-            canvasScale = new Vector3(1f, 1f, 1f);
+            transparency = -0.3f;
+            canvasScale = new Vector3(0.5f, 0.5f, 0.5f);
 
         }
         DOTween.To(() => InfuserStatusUI.GetComponent<RectTransform>().localScale, x => InfuserStatusUI.GetComponent<RectTransform>().localScale = x, canvasScale, 0.1f);

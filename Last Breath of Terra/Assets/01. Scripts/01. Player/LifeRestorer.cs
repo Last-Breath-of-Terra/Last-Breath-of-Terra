@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class LifeRestorer : MonoBehaviour
 {
@@ -32,8 +33,8 @@ public class LifeRestorer : MonoBehaviour
     private void Start()
     {
         lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
-        lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, -0.5f);
-        lifeInfuserData.SetUIForInfuserStatus(false);
+        lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, -0.9f);
+        //lifeInfuserData.SetUIForInfuserStatus(false);
 
         //defaultSize = lifeInfuserData.infuserStatusUI[0].GetComponent<RectTransform>().sizeDelta;
         newSize = defaultSize * 1.2f;
@@ -51,12 +52,15 @@ public class LifeRestorer : MonoBehaviour
             }
             else if (playerData.hp <= 0)
             {
+                //장애물 이동 멈추기
+                //StopAllObstacles
                 //마우스 조작 변경
                 SwitchActionMap("Select");
                 //왼쪽 끝에서부터 설정
                 infuserNumber = 0;
                 //UpdateRectSize(infuserNumber, newSize);
                 //UI 활성화
+                DOTween.To(() => lifeInfuserData.InfuserStatusUI.GetComponent<RectTransform>().localScale, x => lifeInfuserData.InfuserStatusUI.GetComponent<RectTransform>().localScale = x, new Vector3(1f, 1f, 1f), 0.1f);
                 //lifeInfuserData.SetUIForInfuserStatus(true);
                 //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 1.0f);
                 //lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
@@ -160,6 +164,8 @@ public class LifeRestorer : MonoBehaviour
         //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 0.2f);
         lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
         lifeInfuserData.infuserStatusUI[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.1f);
+        DOTween.To(() => lifeInfuserData.InfuserStatusUI.GetComponent<RectTransform>().localScale, x => lifeInfuserData.InfuserStatusUI.GetComponent<RectTransform>().localScale = x, new Vector3(0.5f, 0.5f, 0.5f), 0.1f);
+
 
         UpdateRectSize(infuserNumber, defaultSize);
 

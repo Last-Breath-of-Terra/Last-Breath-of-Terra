@@ -60,13 +60,13 @@ public class LifeRestorer : MonoBehaviour
                 //lifeInfuserData.SetUIForInfuserStatus(true);
                 //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 1.0f);
                 //lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
-                for (int i = infuserNumber; i < lifeInfuserData.canInfusion.Length; i++)
+                for (int i = 0; i + infuserNumber< lifeInfuserData.canInfusion.Length; i++)
                 {
-                    if (!lifeInfuserData.canInfusion[i])
+                    if (!lifeInfuserData.canInfusion[i + infuserNumber])
                     {
-                        if (i + 1 <= lifeInfuserData.canInfusion.Length)
+                        if (i + infuserNumber <= lifeInfuserData.canInfusion.Length)
                         {
-                            SelectReviveLife(i, 0);
+                            SelectReviveLife(i);
 
                         }
                         break;
@@ -121,15 +121,12 @@ public class LifeRestorer : MonoBehaviour
     public void OnLeftSelect(InputAction.CallbackContext context)
     {
         AudioManager.instance.PlayPlayer("ui_click_fire_1", -1f);
-        for (int i = infuserNumber; i > 0; i--)
+        for (int i = 1; infuserNumber - i >= 0; i--)
         {
-            if (!lifeInfuserData.canInfusion[i])
+            if (!lifeInfuserData.canInfusion[infuserNumber - i])
             {
-                if (i - 1 >= 0)
-                {
-                    SelectReviveLife(i + 1, -1);
-                    break;
-                }
+                SelectReviveLife(-i);
+                break;
             }
         }
     }
@@ -137,16 +134,12 @@ public class LifeRestorer : MonoBehaviour
     public void OnRightSelect(InputAction.CallbackContext context)
     {
         AudioManager.instance.PlayPlayer("ui_click_fire_1", 1f);
-        for (int i = infuserNumber; i < lifeInfuserData.canInfusion.Length; i++)
+        for (int i = 1; i + infuserNumber < lifeInfuserData.canInfusion.Length; i++)
         {
-            if (!lifeInfuserData.canInfusion[i])
+            if (!lifeInfuserData.canInfusion[i + infuserNumber])
             {
-                if (i + 1 <= lifeInfuserData.canInfusion.Length)
-                {
-                    //Debug.Log(lifeInfuserData.canInfusion[infuserNumber] + ", " + infuserNumber);
-                    SelectReviveLife(i - 1, 1);
-                    break;
-                }
+                SelectReviveLife(i);
+                break;
             }
         }
         //SelectReviveLife(infuserNumber + 1);
@@ -182,14 +175,14 @@ public class LifeRestorer : MonoBehaviour
         }*/
     }
 
-    public void SelectReviveLife(int newInfuserNumber, int amount)
+    public void SelectReviveLife(int amount)
     {
         //기존 값
         UpdateRectSize(infuserNumber, defaultSize);
         lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
 
         //새로운 값
-        infuserNumber = newInfuserNumber + amount;//Mathf.Clamp(setValue, 0, lifeInfuserData.totalInfuser);
+        infuserNumber += amount;//Mathf.Clamp(setValue, 0, lifeInfuserData.totalInfuser);
         lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
         UpdateRectSize(infuserNumber, newSize);
 

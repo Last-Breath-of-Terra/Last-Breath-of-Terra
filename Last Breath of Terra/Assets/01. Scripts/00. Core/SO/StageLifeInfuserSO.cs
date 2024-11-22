@@ -19,6 +19,7 @@ public class StageLifeInfuserSO : LifeInfuserSO
     
     public override void StartInfusion(int infuserNumber)
     {
+        infuserActivationCanvas.gameObject.transform.position = targetInfuser.transform.position;
         base.StartInfusion(infuserNumber);
         AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
         

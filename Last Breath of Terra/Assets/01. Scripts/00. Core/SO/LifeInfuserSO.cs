@@ -21,9 +21,6 @@ public class LifeInfuserSO : ScriptableObject
     public CinemachineVirtualCamera virtualCamera;
     public Canvas infuserActivationCanvas;
     public GameObject InfuserStatusUI;
-    
-    public Sprite infusionActiveUI;
-    public Sprite infusionInactiveUI;
     public Image infuserActivationUI;
     
     public int infusedLifeCount;
@@ -105,12 +102,12 @@ public class LifeInfuserSO : ScriptableObject
         Vector3 canvasScale = transform.lossyScale;
         if (isStart)
         {
-            transparency = 1f;
+            transparency = 0.3f;
             canvasScale = new Vector3(1.5f, 1.5f, 1.5f);
         }
         else
         {
-            transparency = 0.2f;
+            transparency = -0.3f;
             canvasScale = new Vector3(1f, 1f, 1f);
 
         }
@@ -131,7 +128,7 @@ public class LifeInfuserSO : ScriptableObject
             Image image = child.GetComponent<Image>();
             if (image != null)
             {
-                child.gameObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, transparency);
+                child.gameObject.GetComponent<Image>().color += new Color(1f, 1f, 1f, transparency);
             }
             // 자식의 자식들까지 재귀적으로 탐색
             SetUITransparency(child, transparency);

@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using Cinemachine;
 using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public class LifeRestorer : MonoBehaviour
 {
@@ -116,7 +117,7 @@ public class LifeRestorer : MonoBehaviour
     {
         //비활성화
         lifeInfuserData.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage;
-        lifeInfuserData.infuserStatusUI[infuserNumber].sprite = lifeInfuserData.infusionInactiveUI;
+        lifeInfuserData.infuserStatusUI[infuserNumber].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.5f);
         lifeInfuserData.isInfuser[infuserNumber] = false;
         lifeInfuserData.canInfusion[infuserNumber] = true;
 

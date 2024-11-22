@@ -17,7 +17,8 @@ public class LifeInfuserSO : ScriptableObject
     public float defaultLensSize;
     public float targetLensSize;
     public Tween currentTween;
-    
+    public GameObject targetInfuser;
+    public GameObject player;
     public CinemachineVirtualCamera virtualCamera;
     public Canvas infuserActivationCanvas;
     public GameObject InfuserStatusUI;
@@ -83,6 +84,7 @@ public class LifeInfuserSO : ScriptableObject
         if (currentTween != null && currentTween.IsActive())
         {
             currentTween.Kill();
+            AudioManager.instance.StopCancelable(player.GetComponent<AudioSource>());
             infuserActivationUI.GetComponent<Image>().fillAmount = 0;
             DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
             SetUIForInfuserStatus(false);

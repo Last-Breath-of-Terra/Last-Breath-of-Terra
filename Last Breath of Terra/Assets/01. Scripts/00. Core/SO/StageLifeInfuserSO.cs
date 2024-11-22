@@ -9,7 +9,6 @@ public class StageLifeInfuserSO : LifeInfuserSO
 {
     public string stageName;
     public Image[] infuserStatusUI;
-    public GameObject targetInfuser;
     public Sprite InfuserActiveImage;
     public Sprite InfuserInactiveImage;
     public bool[] canInfusion;

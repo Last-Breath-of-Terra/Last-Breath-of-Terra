@@ -102,12 +102,12 @@ public class LifeInfuserSO : ScriptableObject
         Vector3 canvasScale = transform.lossyScale;
         if (isStart)
         {
-            transparency = 0.3f;
+            transparency = 0.4f;
             canvasScale = new Vector3(1.5f, 1.5f, 1.5f);
         }
         else
         {
-            transparency = -0.3f;
+            transparency = -0.4f;
             canvasScale = new Vector3(1f, 1f, 1f);
 
         }

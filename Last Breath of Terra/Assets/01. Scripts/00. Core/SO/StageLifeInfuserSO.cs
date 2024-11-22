@@ -26,7 +26,6 @@ public class StageLifeInfuserSO : LifeInfuserSO
     }
     public override void CompleteInfusion(int infuserNumber)
     {
-        GameObject player = AudioManager.instance.player;
         AudioManager.instance.PlayPlayer("breath_action_end", 0f);
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
         infuserStatusUI[infuserNumber].GetComponent<Image>().color = Color.white;

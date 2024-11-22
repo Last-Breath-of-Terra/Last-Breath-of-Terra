@@ -33,7 +33,7 @@ public class LifeInfuser : MonoBehaviour
         //AudioManager.instance.PlaySFX("sfx_keyboardcorrect", gameObject.GetComponent<AudioSource>());
         if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion[infuserNumber])
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
+            //gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
 
             lifeInfuserData.targetInfuser = gameObject;
             lifeInfuserData.playerController = collision.GetComponent<PlayerController>();

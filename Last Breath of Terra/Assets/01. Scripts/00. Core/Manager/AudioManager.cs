@@ -10,8 +10,8 @@ public class AudioManager : MonoBehaviour
     public static AudioManager instance;
 
     public GameObject player;
-    //Ambience BGM Foley SFX
 
+    //Ambience BGM Foley SFX
     [Header("BGM")] private AudioClip[] BGMInitClips;
     private Dictionary<string, AudioClip> BGMAudioClips;
     private AudioSource bgmSource;
@@ -31,8 +31,6 @@ public class AudioManager : MonoBehaviour
     private Dictionary<string, AudioClip> ObstacleAudioClips;
     public AudioSource[] ObstacleSources;
     private float ObstacleVolume = 1.0f;
-
-    [Header("Footstep SFX")] private Dictionary<string, AudioClip[]> footstepClipsByMap;
 
     private Tween currentTween;
     
@@ -99,31 +97,16 @@ public class AudioManager : MonoBehaviour
         }
 
         #endregion
-
-
-        #region FootStep Init
-
-        footstepClipsByMap = new Dictionary<string, AudioClip[]>();
-        LoadFootstepClips("AlphaTest");
-
-        #endregion
-    }
-
-    private void LoadFootstepClips(string mapType)
-    {
-        AudioClip[] clips = Resources.LoadAll<AudioClip>($"Audio/Footsteps/{mapType}");
-        footstepClipsByMap[mapType] = clips;
     }
 
     private void Start()
     {
         //PlayBGM("BGM1");
-        //  PlayAmbience("ambi_livingroom");
+        //PlayAmbience("ambi_livingroom");
     }
 
     public void PlayBGM(string bgmName)
     {
-        //Debug.Log(bgmName);
         if (BGMAudioClips.ContainsKey(bgmName))
         {
             bgmSource.clip = BGMAudioClips[bgmName];
@@ -134,7 +117,6 @@ public class AudioManager : MonoBehaviour
 
     public void PlayAmbience(string ambienceName)
     {
-        Debug.Log(ambienceName);
         if (ambienceAudioClips.ContainsKey(ambienceName))
         {
             ambienceSource.clip = ambienceAudioClips[ambienceName];
@@ -178,7 +160,6 @@ public class AudioManager : MonoBehaviour
             audioSource.clip = SFXAudioClips[sfxName];
             audioSource.Play();
             currentTween = DOTween.To(() => -1f, x => audioSource.panStereo = x, 1f, infusionDuration);
-//                .onComplete(() => { audioSource.panStereo = 0; }); 
         }
     }
 

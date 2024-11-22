@@ -36,6 +36,7 @@ public class LifeInfuser : MonoBehaviour
             //gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
 
             lifeInfuserData.targetInfuser = gameObject;
+            lifeInfuserData.player = collision.gameObject;
             lifeInfuserData.playerController = collision.GetComponent<PlayerController>();
             //Invoke("PrepareInfusion", lifeInfuserData.infusionWaitTime);
             startTween = DOVirtual.DelayedCall(lifeInfuserData.infusionWaitTime, () =>

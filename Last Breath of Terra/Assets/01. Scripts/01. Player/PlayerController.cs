@@ -130,7 +130,8 @@ public class PlayerController : MonoBehaviour
         isHoldingClick = false;
         _rb.velocity = new Vector2(0, _rb.velocity.y);
         _animator.SetBool("Walk", false);
-        AudioManager.instance.StopCancelable("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
+        AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
+        AudioManager.instance.PlaySFX("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
         GameManager.Instance._ui.ReleaseClick();
 
         CancelInvoke("StartMoving");

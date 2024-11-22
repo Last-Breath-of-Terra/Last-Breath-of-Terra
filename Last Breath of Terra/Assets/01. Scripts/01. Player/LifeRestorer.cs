@@ -15,7 +15,8 @@ public class LifeRestorer : MonoBehaviour
     public StageLifeInfuserSO lifeInfuserData;
     public CinemachineVirtualCamera camera;
     public CinemachineVirtualCamera infuserTrackedCamera;
-
+    public ObstacleManager obstacleManager;
+    
     [SerializeField] private InputActionMap selectMap;
 
     private PlayerInput playerInput;
@@ -53,7 +54,7 @@ public class LifeRestorer : MonoBehaviour
             else if (playerData.hp <= 0)
             {
                 //장애물 이동 멈추기
-                //StopAllObstacles
+                obstacleManager.StopAllObstacles();
                 //마우스 조작 변경
                 SwitchActionMap("Select");
                 //왼쪽 끝에서부터 설정
@@ -125,10 +126,11 @@ public class LifeRestorer : MonoBehaviour
     public void OnLeftSelect(InputAction.CallbackContext context)
     {
         AudioManager.instance.PlayPlayer("ui_click_fire_1", -1f);
-        for (int i = 1; infuserNumber - i >= 0; i--)
+        for (int i = 1; infuserNumber - i >= 0; i++)
         {
             if (!lifeInfuserData.canInfusion[infuserNumber - i])
             {
+                Debug.Log("leftSelect");
                 SelectReviveLife(-i);
                 break;
             }
@@ -142,6 +144,7 @@ public class LifeRestorer : MonoBehaviour
         {
             if (!lifeInfuserData.canInfusion[i + infuserNumber])
             {
+                Debug.Log("rightSelect");
                 SelectReviveLife(i);
                 break;
             }
@@ -179,6 +182,8 @@ public class LifeRestorer : MonoBehaviour
         {
             나중에 추가..
         }*/
+        //장애물 이동 활성화
+        obstacleManager.ResetAllObstaclesSpeed();
     }
 
     public void SelectReviveLife(int amount)
@@ -188,6 +193,7 @@ public class LifeRestorer : MonoBehaviour
         lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
 
         //새로운 값
+        Debug.Log("infuserNumber : " + infuserNumber + ", amount : " + amount + " newInfuserNumber : " + infuserNumber + amount);
         infuserNumber += amount;//Mathf.Clamp(setValue, 0, lifeInfuserData.totalInfuser);
         lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
         UpdateRectSize(infuserNumber, newSize);
@@ -198,7 +204,6 @@ public class LifeRestorer : MonoBehaviour
 
     private void UpdateRectSize(int setValue, Vector2 changeSize)
     {
-        Debug.Log(lifeInfuserData.infuserStatusUI[setValue].name);
         RectTransform rectTransform = lifeInfuserData.infuserStatusUI[setValue].GetComponent<RectTransform>();
         rectTransform.sizeDelta = changeSize;
     }

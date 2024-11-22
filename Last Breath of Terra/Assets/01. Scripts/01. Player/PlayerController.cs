@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour
         if (footstepTimer >= footstepInterval)
         {
             footstepTimer = 0f;
-            AudioManager.instance.PlayRandomSFX("footstep_"+ GameManager.Map.GetCurrentMapType() + "_", gameObject.GetComponent<AudioSource>(), transform);
+            AudioManager.instance.PlayRandomPlayer("footstep_" + GameManager.Map.GetCurrentMapType() + "_", 0);// gameObject.GetComponent<AudioSource>(), transform);
         }
     }
 

@@ -15,7 +15,7 @@ public class AudioManager : MonoBehaviour
     [Header("BGM")] private AudioClip[] BGMInitClips;
     private Dictionary<string, AudioClip> BGMAudioClips;
     private AudioSource bgmSource;
-    private float bgmVolume = 1.0f;
+    private float bgmVolume = 0.5f;
 
     [Header("Ambience")] private AudioClip[] ambienceInitClips;
     private Dictionary<string, AudioClip> ambienceAudioClips;
@@ -101,7 +101,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        //PlayBGM("BGM1");
+        PlayBGM("BGM1");
         //PlayAmbience("ambi_livingroom");
     }
 
@@ -173,10 +173,20 @@ public class AudioManager : MonoBehaviour
         audioSource.Stop();
         audioSource.panStereo = panValue;
         audioSource.PlayOneShot(SFXAudioClips[audioName]);
-
+    }
+    public void PlayRandomPlayer(string audioName, float panValue)
+    {
+        int randomIndex = UnityEngine.Random.Range(1, 3);
+        audioName += randomIndex;
+        currentTween.Kill();
+        AudioSource audioSource = player.GetComponent<AudioSource>();
+        audioSource.Stop();
+        audioSource.panStereo = panValue;
+        audioSource.PlayOneShot(SFXAudioClips[audioName]);
     }
     public void PlayCancelable(string audioName, AudioSource audioSource, Transform soundTransform)
     {
+        Debug.Log("playing cancelable");
         if (SFXAudioClips.ContainsKey(audioName))
         {
             audioSource.clip = SFXAudioClips[audioName];

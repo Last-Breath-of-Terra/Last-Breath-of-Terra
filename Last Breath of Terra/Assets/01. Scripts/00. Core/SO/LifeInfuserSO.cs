@@ -70,8 +70,8 @@ public class LifeInfuserSO : ScriptableObject
             playerController.SetCanMove(true);
         }
         infusedLifeCount++;
-        infuserActivationUI.gameObject.SetActive(false);
-        infuserActivationUI.GetComponent<Image>().fillAmount = 0;
+        infuserActivationCanvas.gameObject.SetActive(false);
+        infuserActivationUI.GetComponent<Image>().fillAmount = 0.126f;
         SetUIForInfuserStatus(false);
     }
 

@@ -165,8 +165,9 @@ public class LifeRestorer : MonoBehaviour
         //UI 비활성화
         //lifeInfuserData.SetUIForInfuserStatus(false);
         //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 0.2f);
-        //lifeInfuserData.infuserStatusUI[infuserNumber].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.2f);
         lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
+        lifeInfuserData.infuserStatusUI[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.1f);
+
         UpdateRectSize(infuserNumber, defaultSize);
 
         //카메라 비활성화

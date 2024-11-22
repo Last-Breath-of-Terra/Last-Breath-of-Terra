@@ -176,7 +176,7 @@ public class Obstacle : MonoBehaviour
             {
                 string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
                 AudioManager.instance.PlaySFX(audioName, gameObject.GetComponent<AudioSource>(), transform);
-
+                Debug.Log("Clicked " + point.name[point.name.Length - 1]);
                 Color color = point.GetComponent<SpriteRenderer>().color;
                 color.a = 100f;
                 point.GetComponent<SpriteRenderer>().color = color;
@@ -188,7 +188,8 @@ public class Obstacle : MonoBehaviour
 
         if (currentHitCount >= data.clicksToDestroy)
         {
-            DeactivateObstacle();
+            Invoke("DeactivateObstacle", 0.1f);
+            //DeactivateObstacle();
         }
     }
 

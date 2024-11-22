@@ -15,7 +15,7 @@ public class AudioManager : MonoBehaviour
     [Header("BGM")] private AudioClip[] BGMInitClips;
     private Dictionary<string, AudioClip> BGMAudioClips;
     private AudioSource bgmSource;
-    private float bgmVolume = 1.0f;
+    private float bgmVolume = 0.5f;
 
     [Header("Ambience")] private AudioClip[] ambienceInitClips;
     private Dictionary<string, AudioClip> ambienceAudioClips;
@@ -101,7 +101,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        //PlayBGM("BGM1");
+        PlayBGM("BGM1");
         //PlayAmbience("ambi_livingroom");
     }
 

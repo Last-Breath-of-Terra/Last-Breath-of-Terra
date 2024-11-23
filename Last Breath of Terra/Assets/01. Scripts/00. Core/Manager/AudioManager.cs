@@ -102,7 +102,7 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         PlayBGM("BGM1");
-        //PlayAmbience("ambi_livingroom");
+        PlayAmbience("ambi_livingroom");
     }
 
     public void PlayBGM(string bgmName)

@@ -41,11 +41,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Thickness: 0.005
+    - _Enabled: 1
+    - _GlowIntensity: 10.7
+    - _Outline: 0.005
+    - _Thickness: 10
     m_Colors:
-    - _Color: {r: 0, g: 1, b: 0.8334823, a: 0}
+    - _GlowColor: {r: 0, g: 1, b: 0.8356807, a: 0}
+    - _OutlineColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &4186778765192403988
+--- !u!114 &5234518974956442288
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

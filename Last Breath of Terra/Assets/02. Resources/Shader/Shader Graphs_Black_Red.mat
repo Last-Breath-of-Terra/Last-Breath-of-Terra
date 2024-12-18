@@ -7,9 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_OutlineGlow
-  m_Shader: {fileID: -6465566751694194690, guid: e37d2e57792e44129b0bb2671e714503, type: 3}
-  m_Parent: {fileID: 0}
+  m_Name: Shader Graphs_Black_Red
+  m_Shader: {fileID: -6465566751694194690, guid: e93f88bd8830945589d7c004f0ea340a, type: 3}
+  m_Parent: {fileID: 2100000, guid: 4dbba0d7c9b574e1c985261701441444, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -23,39 +23,17 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _GlowTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 8708255ab3a043547a87157e28db2857, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - unity_Lightmaps:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - unity_LightmapsInd:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - unity_ShadowMasks:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats:
-    - _Clear: 0
-    - _Enabled: 0
-    - _GlowIntensity: 0
-    - _Outline: 0.005
-    - _Thickness: 1.74
+    m_Floats: []
     m_Colors:
-    - _AllGlowColor: {r: 3.2056212, g: 9.849155, b: 9.517308, a: 0}
-    - _GlowColor: {r: 38.892487, g: 191.74901, b: 166.93982, a: 0}
-    - _OutlineColor: {r: 17.290764, g: 17.290764, b: 17.290764, a: 0}
+    - _GlowColor: {r: 0, g: 0, b: 0, a: 0}
+    - _ObjectColor: {r: 763.1698, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &5234518974956442288
+--- !u!114 &5049106842160066934
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

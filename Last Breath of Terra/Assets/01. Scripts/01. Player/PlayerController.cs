@@ -12,6 +12,7 @@ using DG.Tweening;
 public class PlayerController : MonoBehaviour
 {
     public PlayerSO data;
+    public bool isGrounded = true;
 
     [SerializeField] private float currentSpeed;
     
@@ -20,7 +21,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalScale;
     private Vector2 targetPosition;
     private float accelerationTimer;
-    private bool isGrounded = true;
     private bool canMove = true;
     private bool isHoldingClick = false;
     private float footstepInterval = 0.5f;

@@ -46,14 +46,14 @@ Material:
     m_Ints: []
     m_Floats:
     - _Clear: 0
-    - _Enabled: 0
+    - _Enabled: 1
     - _GlowIntensity: 0
     - _Outline: 0.005
-    - _Thickness: 1.74
+    - _Thickness: 3.35
     m_Colors:
     - _AllGlowColor: {r: 3.2056212, g: 9.849155, b: 9.517308, a: 0}
-    - _GlowColor: {r: 38.892487, g: 191.74901, b: 166.93982, a: 0}
-    - _OutlineColor: {r: 17.290764, g: 17.290764, b: 17.290764, a: 0}
+    - _GlowColor: {r: 23.142946, g: 60.571663, b: 60.571663, a: 0}
+    - _OutlineColor: {r: 0.74509805, g: 0.74509805, b: 0.74509805, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &5234518974956442288
 MonoBehaviour:

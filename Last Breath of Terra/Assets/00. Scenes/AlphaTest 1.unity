@@ -2096,6 +2096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 45b86c0c660e9429282d8e93a3edfec3, type: 2}
+  isGrounded: 1
   currentSpeed: 0
 --- !u!95 &243389119
 Animator:
@@ -2360,6 +2361,7 @@ MonoBehaviour:
   lifeInfuserData: {fileID: 11400000, guid: 16e2f725b91c66142bb0654d826a5b39, type: 2}
   camera: {fileID: 651167934}
   infuserTrackedCamera: {fileID: 754961215}
+  obstacleManager: {fileID: 0}
   selectMap:
     m_Name: Select Map
     m_Id: ce1f1f24-410a-4683-81f4-58f08f29a5b8

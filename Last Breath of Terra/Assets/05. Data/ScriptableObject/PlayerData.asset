@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PlayerData
   m_EditorClassIdentifier: 
   hp: -20
-  baseSpeed: 0.5
-  maxSpeed: 3
+  baseSpeed: 1
+  maxSpeed: 5
   accelerationTime: 3
-  jumpForce: 5.13
-  dashForce: 10
+  jumpForce: 15
+  dashForce: 50

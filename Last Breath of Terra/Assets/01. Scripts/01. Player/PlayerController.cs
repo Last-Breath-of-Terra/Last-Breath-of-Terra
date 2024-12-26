@@ -12,6 +12,7 @@ using DG.Tweening;
 public class PlayerController : MonoBehaviour
 {
     public PlayerSO data;
+    public float hp;
     public bool isGrounded = true;
 
     [SerializeField] private float currentSpeed;
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour
     {
         currentSpeed = data.baseSpeed;
         originalScale = transform.localScale;
+        hp = data.hp;
     }
 
     void Update()

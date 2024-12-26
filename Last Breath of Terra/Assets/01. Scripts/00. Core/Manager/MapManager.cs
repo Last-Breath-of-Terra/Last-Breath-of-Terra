@@ -42,7 +42,9 @@ public class MapManager
         }
         else
         {
-            currentMapType = MAP_TYPE.Default;
+            currentMapType = MAP_TYPE.Gravel;
+
+            //currentMapType = MAP_TYPE.Default;
         }
     }
 

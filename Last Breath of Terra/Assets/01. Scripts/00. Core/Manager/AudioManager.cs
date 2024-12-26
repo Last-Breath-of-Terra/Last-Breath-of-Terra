@@ -182,6 +182,7 @@ public class AudioManager : MonoBehaviour
         AudioSource audioSource = player.GetComponent<AudioSource>();
         audioSource.Stop();
         audioSource.panStereo = panValue;
+        Debug.Log(audioName);
         audioSource.PlayOneShot(SFXAudioClips[audioName]);
     }
     public void PlayCancelable(string audioName, AudioSource audioSource, Transform soundTransform)

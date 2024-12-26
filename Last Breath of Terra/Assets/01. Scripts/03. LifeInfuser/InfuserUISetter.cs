@@ -12,6 +12,6 @@ public class InfuserUISetter : MonoBehaviour
 
     private void Awake()
     {
-        stageLifeInfuserSO.infuserStatusUI[infuserUINumber] = gameObject.GetComponent<Image>();
+        //stageLifeInfuserSO.infuserStatusUI[infuserUINumber] = gameObject.GetComponent<Image>();
     }
 }

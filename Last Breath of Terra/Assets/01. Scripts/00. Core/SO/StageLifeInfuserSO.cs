@@ -2,36 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cinemachine;
 
 
 [CreateAssetMenu(fileName = "SO_StageLifeInfuser", menuName = "ScriptableObject/StageLifeInfuser")]
 public class StageLifeInfuserSO : LifeInfuserSO
 {
-    public string stageName;
-    public Image[] infuserStatusUI;
+    //public Image[] infuserStatusUI;
     public Sprite InfuserActiveImage;
     public Sprite InfuserInactiveImage;
-    public bool[] canInfusion;
-    public GameObject[] infuser;
-    public int totalInfuser;
-    public bool[] isInfuser;
+    //public int totalInfuser;
+    //public bool[] isInfuser;
     
-    public override void StartInfusion(int infuserNumber)
+    public override void StartInfusion(int infuserNumber, GameObject targetInfuser)
     {
-        infuserActivationCanvas.gameObject.transform.position = targetInfuser.transform.position;
-        base.StartInfusion(infuserNumber);
+        InfuserManager.Instance.infuserActivationCanvas.gameObject.transform.position = targetInfuser.transform.position;
+        base.StartInfusion(infuserNumber, targetInfuser);
         AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
         
     }
-    public override void CompleteInfusion(int infuserNumber)
+    public override void CompleteInfusion(int infuserNumber, GameObject targetInfuser)
     {
         AudioManager.instance.PlayPlayer("breath_action_end", 0f);
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
-        infuserStatusUI[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.8f);
-        base.CompleteInfusion(infuserNumber);
-        isInfuser[infuserNumber] = true;
-        canInfusion[infuserNumber] = false;
-        
+        InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.8f);
+        base.CompleteInfusion(infuserNumber, targetInfuser);
+        InfuserManager.Instance.activatedInfusers[infuserNumber] = true;
     }
 
     

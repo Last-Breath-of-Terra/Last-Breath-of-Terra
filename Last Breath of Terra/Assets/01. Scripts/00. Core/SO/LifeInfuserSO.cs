@@ -11,20 +11,20 @@ using UnityEditor.Timeline.Actions;
 [CreateAssetMenu(fileName = "LifeInfuser", menuName = "ScriptableObject/LifeInfuser")]
 public class LifeInfuserSO : ScriptableObject
 {
-    public PlayerController playerController;
     public float infusionDuration;
     public float infusionWaitTime;
     public float defaultLensSize;
     public float targetLensSize;
-    public Tween currentTween;
-    public GameObject targetInfuser;
-    public GameObject player;
-    public CinemachineVirtualCamera virtualCamera;
-    public Canvas infuserActivationCanvas;
-    public GameObject InfuserStatusUI;
-    public Image infuserActivationUI;
+    
+    public Sprite InfuserActiveImage;
+    public Sprite InfuserInactiveImage;
+    //public CinemachineVirtualCamera virtualCamera;
+    //public Canvas infuserActivationCanvas;
+    //public GameObject InfuserStatusUI;
+    //public Image infuserActivationUI;
     
     public int infusedLifeCount;
+    private Tween currentTween;
 
     void Awake()
     {
@@ -34,13 +34,14 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 활성화 시작 시 호출\
      */
-    public virtual void StartInfusion(int infuserNumber)
+    public virtual void StartInfusion(int infuserNumber, GameObject targetInfuser)
     {
+        InfuserManager.Instance.infuserActivationCanvas.gameObject.transform.position = targetInfuser.transform.position;
         SetUIForInfuserStatus(true);
-        infuserActivationCanvas.gameObject.SetActive(true);
+        InfuserManager.Instance.infuserActivationCanvas.gameObject.SetActive(true);
         
-        currentTween = DOTween.To(() => 0.126f, x => infuserActivationUI.GetComponent<Image>().fillAmount = x, 0.875f, infusionDuration);
-
+        currentTween = DOTween.To(() => 0.126f, x => InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = x, 0.875f, infusionDuration);
+        AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
         //infuserActivationUI.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infuserActivationUI, infuserNumber));
     }
     public void SpawnObstacle(GameObject[] obstacleSprites)
@@ -59,19 +60,21 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 활성화 완료 시 호출
      */
-    public virtual void CompleteInfusion(int infuserNumber)
+    public virtual void CompleteInfusion(int infuserNumber, GameObject targetInfuser)
     {
+        AudioManager.instance.PlayPlayer("breath_action_end", 0f);
+        targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
+        InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.8f);
+
         Debug.Log("infusion completed");
-        
+        CinemachineVirtualCamera virtualCamera = InfuserManager.Instance.virtualCamera;
         //state 복귀
         DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
-        if (playerController != null)
-        {
-            playerController.SetCanMove(true);
-        }
         infusedLifeCount++;
-        infuserActivationCanvas.gameObject.SetActive(false);
-        infuserActivationUI.GetComponent<Image>().fillAmount = 0.126f;
+        InfuserManager.Instance.infuserActivationCanvas.gameObject.SetActive(false);
+        InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = 0.126f;
+        InfuserManager.Instance.activatedInfusers[infuserNumber] = true;
+
         SetUIForInfuserStatus(false);
     }
 
@@ -79,14 +82,14 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 활성화 중지 시 호출
      */
-    public void StopInfusion()
+    public void StopInfusion(AudioSource audioSource)
     {
         if (currentTween != null && currentTween.IsActive())
         {
             currentTween.Kill();
-            AudioManager.instance.StopCancelable(player.GetComponent<AudioSource>());
-            infuserActivationUI.GetComponent<Image>().fillAmount = 0;
-            DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
+            AudioManager.instance.StopCancelable(audioSource);
+            InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = 0;
+            DOTween.To(() => targetLensSize, x => InfuserManager.Instance. virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
             SetUIForInfuserStatus(false);
             
             Debug.Log("infusion stopped");
@@ -100,8 +103,8 @@ public class LifeInfuserSO : ScriptableObject
     {
         Debug.Log("setting UI for Infuser");
         float transparency;
-        Transform transform = InfuserStatusUI.transform;
-        Vector3 canvasScale = transform.lossyScale;
+        Transform[] infuserStatusChild = InfuserManager.Instance.infuserStatusChild;
+        Vector3 canvasScale = InfuserManager.Instance.infuserStatus.transform.lossyScale;
         if (isStart)
         {
             transparency = 0.3f;
@@ -113,9 +116,18 @@ public class LifeInfuserSO : ScriptableObject
             canvasScale = new Vector3(0.5f, 0.5f, 0.5f);
 
         }
-        DOTween.To(() => InfuserStatusUI.GetComponent<RectTransform>().localScale, x => InfuserStatusUI.GetComponent<RectTransform>().localScale = x, canvasScale, 0.1f);
+        DOTween.To(() => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale, x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x, canvasScale, 0.1f);
         //InfuserStatusUI.GetComponent<RectTransform>().localScale = canvasScale;
-        SetUITransparency(transform, transparency);
+        foreach (Transform child in infuserStatusChild)
+        {
+            Image image = child.GetComponent<Image>();
+            if (image != null && !image.gameObject.CompareTag("Cursor"))
+            {
+                child.gameObject.GetComponent<Image>().color += new Color(1f, 1f, 1f, transparency);
+            }
+            // 자식의 자식들까지 재귀적으로 탐색
+            //SetUITransparency(child, transparency);
+        }
 
     }
     public void SetUITransparency(Transform parent, float transparency)

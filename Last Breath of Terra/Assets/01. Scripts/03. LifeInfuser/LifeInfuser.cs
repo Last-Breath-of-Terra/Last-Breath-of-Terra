@@ -13,16 +13,13 @@ using UnityEngine.Rendering.Universal;
 
 public class LifeInfuser : MonoBehaviour
 {
-    //public GameObject camera;
-
-    //public Image infuserActivationUI;
-    //[FormerlySerializedAs("infusionSlider")] public Image infuserActivationUI;
-    public StageLifeInfuserSO lifeInfuserData;
+    public LifeInfuserSO lifeInfuserData;
     public GameObject[] obstacleSprites;
     public int infuserNumber;
-    
+    //public bool[] canInfusion;
     private Tween startTween;
-    
+
+    private PlayerController _playerController;
     private Material mat;
     private Tween enableTween;
     private Tween thicknessTween;
@@ -33,23 +30,15 @@ public class LifeInfuser : MonoBehaviour
         mat = GetComponent<Renderer>().material;
         mat.SetFloat("_Enabled", 0f);
         mat.SetFloat("_Thickness", 0f);
+        Debug.Log(InfuserManager.Instance.gameObject.name);
 
-        //나중에 삭제 필요
-        lifeInfuserData.canInfusion[infuserNumber] = true;
-        
-        lifeInfuserData.infuser[infuserNumber] = gameObject;
+        InfuserManager.Instance.canInfusion[infuserNumber] = true;
+        InfuserManager.Instance.infuser[infuserNumber] = gameObject;
     }
-
+    
     private void OnTriggerEnter2D(Collider2D collision) {
-        //AudioManager.instance.PlaySFX("sfx_keyboardcorrect", gameObject.GetComponent<AudioSource>());
-        if (collision.transform.CompareTag("Player") && lifeInfuserData.canInfusion[infuserNumber])
+        if (collision.transform.CompareTag("Player") && InfuserManager.Instance.canInfusion[infuserNumber])
         {
-            //gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
-
-            lifeInfuserData.targetInfuser = gameObject;
-            lifeInfuserData.player = collision.gameObject;
-            lifeInfuserData.playerController = collision.GetComponent<PlayerController>();
-            //Invoke("PrepareInfusion", lifeInfuserData.infusionWaitTime);
             startTween = DOVirtual.DelayedCall(lifeInfuserData.infusionWaitTime, () =>
             {
                 PrepareInfusion();
@@ -62,14 +51,13 @@ public class LifeInfuser : MonoBehaviour
     {
         Debug.Log("Prepare Infusion");
 
-        if (lifeInfuserData.playerController != null)
+        if (_playerController != null)
         {
             AudioManager.instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(), gameObject.transform);
-            lifeInfuserData.playerController.SetCanMove(false);
+            _playerController.SetCanMove(false);
         }
-        //lifeInfuserData.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
-        DOTween.To(() => lifeInfuserData.defaultLensSize, x => lifeInfuserData.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
-        lifeInfuserData.StartInfusion(infuserNumber);
+        DOTween.To(() => lifeInfuserData.defaultLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
+        lifeInfuserData.StartInfusion(infuserNumber, gameObject);
         lifeInfuserData.SpawnObstacle(obstacleSprites);
         
         Volume volume = Camera.main.GetComponent<Volume>();
@@ -115,7 +103,8 @@ public class LifeInfuser : MonoBehaviour
         {
             mat.SetFloat("_Clear", 0f);
 
-            lifeInfuserData.CompleteInfusion(infuserNumber);
+            lifeInfuserData.CompleteInfusion(infuserNumber, gameObject);
+            InfuserManager.Instance.canInfusion[infuserNumber] = false;
         });
     }
 
@@ -125,7 +114,11 @@ public class LifeInfuser : MonoBehaviour
         {
             startTween.Kill();
         }
-        lifeInfuserData.StopInfusion();
+        lifeInfuserData.StopInfusion(gameObject.GetComponent<AudioSource>());
+        if (_playerController != null)
+        {
+            _playerController.SetCanMove(true);
+        }
 
         TurnOffOutline();
     }

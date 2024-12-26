@@ -240,7 +240,7 @@ public class Obstacle : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.transform.CompareTag("Player"))
         {
-            lifeInfuserSO.StopInfusion();
+            lifeInfuserSO.StopInfusion(collision.GetComponent<AudioSource>());
 
             GameManager.Instance._ui.miniMapManager.ForceCloseMap();
             GameManager.Instance.playerTr.GetComponent<PlayerController>().data.hp -= 10f;

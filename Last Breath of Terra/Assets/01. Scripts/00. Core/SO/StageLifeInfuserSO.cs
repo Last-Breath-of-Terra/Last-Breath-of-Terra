@@ -8,6 +8,7 @@ using Cinemachine;
 [CreateAssetMenu(fileName = "SO_StageLifeInfuser", menuName = "ScriptableObject/StageLifeInfuser")]
 public class StageLifeInfuserSO : LifeInfuserSO
 {
+    /*
     //public Image[] infuserStatusUI;
     public Sprite InfuserActiveImage;
     public Sprite InfuserInactiveImage;
@@ -30,5 +31,5 @@ public class StageLifeInfuserSO : LifeInfuserSO
         InfuserManager.Instance.activatedInfusers[infuserNumber] = true;
     }
 
-    
+    */
 }

@@ -39,6 +39,7 @@ public class LifeInfuser : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.transform.CompareTag("Player") && InfuserManager.Instance.canInfusion[infuserNumber])
         {
+            _playerController = collision.GetComponent<PlayerController>();
             startTween = DOVirtual.DelayedCall(lifeInfuserData.infusionWaitTime, () =>
             {
                 PrepareInfusion();
@@ -106,6 +107,10 @@ public class LifeInfuser : MonoBehaviour
             lifeInfuserData.CompleteInfusion(infuserNumber, gameObject);
             InfuserManager.Instance.canInfusion[infuserNumber] = false;
         });
+        if (_playerController != null)
+        {
+            _playerController.SetCanMove(true);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)

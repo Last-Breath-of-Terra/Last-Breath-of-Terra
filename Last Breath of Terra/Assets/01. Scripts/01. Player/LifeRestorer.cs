@@ -11,7 +11,6 @@ using DG.Tweening;
 
 public class LifeRestorer : MonoBehaviour
 {
-    public PlayerSO playerData;
     public LifeInfuserSO lifeInfuserData;
     public CinemachineVirtualCamera camera;
     public CinemachineVirtualCamera infuserTrackedCamera;
@@ -49,7 +48,6 @@ public class LifeRestorer : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("hp : " + playerData.hp);
         if (collision.transform.CompareTag("Obstacle"))
         {
             //부활에 사용할 생명력?이 남아있지 않다면
@@ -57,7 +55,7 @@ public class LifeRestorer : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
-            else if (playerData.hp <= 0)
+            else if (gameObject.GetComponent<PlayerController>().hp <= 0)
             {
                 //장애물 이동 멈추기
                 obstacleManager.StopAllObstacles();

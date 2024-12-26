@@ -103,7 +103,6 @@ public class LifeInfuserSO : ScriptableObject
     {
         Debug.Log("setting UI for Infuser");
         float transparency;
-        Transform[] infuserStatusChild = InfuserManager.Instance.infuserStatusChild;
         Vector3 canvasScale = InfuserManager.Instance.infuserStatus.transform.lossyScale;
         if (isStart)
         {
@@ -117,35 +116,20 @@ public class LifeInfuserSO : ScriptableObject
 
         }
         DOTween.To(() => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale, x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x, canvasScale, 0.1f);
-        //InfuserStatusUI.GetComponent<RectTransform>().localScale = canvasScale;
-        foreach (Transform child in infuserStatusChild)
+        SetUITransparency(transparency);
+
+    }
+    public void SetUITransparency(float transparency)
+    {
+        foreach (Transform child in InfuserManager.Instance.infuserStatusChild)
         {
             Image image = child.GetComponent<Image>();
-            if (image != null && !image.gameObject.CompareTag("Cursor"))
+            if (image != null)// && !image.gameObject.CompareTag("Cursor"))
             {
                 child.gameObject.GetComponent<Image>().color += new Color(1f, 1f, 1f, transparency);
             }
             // 자식의 자식들까지 재귀적으로 탐색
             //SetUITransparency(child, transparency);
-        }
-
-    }
-    public void SetUITransparency(Transform parent, float transparency)
-    {
-        // 부모가 null이 아니면 진행
-        if (parent == null)
-            return;
-
-        // 자식 오브젝트들을 모두 탐색
-        foreach (Transform child in parent)
-        {
-            Image image = child.GetComponent<Image>();
-            if (image != null && !image.gameObject.CompareTag("Cursor"))
-            {
-                child.gameObject.GetComponent<Image>().color += new Color(1f, 1f, 1f, transparency);
-            }
-            // 자식의 자식들까지 재귀적으로 탐색
-            SetUITransparency(child, transparency);
         }
     }
 

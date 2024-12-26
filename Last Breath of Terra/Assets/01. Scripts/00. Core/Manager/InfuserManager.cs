@@ -44,7 +44,7 @@ public class InfuserManager : MonoBehaviour
             Image image = child.GetComponent<Image>();
             if (image != null)
             {
-                child.gameObject.GetComponent<Image>().color += new Color(1f, 1f, 1f, 0.3f);
+                child.gameObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.1f);
             }
         }
     }

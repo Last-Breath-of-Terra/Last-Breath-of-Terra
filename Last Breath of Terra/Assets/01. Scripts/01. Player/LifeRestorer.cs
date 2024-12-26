@@ -12,7 +12,7 @@ using DG.Tweening;
 public class LifeRestorer : MonoBehaviour
 {
     public PlayerSO playerData;
-    public StageLifeInfuserSO lifeInfuserData;
+    public LifeInfuserSO lifeInfuserData;
     public CinemachineVirtualCamera camera;
     public CinemachineVirtualCamera infuserTrackedCamera;
     public ObstacleManager obstacleManager;
@@ -35,10 +35,11 @@ public class LifeRestorer : MonoBehaviour
     {
         InfuserManager.Instance.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
         Transform[] transform = InfuserManager.Instance.infuserStatusChild;
+        /*
         for (int i = 0; i < transform.Length; i++)
         {
             lifeInfuserData.SetUITransparency(transform[i], -0.9f);
-        }
+        }*/
         //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, -0.9f);
         //lifeInfuserData.SetUIForInfuserStatus(false);
 
@@ -67,12 +68,12 @@ public class LifeRestorer : MonoBehaviour
                 //UpdateRectSize(infuserNumber, newSize);
                 //UI 활성화
                 DOTween.To(() => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale, x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x, new Vector3(1f, 1f, 1f), 0.1f);
-                //lifeInfuserData.SetUIForInfuserStatus(true);
+                lifeInfuserData.SetUIForInfuserStatus(true);
                 //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 1.0f);
                 //lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
-                for (int i = 0; i + infuserNumber< InfuserManager.Instance.activatedInfusers.Length; i++)
+                for (int i = 0; i + infuserNumber < InfuserManager.Instance.activatedInfusers.Length; i++)
                 {
-                    if (!InfuserManager.Instance.activatedInfusers[i + infuserNumber])
+                    if (InfuserManager.Instance.activatedInfusers[i + infuserNumber])
                     {
                         if (i + infuserNumber <= InfuserManager.Instance.activatedInfusers.Length)
                         {
@@ -133,7 +134,7 @@ public class LifeRestorer : MonoBehaviour
         AudioManager.instance.PlayPlayer("ui_click_fire_1", -1f);
         for (int i = 1; infuserNumber - i >= 0; i++)
         {
-            if (!InfuserManager.Instance.activatedInfusers[infuserNumber - i])
+            if (InfuserManager.Instance.activatedInfusers[infuserNumber - i])
             {
                 Debug.Log("leftSelect");
                 SelectReviveLife(-i);
@@ -147,7 +148,7 @@ public class LifeRestorer : MonoBehaviour
         AudioManager.instance.PlayPlayer("ui_click_fire_1", 1f);
         for (int i = 1; i + infuserNumber < InfuserManager.Instance.activatedInfusers.Length; i++)
         {
-            if (!InfuserManager.Instance.activatedInfusers[i + infuserNumber])
+            if (InfuserManager.Instance.activatedInfusers[i + infuserNumber])
             {
                 Debug.Log("rightSelect");
                 SelectReviveLife(i);
@@ -168,7 +169,7 @@ public class LifeRestorer : MonoBehaviour
         InfuserManager.Instance.canInfusion[infuserNumber] = true;
 
         //UI 비활성화
-        //lifeInfuserData.SetUIForInfuserStatus(false);
+        lifeInfuserData.SetUIForInfuserStatus(false);
         //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 0.2f);
         InfuserManager.Instance.infuserStatusChild[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
         InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.1f);

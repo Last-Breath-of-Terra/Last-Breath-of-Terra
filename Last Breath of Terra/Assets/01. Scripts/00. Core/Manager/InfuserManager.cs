@@ -32,9 +32,9 @@ public class InfuserManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        infuser = new GameObject[3];
-        activatedInfusers = new bool[3];
-        canInfusion = new bool[3];
+        infuser = new GameObject[10];
+        activatedInfusers = new bool[10];
+        canInfusion = new bool[10];
     }
 
     private void Start()

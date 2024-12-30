@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1de2538842d84eea998bf314cfb95c6, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  hp: 20
-  baseSpeed: 0.5
-  maxSpeed: 3
+  hp: -20
+  baseSpeed: 2
+  maxSpeed: 8
   accelerationTime: 3
-  jumpForce: 5.13
-  dashForce: 10
+  jumpForce: 17
+  dashForce: 50

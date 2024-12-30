@@ -2175,6 +2175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 45b86c0c660e9429282d8e93a3edfec3, type: 2}
+  isGrounded: 1
   currentSpeed: 0
 --- !u!95 &243389119
 Animator:

@@ -102,6 +102,7 @@ MonoBehaviour:
   lifeInfuserData: {fileID: 11400000, guid: 8fb6ba2920c5aa646bc77e9de7c28c8c, type: 2}
   obstacleSprites: []
   infuserNumber: 0
+  infuserType: 2
 --- !u!82 &3060583005976478257
 AudioSource:
   m_ObjectHideFlags: 0

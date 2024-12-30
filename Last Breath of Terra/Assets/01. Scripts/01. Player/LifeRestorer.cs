@@ -161,7 +161,7 @@ public class LifeRestorer : MonoBehaviour
         //부활사운드
         AudioManager.instance.PlayPlayer("revival", 0f);
         //비활성화
-        InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage;
+        InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage[InfuserManager.Instance.infuser[infuserNumber].GetComponent<LifeInfuser>().infuserType];
         InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.5f);
         InfuserManager.Instance.activatedInfusers[infuserNumber] = false;
         InfuserManager.Instance.canInfusion[infuserNumber] = true;

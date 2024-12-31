@@ -37,15 +37,15 @@ public class TeleportManager : MonoBehaviour
 
     public void ChangeCamera(int index)
     {
-        var confiner = virtualCamera.GetComponent<CinemachineConfiner>();
+        var confiner = virtualCamera.GetComponent<CinemachineConfiner2D>();
         if (confiner == null)
         {
             // CinemachineConfiner가 없다면 추가하기
-            confiner = virtualCamera.gameObject.AddComponent<CinemachineConfiner>();
+            confiner = virtualCamera.gameObject.AddComponent<CinemachineConfiner2D>();
             Debug.Log("CinemachineConfiner component added.");
         }
 
-        virtualCamera.GetComponent<CinemachineConfiner>().m_BoundingShape2D = camBorders[index];
+        virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = camBorders[index];
     }
 
     public void CoFade(int targetID)

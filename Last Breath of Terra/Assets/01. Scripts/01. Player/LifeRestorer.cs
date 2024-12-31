@@ -8,6 +8,8 @@ using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq;
+
 
 public class LifeRestorer : MonoBehaviour
 {
@@ -51,12 +53,14 @@ public class LifeRestorer : MonoBehaviour
         if (collision.transform.CompareTag("Obstacle"))
         {
             //부활에 사용할 생명력?이 남아있지 않다면
-            if (lifeInfuserData.infusedLifeCount <= 0)
+            if (!InfuserManager.Instance.activatedInfusers.Any(infuser => infuser))
             {
+                Debug.Log("Activating obstacle");
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
             else if (gameObject.GetComponent<PlayerController>().hp <= 0)
             {
+                Debug.Log("Deactivating obstacle");
                 //장애물 이동 멈추기
                 obstacleManager.StopAllObstacles();
                 //마우스 조작 변경

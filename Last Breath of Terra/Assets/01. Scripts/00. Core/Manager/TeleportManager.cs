@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 public class TeleportManager : MonoBehaviour
 {
@@ -11,6 +13,8 @@ public class TeleportManager : MonoBehaviour
     public TeleportSO teleportSO;
     public PolygonCollider2D[] camBorders;
     public CinemachineVirtualCamera virtualCamera;
+    public Image fadeImage;
+    public float fadeDuration = 1f;
 
     private GameObject player;
 
@@ -26,6 +30,11 @@ public class TeleportManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+    }
+
     public void ChangeCamera(int index)
     {
         var confiner = virtualCamera.GetComponent<CinemachineConfiner>();
@@ -35,6 +44,37 @@ public class TeleportManager : MonoBehaviour
             confiner = virtualCamera.gameObject.AddComponent<CinemachineConfiner>();
             Debug.Log("CinemachineConfiner component added.");
         }
+
         virtualCamera.GetComponent<CinemachineConfiner>().m_BoundingShape2D = camBorders[index];
     }
+
+    public void CoFade(int targetID)
+    {
+        StartCoroutine(Fade(targetID));
+        
+    }
+
+    IEnumerator Fade(int targetID)
+    {
+        float f = 0f;
+        while (f <= 1f)
+        {
+            f += 0.01f;
+            yield return new WaitForSeconds(0.01f);
+            fadeImage.color = new Color(0f, 0f, 0f, f);
+        }
+        player.transform.position = teleportSO.portals[targetID];
+        ChangeCamera(targetID / 2);
+        while (f > 0f)
+        {
+            f -= 0.01f;
+            yield return new WaitForSeconds(0.01f);
+            fadeImage.color = new Color(0f, 0f, 0f, f);
+        }
+
+        fadeImage.color = new Color(0f, 0f, 0f, 0f);
+        
+        
+    }
+    
 }

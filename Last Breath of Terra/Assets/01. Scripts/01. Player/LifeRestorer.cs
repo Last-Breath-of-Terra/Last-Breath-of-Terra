@@ -8,6 +8,8 @@ using Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq;
+
 
 public class LifeRestorer : MonoBehaviour
 {
@@ -51,12 +53,14 @@ public class LifeRestorer : MonoBehaviour
         if (collision.transform.CompareTag("Obstacle"))
         {
             //부활에 사용할 생명력?이 남아있지 않다면
-            if (lifeInfuserData.infusedLifeCount <= 0)
+            if (!InfuserManager.Instance.activatedInfusers.Any(infuser => infuser))
             {
+                Debug.Log("Activating obstacle");
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
             else if (gameObject.GetComponent<PlayerController>().hp <= 0)
             {
+                Debug.Log("Deactivating obstacle");
                 //장애물 이동 멈추기
                 obstacleManager.StopAllObstacles();
                 //마우스 조작 변경
@@ -161,7 +165,7 @@ public class LifeRestorer : MonoBehaviour
         //부활사운드
         AudioManager.instance.PlayPlayer("revival", 0f);
         //비활성화
-        InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage;
+        InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage[InfuserManager.Instance.infuser[infuserNumber].GetComponent<LifeInfuser>().infuserType];
         InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.5f);
         InfuserManager.Instance.activatedInfusers[infuserNumber] = false;
         InfuserManager.Instance.canInfusion[infuserNumber] = true;

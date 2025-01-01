@@ -11,7 +11,7 @@ using UnityEngine.InputSystem;
 public class Obstacle : MonoBehaviour
 {
     public ObstacleSO data;
-    public StageLifeInfuserSO lifeInfuserSO;
+    public LifeInfuserSO lifeInfuserSO;
     public Transform[] attackPoints;
     public Transform timingIndicator;
     public GameObject attackGroup;

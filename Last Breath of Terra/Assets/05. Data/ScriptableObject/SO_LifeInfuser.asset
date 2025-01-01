@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce44423cc1ee96f448f59b6a35759ef3, type: 3}
   m_Name: SO_LifeInfuser
   m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
   infusionDuration: 10
   infusionWaitTime: 2
-  defaultLensSize: 1
-  targetLensSize: 1.65
-  infusionActiveUI: {fileID: 21300000, guid: cea2f2249a6912740a590516732f6d64, type: 3}
-  infusionInactiveUI: {fileID: 21300000, guid: 80f0eab198b8a134bab36bdd001436fa, type: 3}
-  virtualCamera: {fileID: 0}
-  infuserActivationCanvas: {fileID: 0}
-  InfuserStatusUI: {fileID: 0}
-  infuserActivationUI: {fileID: 0}
-  infusedLifeCount: 30
+  defaultLensSize: 8
+  targetLensSize: 10
+  InfuserActiveImage:
+  - {fileID: 21300000, guid: fdb8ecf44b96c714694acf68a49e252d, type: 3}
+  - {fileID: 21300000, guid: 09e5efa0b12810a40bfdc3f91801f23c, type: 3}
+  - {fileID: 21300000, guid: 6a2f2a31a9249cc478831e4e23a6dd02, type: 3}
+  InfuserInactiveImage:
+  - {fileID: 21300000, guid: 8ccd2924de4a98a44b672148ac160d01, type: 3}
+  - {fileID: 21300000, guid: 6a68f6fcc57aa534c86245fd989345d5, type: 3}
+  - {fileID: 21300000, guid: 426457d2095d7df469b4c973c9a7f1af, type: 3}
+  infusedLifeCount: 37

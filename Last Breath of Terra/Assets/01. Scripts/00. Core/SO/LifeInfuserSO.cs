@@ -16,8 +16,8 @@ public class LifeInfuserSO : ScriptableObject
     public float defaultLensSize;
     public float targetLensSize;
     
-    public Sprite InfuserActiveImage;
-    public Sprite InfuserInactiveImage;
+    public Sprite[] InfuserActiveImage;
+    public Sprite[] InfuserInactiveImage;
     //public CinemachineVirtualCamera virtualCamera;
     //public Canvas infuserActivationCanvas;
     //public GameObject InfuserStatusUI;
@@ -60,10 +60,10 @@ public class LifeInfuserSO : ScriptableObject
     /*
      * 활성화 완료 시 호출
      */
-    public virtual void CompleteInfusion(int infuserNumber, GameObject targetInfuser)
+    public virtual void CompleteInfusion(int infuserNumber, GameObject targetInfuser, int infuserType)
     {
         AudioManager.instance.PlayPlayer("breath_action_end", 0f);
-        targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage;
+        targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage[infuserType];
         InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.8f);
 
         Debug.Log("infusion completed");

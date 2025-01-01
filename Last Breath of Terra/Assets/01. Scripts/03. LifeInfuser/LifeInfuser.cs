@@ -16,6 +16,7 @@ public class LifeInfuser : MonoBehaviour
     public LifeInfuserSO lifeInfuserData;
     public GameObject[] obstacleSprites;
     public int infuserNumber;
+    public int infuserType;
     //public bool[] canInfusion;
     private Tween startTween;
 
@@ -104,7 +105,7 @@ public class LifeInfuser : MonoBehaviour
         {
             mat.SetFloat("_Clear", 0f);
 
-            lifeInfuserData.CompleteInfusion(infuserNumber, gameObject);
+            lifeInfuserData.CompleteInfusion(infuserNumber, gameObject, infuserType);
             InfuserManager.Instance.canInfusion[infuserNumber] = false;
         });
         if (_playerController != null)

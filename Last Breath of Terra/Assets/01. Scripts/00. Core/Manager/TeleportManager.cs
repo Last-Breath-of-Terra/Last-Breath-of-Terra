@@ -65,6 +65,7 @@ public class TeleportManager : MonoBehaviour
         }
         player.transform.position = teleportSO.portals[targetID];
         ChangeCamera(targetID / 2);
+        yield return new WaitForSeconds(0.5f);
         while (f > 0f)
         {
             f -= 0.01f;

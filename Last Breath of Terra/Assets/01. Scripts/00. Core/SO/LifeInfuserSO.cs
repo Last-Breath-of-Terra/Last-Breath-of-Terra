@@ -22,6 +22,10 @@ public class LifeInfuserSO : ScriptableObject
     //public Canvas infuserActivationCanvas;
     //public GameObject InfuserStatusUI;
     //public Image infuserActivationUI;
+    public Sprite activeIcon;
+    public Sprite inactiveIcon;
+    public Material defaultMaterial;
+    public Material sacrificeMaterial;
     
     public int infusedLifeCount;
     private Tween currentTween;
@@ -64,6 +68,7 @@ public class LifeInfuserSO : ScriptableObject
     {
         AudioManager.instance.PlayPlayer("breath_action_end", 0f);
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage[infuserType];
+        targetInfuser.GetComponent<SpriteRenderer>().material = sacrificeMaterial;
         InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1, 1, 1, 0.8f);
 
         Debug.Log("infusion completed");

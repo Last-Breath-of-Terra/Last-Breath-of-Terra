@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
 
     public UIManager _ui;
     public ObstacleManager _obstacleManager;
+    public ShaderManager _shaderManager;
     
     public Transform playerTr;
 
@@ -66,6 +67,10 @@ public class GameManager : MonoBehaviour
         if (_obstacleManager == null)
         {
             _obstacleManager = GameObject.FindObjectOfType<ObstacleManager>();
+        }
+        if (_shaderManager == null)
+        {
+            _shaderManager = GameObject.FindObjectOfType<ShaderManager>();
         }
     }
 

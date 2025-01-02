@@ -1,21 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MinimapObjectController : MonoBehaviour
 {
-    private Material material;
+    private Image image;
 
     private void Awake()
     {
-        material = GetComponent<SpriteRenderer>().material;
+        image = GetComponent<Image>();
     }
 
-    public void SetActive(bool isActive)
+    public void SetSprite(Sprite sprite)
     {
-        if (material != null)
+        if (image != null)
         {
-            material.SetFloat("_isActive", isActive ? 1f : 0f);
+            image.sprite = sprite;
         }
     }
 }

@@ -46,7 +46,7 @@ public class LifeInfuser : MonoBehaviour
                 PrepareInfusion();
             });
 
-            TurnOnOutline();
+            GameManager.Instance._shaderManager.TurnOnOutline(mat, 3f, 0.5f);
         }
     }
     private void PrepareInfusion()
@@ -62,56 +62,31 @@ public class LifeInfuser : MonoBehaviour
         lifeInfuserData.StartInfusion(infuserNumber, gameObject);
         lifeInfuserData.SpawnObstacle(obstacleSprites);
         
-        Volume volume = Camera.main.GetComponent<Volume>();
-        if (volume.profile.TryGet(out bloom))
-        {
-            DOTween.To(() => bloom.scatter.value, 
-                    x => bloom.scatter.value = x, 
-                    1f, // 최종 목표값: 1.0
-                    lifeInfuserData.infusionDuration); // Duration 설정
-        }
-        DOTween.To(
-            () => mat.GetFloat("_Thickness"),
-            x => mat.SetFloat("_Thickness", x),
-            7f,
-            lifeInfuserData.infusionDuration
+        GameManager.Instance._shaderManager.PlayInfusionSequence(
+            mat, 
+            Camera.main.GetComponent<Volume>(), 
+            lifeInfuserData.infusionDuration, 
+            CompleteInfusion
         );
-
-        DOVirtual.DelayedCall(lifeInfuserData.infusionDuration, CompleteInfusion);
-
     }
 
     private void CompleteInfusion()
     {
-        // Infusion 완료 로직
-        Color baseColor = mat.GetColor("_AllGlowColor");
-
-        Volume volume = Camera.main.GetComponent<Volume>();
-        Bloom bloom = null;
-
-        if (volume.profile.TryGet(out bloom))
+        Debug.Log("완료되었습니당!");
+        GameManager.Instance._shaderManager.CompleteInfusionEffect(
+        mat,
+        Camera.main.GetComponent<Volume>(),
+        () =>
         {
-            DOTween.To(() => bloom.scatter.value, 
-                    x => bloom.scatter.value = x, 
-                    0.6f,
-                    1f);
-        }
-
-        DG.Tweening.Sequence seq = DOTween.Sequence()
-        .Append(DOTween.To(() => mat.GetFloat("_Enabled"), x => mat.SetFloat("_Enabled", x), 0, 0.1f))
-        .Append(DOTween.To(() => mat.GetFloat("_Clear"), x => mat.SetFloat("_Clear", x), 1, 0.1f))
-        .Append(DOTween.To(() => 1f, val => mat.SetColor("_AllGlowColor", baseColor * val), 1.5f, 2f))
-        .OnComplete(() =>
-        {
-            mat.SetFloat("_Clear", 0f);
-
+            // Infusion 완료 후 처리
             lifeInfuserData.CompleteInfusion(infuserNumber, gameObject, infuserType);
             InfuserManager.Instance.canInfusion[infuserNumber] = false;
+
+            if (_playerController != null)
+            {
+                _playerController.SetCanMove(true);
+            }
         });
-        if (_playerController != null)
-        {
-            _playerController.SetCanMove(true);
-        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -126,44 +101,6 @@ public class LifeInfuser : MonoBehaviour
             _playerController.SetCanMove(true);
         }
 
-        TurnOffOutline();
-    }
-
-    // 외곽선 천천히 켜기 (Enable=1, Thickness=3)
-    private void TurnOnOutline()
-    {
-        if (mat == null) return;
-
-        enableTween?.Kill();
-        thicknessTween?.Kill();
-
-        enableTween = DOTween.To(() => mat.GetFloat("_Enabled"),
-                                 x => mat.SetFloat("_Enabled", x),
-                                 1f,
-                                 0.5f);
-
-        thicknessTween = DOTween.To(() => mat.GetFloat("_Thickness"),
-                                    x => mat.SetFloat("_Thickness", x),
-                                    1.5f,
-                                    0.5f);
-    }
-
-    // 외곽선 천천히 끄기 (Enable=0, Thickness=0)
-    private void TurnOffOutline()
-    {
-        if (mat == null) return;
-
-        enableTween?.Kill();
-        thicknessTween?.Kill();
-
-        enableTween = DOTween.To(() => mat.GetFloat("_Enabled"),
-                                 x => mat.SetFloat("_Enabled", x),
-                                 0f,
-                                 0.5f);
-
-        thicknessTween = DOTween.To(() => mat.GetFloat("_Thickness"),
-                                    x => mat.SetFloat("_Thickness", x),
-                                    0f,
-                                    0.5f);
+        GameManager.Instance._shaderManager.TurnOffOutline(mat, 0.5f);
     }
 }

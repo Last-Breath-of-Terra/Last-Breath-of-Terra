@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using System.Collections;
 
 /// <summary>
 /// 미니맵 활성화/비활성화 상태를 관리하고,
@@ -29,9 +28,10 @@ public class MiniMapManager : MonoBehaviour
     [SerializeField] private Transform bottom;
     [SerializeField] private Image minimapImage;
     [SerializeField] private Image minimapPlayerImage;
-    [SerializeField] private GameObject minimapObjectIconPrefab;
+    [SerializeField] private GameObject minimapIconPrefab;
 
-    private List<GameObject> minimapObjectIcons = new List<GameObject>();
+    private List<Image> minimapIcons = new List<Image>();
+    
 
     private void OnEnable()
     {
@@ -53,7 +53,7 @@ public class MiniMapManager : MonoBehaviour
         {
             if (InfuserManager.Instance != null && InfuserManager.Instance.infuser != null && InfuserManager.Instance.infuser.Length > 0)
             {
-                //InitializeMinimapObjects();
+                InitializeMinimapObjects();
                 isInitialized = true;
             }
         }
@@ -61,7 +61,7 @@ public class MiniMapManager : MonoBehaviour
         if (!isFullMapActive)
         {
             UpdatePlayerIconPosition();
-            //UpdateObjectIcons();
+            UpdateObjectIcons();
         }
     }
 
@@ -95,41 +95,85 @@ public class MiniMapManager : MonoBehaviour
         minimapPlayerImage.rectTransform.anchoredPosition = new Vector2(minimapImage.rectTransform.sizeDelta.x * normalPos.x, minimapImage.rectTransform.sizeDelta.y * normalPos.y);
     }
 
-    // private void InitializeMinimapObjects()
-    // {
-    //     for (int i = 0; i < InfuserManager.Instance.infuser.Length; i++)
-    //     {
-    //         if (InfuserManager.Instance.infuser[i] != null)
-    //         {
-    //             GameObject icon = Instantiate(minimapObjectIconPrefab, minimapImage.transform);
-    //             minimapObjectIcons.Add(icon);
+    private void InitializeMinimapObjects()
+    {
+        for (int i = 0; i < InfuserManager.Instance.infuser.Length; i++)
+        {
+            if (InfuserManager.Instance.infuser[i] != null)
+            {
+                GameObject iconObject = Instantiate(minimapIconPrefab, minimapImage.transform);
+                Image iconImage = iconObject.GetComponent<Image>();
+                if (iconImage != null)
+                {
+                    bool isActive = InfuserManager.Instance.activatedInfusers[i];
+                    iconImage.sprite = isActive
+                        ? InfuserManager.Instance.LifeInfuserSO.activeIcon
+                        : InfuserManager.Instance.LifeInfuserSO.inactiveIcon;
 
-    //             UpdateObjectIconPosition(icon, InfuserManager.Instance.infuser[i].transform.position);
+                    minimapIcons.Add(iconImage);
 
-    //             MinimapObjectController controller = icon.GetComponent<MinimapObjectController>();
-    //             controller.SetActive(InfuserManager.Instance.activatedInfusers[i]);
-    //         }
-    //     }
-    // }
+                    UpdateObjectIconPosition(iconObject, InfuserManager.Instance.infuser[i].transform.position);
+                }
+            }
+        }
+    }
 
-    // private void UpdateObjectIcons()
-    // {
-    //     for (int i = 0; i < minimapObjectIcons.Count; i++)
-    //     {
-    //         MinimapObjectController controller = minimapObjectIcons[i].GetComponent<MinimapObjectController>();
-    //         controller.SetActive(InfuserManager.Instance.activatedInfusers[i]);
-    //     }
-    // }
+    private void UpdateObjectIcons()
+    {
+        for (int i = 0; i < minimapIcons.Count; i++)
+        {
+            if (InfuserManager.Instance.infuser[i] != null)
+            {
+                bool isActive = InfuserManager.Instance.activatedInfusers[i];
 
-    // private void UpdateObjectIconPosition(GameObject icon, Vector3 worldPosition)
-    // {
-    //     Vector2 mapArea = new Vector2(Vector3.Distance(left.position, right.position), Vector3.Distance(bottom.position, top.position));
-    //     Vector2 objPos = new Vector2(Vector3.Distance(left.position, new Vector3(worldPosition.x, 0f, 0f)), Vector3.Distance(bottom.position, new Vector3(0f, worldPosition.y, 0f)));
-    //     Vector2 normalPos = new Vector2(objPos.x / mapArea.x, objPos.y / mapArea.y);
+                minimapIcons[i].GetComponent<Image>().sprite = isActive
+                    ? InfuserManager.Instance.LifeInfuserSO.activeIcon
+                    : InfuserManager.Instance.LifeInfuserSO.inactiveIcon;
+            }
+        }
+        // for (int i = 0; i < minimapObjectIcons.Count; i++)
+        // {
+        //     MinimapObjectController controller = minimapObjectIcons[i].GetComponent<MinimapObjectController>();
+        //     controller.SetActive(InfuserManager.Instance.activatedInfusers[i]);
+        // }
+    }
 
-    //     icon.GetComponent<RectTransform>().anchoredPosition = new Vector2(
-    //         minimapImage.rectTransform.sizeDelta.x * normalPos.x,
-    //         minimapImage.rectTransform.sizeDelta.y * normalPos.y
-    //     );
-    // }
+    private void UpdateObjectIconPosition(GameObject icon, Vector3 worldPosition)
+    {
+        // Vector2 mapArea = new Vector2(Vector3.Distance(left.position, right.position), Vector3.Distance(bottom.position, top.position));
+        // Vector2 objPos = new Vector2(Vector3.Distance(left.position, new Vector3(worldPosition.x, 0f, 0f)), Vector3.Distance(bottom.position, new Vector3(0f, worldPosition.y, 0f)));
+        // Vector2 normalPos = new Vector2(objPos.x / mapArea.x, objPos.y / mapArea.y);
+
+        // icon.GetComponent<RectTransform>().anchoredPosition = new Vector2(
+        //     minimapImage.rectTransform.sizeDelta.x * normalPos.x,
+        //     minimapImage.rectTransform.sizeDelta.y * normalPos.y
+        // );
+        Vector2 mapArea = new Vector2(
+        right.position.x - left.position.x, 
+        top.position.y - bottom.position.y
+        );
+
+        // 월드 좌표 -> 미니맵 상대 좌표 변환
+        Vector2 objPos = new Vector2(
+            worldPosition.x - left.position.x, 
+            worldPosition.y - bottom.position.y
+        );
+
+        // 정규화된 좌표 계산
+        Vector2 normalPos = new Vector2(
+            objPos.x / mapArea.x, 
+            objPos.y / mapArea.y
+        );
+
+        // UI 좌표 변환
+        RectTransform iconRect = icon.GetComponent<RectTransform>();
+        if (iconRect != null)
+        {
+            Vector2 minimapSize = minimapImage.rectTransform.sizeDelta; // 크기 캐싱
+            iconRect.anchoredPosition = new Vector2(
+                minimapSize.x * normalPos.x, 
+                minimapSize.y * normalPos.y
+            );
+        }
+    }
 }

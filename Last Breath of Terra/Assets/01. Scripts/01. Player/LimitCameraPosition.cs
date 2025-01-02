@@ -50,11 +50,11 @@ public class LimitCameraPosition : MonoBehaviour
         {
             if (gameObject.CompareTag("LockXPositon"))
             {
-                LockCameraXPosition();
+                UnlockCameraXPosition();
             }
             else if (gameObject.CompareTag("LockYPositon"))
             {
-                LockCameraYPosition();
+                UnlockCameraYPosition();
             }
             else if (gameObject.CompareTag("ChangeLensSize"))
             {

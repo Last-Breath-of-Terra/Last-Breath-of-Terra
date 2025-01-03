@@ -9,7 +9,8 @@ using Unity.VisualScripting;
 using UnityEngine.UI;
 using DG.Tweening;
 using System.Linq;
-
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class LifeRestorer : MonoBehaviour
 {
@@ -140,6 +141,11 @@ public class LifeRestorer : MonoBehaviour
             {
                 Debug.Log("leftSelect");
                 SelectReviveLife(-i);
+
+                GameObject infuser = InfuserManager.Instance.infuser[infuserNumber];
+                infuser.GetComponent<SpriteRenderer>().material.SetFloat("_Enabled", 1f);
+                InfuserManager.Instance.infuser[infuserNumber+1].GetComponent<SpriteRenderer>().material.SetFloat("_Enabled", 0f);
+
                 break;
             }
         }
@@ -154,6 +160,11 @@ public class LifeRestorer : MonoBehaviour
             {
                 Debug.Log("rightSelect");
                 SelectReviveLife(i);
+
+                GameObject infuser = InfuserManager.Instance.infuser[infuserNumber];
+                infuser.GetComponent<SpriteRenderer>().material.SetFloat("_Enabled", 1f);
+                InfuserManager.Instance.infuser[infuserNumber-1].GetComponent<SpriteRenderer>().material.SetFloat("_Enabled", 0f);
+
                 break;
             }
         }
@@ -166,6 +177,7 @@ public class LifeRestorer : MonoBehaviour
         AudioManager.instance.PlayPlayer("revival", 0f);
         //비활성화
         InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage[InfuserManager.Instance.infuser[infuserNumber].GetComponent<LifeInfuser>().infuserType];
+        InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().material = lifeInfuserData.defaultMaterial;
         InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.5f);
         InfuserManager.Instance.activatedInfusers[infuserNumber] = false;
         InfuserManager.Instance.canInfusion[infuserNumber] = true;
@@ -196,6 +208,13 @@ public class LifeRestorer : MonoBehaviour
 
     public void SelectReviveLife(int amount)
     {
+        GameObject selectedInfuser = InfuserManager.Instance.infuser[infuserNumber];
+        GameManager.Instance._shaderManager.LifeSacrificeEffect(
+            selectedInfuser.GetComponent<SpriteRenderer>().material, 
+            Camera.main.GetComponent<Volume>(), 
+            lifeInfuserData.infusionDuration
+        );
+
         //기존 값
         UpdateRectSize(infuserNumber, defaultSize);
         InfuserManager.Instance.infuserStatusChild[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);

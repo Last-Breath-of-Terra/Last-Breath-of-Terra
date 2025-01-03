@@ -24,4 +24,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 8ccd2924de4a98a44b672148ac160d01, type: 3}
   - {fileID: 21300000, guid: 6a68f6fcc57aa534c86245fd989345d5, type: 3}
   - {fileID: 21300000, guid: 426457d2095d7df469b4c973c9a7f1af, type: 3}
-  infusedLifeCount: 37
+  activeIcon: {fileID: 21300000, guid: 2f5fd1488aaf7f84a89ed3d8f113bfde, type: 3}
+  inactiveIcon: {fileID: 21300000, guid: 854edce3c4b675a42ad20820db641384, type: 3}
+  defaultMaterial: {fileID: 2100000, guid: f8a9ab2961abd4a55b8e537d72217c7b, type: 2}
+  sacrificeMaterial: {fileID: 2100000, guid: ee4caaf5cd06a41f28be458446ab4421, type: 2}
+  infusedLifeCount: 38

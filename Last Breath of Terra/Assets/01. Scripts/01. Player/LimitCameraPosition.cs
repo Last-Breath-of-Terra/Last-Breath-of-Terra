@@ -87,6 +87,6 @@ public class LimitCameraPosition : MonoBehaviour
     private void ChangeCameraLensSize(float targetLensSize)
     {
         float defaultLensSize = virtualCamera.m_Lens.OrthographicSize;
-        DOTween.To(() => defaultLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, targetLensSize, 0.3f);
+        DOTween.To(() => defaultLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, targetLensSize, 1.5f);
     }
 }

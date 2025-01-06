@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Image = UnityEngine.UI.Image;
+using DG.Tweening;
 
 public class TeleportManager : MonoBehaviour
 {
@@ -62,6 +63,8 @@ public class TeleportManager : MonoBehaviour
 
     IEnumerator Fade(int targetID, Vector3 teleportDirection)
     {
+        DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
+
         float f = 0f;
         while (f <= 1f)
         {
@@ -69,7 +72,9 @@ public class TeleportManager : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
             fadeImage.color = new Color(0f, 0f, 0f, f);
         }
-        player.transform.position = teleportSet[targetID].transform.position + 5 * teleportDirection;
+        //animator.SetBool("MoveToPortal", false);
+        animator.Play("Idle");
+        player.transform.position = teleportSet[targetID].transform.position + 2 * teleportDirection;
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
         yield return new WaitForSeconds(0.5f);
         while (f > 0f)
@@ -81,13 +86,15 @@ public class TeleportManager : MonoBehaviour
 
         fadeImage.color = new Color(0f, 0f, 0f, 0f);
         
-        
+        player.GetComponent<PlayerController>().canMove = true;
+
     }
 
     public void MoveToPortal()
     {
+        player.GetComponent<PlayerController>().canMove = false;
         Debug.Log("MoveToPortal called");
-        animator.SetBool("Walk", true);
+        animator.SetBool("MoveToPortal", true);
 
         
     }

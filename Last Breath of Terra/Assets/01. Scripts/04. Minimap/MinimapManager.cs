@@ -61,7 +61,12 @@ public class MiniMapManager : MonoBehaviour
         if (!isFullMapActive)
         {
             UpdatePlayerIconPosition();
+
             UpdateObjectIcons();
+
+            for (int i = 0; i < InfuserManager.Instance.infuser.Length; i++){
+                UpdateObjectIconPosition(InfuserManager.Instance.infuser[i], InfuserManager.Instance.infuser[i].transform.position);
+            }
         }
     }
 
@@ -161,15 +166,15 @@ public class MiniMapManager : MonoBehaviour
 
         // 정규화된 좌표 계산
         Vector2 normalPos = new Vector2(
-            objPos.x / mapArea.x, 
-            objPos.y / mapArea.y
+            Mathf.Clamp01(objPos.x / mapArea.x),
+            Mathf.Clamp01(objPos.y / mapArea.y)
         );
 
         // UI 좌표 변환
         RectTransform iconRect = icon.GetComponent<RectTransform>();
         if (iconRect != null)
         {
-            Vector2 minimapSize = minimapImage.rectTransform.sizeDelta; // 크기 캐싱
+            Vector2 minimapSize = minimapImage.rectTransform.sizeDelta;
             iconRect.anchoredPosition = new Vector2(
                 minimapSize.x * normalPos.x, 
                 minimapSize.y * normalPos.y

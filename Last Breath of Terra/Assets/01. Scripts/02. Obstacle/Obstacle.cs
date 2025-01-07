@@ -16,6 +16,7 @@ public class Obstacle : MonoBehaviour
     public Transform timingIndicator;
     public GameObject attackGroup;
 
+    private ParticleSystem moveParticles;
     private Rigidbody2D _rb;
     private Vector3 initialTimingIndicatorPos;
     private int currentHitCount = 0;
@@ -33,6 +34,12 @@ public class Obstacle : MonoBehaviour
         foreach (Transform point in attackPoints)
         {
             attackPointStates[point] = true;
+        }
+
+        moveParticles = GetComponentInChildren<ParticleSystem>();
+        if (moveParticles != null)
+        {
+            moveParticles.Stop();
         }
     }
 
@@ -76,6 +83,18 @@ public class Obstacle : MonoBehaviour
         if (distanceToPlayer > data.stopDistance)
         {
             transform.position += direction * currentSpeed * Time.deltaTime;
+
+            if (moveParticles != null && !moveParticles.isPlaying)
+            {
+                moveParticles.Play();
+            }
+        }
+        else
+        {
+            if (moveParticles != null && moveParticles.isPlaying)
+            {
+                moveParticles.Stop();
+            }
         }
     }
     #endregion
@@ -150,12 +169,27 @@ public class Obstacle : MonoBehaviour
 
     private IEnumerator DeactivateAllPointsTemporarily(float delay)
     {
+        SpriteRenderer indicatorRenderer = timingIndicator.GetComponent<SpriteRenderer>();
+        if (indicatorRenderer != null)
+        {
+            Color color = indicatorRenderer.color;
+            color.a = 0.2f;
+            indicatorRenderer.color = color;
+        }
+
         foreach (Transform point in attackPoints)
         {
             attackPointStates[point] = false;
         }
 
         yield return new WaitForSeconds(delay);
+
+        if (indicatorRenderer != null)
+        {
+            Color color = indicatorRenderer.color;
+            color.a = 1f;
+            indicatorRenderer.color = color;
+        }
 
         foreach (Transform point in attackPoints)
         {

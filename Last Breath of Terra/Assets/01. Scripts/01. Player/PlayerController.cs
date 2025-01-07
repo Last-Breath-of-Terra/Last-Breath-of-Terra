@@ -97,6 +97,11 @@ public class PlayerController : MonoBehaviour
 
             transform.localScale = new Vector3(direction * Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
         }
+        else
+        {
+            _rb.velocity = new Vector2(0, _rb.velocity.y);
+            return;
+        }
     }
 
     private void HandleAcceleration()
@@ -345,6 +350,11 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        if (Vector2.Distance(worldPosition, transform.position) <= 0.1f)
+        {
+            return;
+        }
 
         targetPosition = worldPosition;
 

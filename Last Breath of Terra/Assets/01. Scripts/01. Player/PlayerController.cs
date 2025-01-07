@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private bool isOnWall = false;
     private bool isClimbing = false;
     private float climbSpeed = 3f;
+    private float fallStartY = 0f;
 
     void Awake()
     {
@@ -57,6 +58,11 @@ public class PlayerController : MonoBehaviour
             UpdateTargetPosition();
             Move();
             HandleFootstepSound();
+        }
+
+        if (!isGrounded && _rb.velocity.y < 0f && fallStartY == 0f)
+        {
+            fallStartY = transform.position.y;
         }
     }
     
@@ -276,6 +282,7 @@ public class PlayerController : MonoBehaviour
         {
             if (isClimbing)
             {
+                Debug.Log("check!!");
                 FallOffWall();
             }
             else
@@ -360,12 +367,12 @@ public class PlayerController : MonoBehaviour
     private IEnumerator HandleLandingDelay()
     {
         //_animator.SetBool("Land", true);
+        isGrounded = true;
         canMove = false;
 
         yield return new WaitForSeconds(3f);
 
         //_animator.SetBool("Land", false);
-        isGrounded = true;
         canMove = true;
 
          _rb.velocity = new Vector2(0, _rb.velocity.y);
@@ -385,8 +392,10 @@ public class PlayerController : MonoBehaviour
         {
             if (!isGrounded)
             {
-                Debug.Log(_rb.velocity.y);
-                if (_rb.velocity.y < -5f)
+                float fallHeight = fallStartY - transform.position.y;
+                fallStartY = 0f;
+
+                if (fallHeight > 5f)
                 {
                     StartCoroutine(HandleLandingDelay());
                 }
@@ -394,6 +403,15 @@ public class PlayerController : MonoBehaviour
                 {
                     isGrounded = true;
                 }
+                // Debug.Log(_rb.velocity.y);
+                // if (_rb.velocity.y < -5f)
+                // {
+                //     StartCoroutine(HandleLandingDelay());
+                // }
+                // else
+                // {
+                //     isGrounded = true;
+                // }
             }
         }
     }

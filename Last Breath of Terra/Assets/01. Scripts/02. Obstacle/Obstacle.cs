@@ -11,23 +11,27 @@ public class Obstacle : MonoBehaviour
 {
     public ObstacleSO data;
     public LifeInfuserSO lifeInfuserSO;
+    public Sprite[] obstacleSprites;
     public Transform[] attackPoints;
     public Transform timingIndicator;
     public GameObject attackGroup;
-    public bool isActive = true;
+    public GameObject destroyEffectPrefab;
 
-    private ParticleSystem moveParticles;
+    protected bool isHovered = false;
+    protected bool isRotating = true;
+    private SpriteRenderer spriteRenderer;
     private Rigidbody2D _rb;
     private Vector3 initialTimingIndicatorPos;
     private int currentHitCount = 0;
+    private bool isActive = true;
     private float currentSpeed;
-    private bool isHovered = false;
     private List<Transform> clickedPoints = new List<Transform>();
     private Dictionary<Transform, bool> attackPointStates = new Dictionary<Transform, bool>();
 
     private void Start()
     {
         _rb = this.GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         initialTimingIndicatorPos = timingIndicator.localPosition;
 
         foreach (Transform point in attackPoints)
@@ -35,10 +39,9 @@ public class Obstacle : MonoBehaviour
             attackPointStates[point] = true;
         }
 
-        moveParticles = GetComponentInChildren<ParticleSystem>();
-        if (moveParticles != null)
+        if (obstacleSprites != null && obstacleSprites.Length > 0)
         {
-            moveParticles.Stop();
+            spriteRenderer.sprite = obstacleSprites[0];
         }
     }
 
@@ -75,6 +78,11 @@ public class Obstacle : MonoBehaviour
         {
             MoveTowardsPlayer();
         }
+
+        if (isHovered && isRotating)
+        {
+            RotateTimingIndicator();
+        }
     }
 
     #region Movement Methods
@@ -86,18 +94,6 @@ public class Obstacle : MonoBehaviour
         if (distanceToPlayer > data.stopDistance)
         {
             transform.position += direction * currentSpeed * Time.deltaTime;
-
-            if (moveParticles != null && !moveParticles.isPlaying)
-            {
-                moveParticles.Play();
-            }
-        }
-        else
-        {
-            if (moveParticles != null && moveParticles.isPlaying)
-            {
-                moveParticles.Stop();
-            }
         }
     }
     #endregion
@@ -124,19 +120,14 @@ public class Obstacle : MonoBehaviour
     private void HandleHoverEffect()
     {
         attackGroup.SetActive(isHovered);
-
-        if (isHovered)
-        {
-            RotateTimingIndicator();
-        }
     }
 
-    private void RotateTimingIndicator()
+    public void RotateTimingIndicator()
     {
         if (timingIndicator != null)
         {
             timingIndicator.RotateAround(transform.position, Vector3.back, data.timingRotationSpeed * Time.deltaTime);
-            CheckTiming();
+            //CheckTiming();
         }
     }
 
@@ -144,17 +135,24 @@ public class Obstacle : MonoBehaviour
     {
         foreach (Transform point in attackPoints)
         {
-            if (Vector3.Distance(timingIndicator.position, point.position) < 0.3f && !clickedPoints.Contains(point))
+            float distance = Vector3.Distance(timingIndicator.position, point.position);
+
+            if (distance < 0.3f && !clickedPoints.Contains(point))
             {
                 return true;
             }
         }
+
         return false;
     }
 
     public void OnPlayerAttack()
     {
-        if (isHovered && CheckTiming())
+        if (!isHovered) return;
+
+        bool timingMatched = CheckTiming();
+
+        if (timingMatched)
         {
             HandleSuccessfulAttack();
         }
@@ -165,7 +163,9 @@ public class Obstacle : MonoBehaviour
     }
 
     private IEnumerator DeactivateAllPointsTemporarily(float delay)
-    {
+    {   
+        isRotating = false;
+
         SpriteRenderer indicatorRenderer = timingIndicator.GetComponent<SpriteRenderer>();
         if (indicatorRenderer != null)
         {
@@ -195,6 +195,8 @@ public class Obstacle : MonoBehaviour
                 attackPointStates[point] = true;
             }
         }
+
+        isRotating = true;
     }
     #endregion
 
@@ -207,12 +209,13 @@ public class Obstacle : MonoBehaviour
             {
                 string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
                 AudioManager.instance.PlaySFX(audioName, gameObject.GetComponent<AudioSource>(), transform);
-                Debug.Log("Clicked " + point.name[point.name.Length - 1]);
+
                 Color color = point.GetComponent<SpriteRenderer>().color;
                 color.a = 100f;
                 point.GetComponent<SpriteRenderer>().color = color;
                 clickedPoints.Add(point);
                 currentHitCount++;
+                UpdateObstacleSprite();
                 break;
             }
         }
@@ -221,6 +224,14 @@ public class Obstacle : MonoBehaviour
         {
             Invoke("DeactivateObstacle", 0.1f);
             //DeactivateObstacle();
+        }
+    }
+
+    private void UpdateObstacleSprite()
+    {
+        if (obstacleSprites != null && currentHitCount < obstacleSprites.Length)
+        {
+            spriteRenderer.sprite = obstacleSprites[currentHitCount];
         }
     }
 
@@ -236,13 +247,31 @@ public class Obstacle : MonoBehaviour
         foreach (Transform point in attackPoints)
         {
             attackPointStates[point] = true;
+
+            SpriteRenderer pointRenderer = point.GetComponent<SpriteRenderer>();
+            if (pointRenderer != null)
+            {
+                Color color = pointRenderer.color;
+                color.a = 0f;
+                pointRenderer.color = color;
+            }
         }
+
+        if (obstacleSprites != null && obstacleSprites.Length > 0)
+        {
+            spriteRenderer.sprite = obstacleSprites[0];
+        }
+
+        clickedPoints.Clear();
     }
     #endregion
 
     #region Obstacle Management Methods
     protected virtual void DeactivateObstacle()
     {
+        GameObject effect = Instantiate(destroyEffectPrefab, transform.position, Quaternion.identity);
+        Destroy(effect, 2f);
+
         gameObject.SetActive(false);
     }
 

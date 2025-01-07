@@ -1017,7 +1017,7 @@ MonoBehaviour:
   lifeInfuserData: {fileID: 11400000, guid: 8fb6ba2920c5aa646bc77e9de7c28c8c, type: 2}
   camera: {fileID: 651167934}
   infuserTrackedCamera: {fileID: 754961215}
-  obstacleManager: {fileID: 0}
+  obstacleManager: {fileID: 8550263938161392877}
   selectMap:
     m_Name: Select Map
     m_Id: ce1f1f24-410a-4683-81f4-58f08f29a5b8
@@ -47600,7 +47600,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!224 &76427142088675875
@@ -48030,7 +48030,7 @@ SpriteRenderer:
   m_Size: {x: 1.34, y: 1.34}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &484999630954055920
@@ -48478,7 +48478,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!224 &1115006836468549184
@@ -48889,7 +48889,7 @@ SpriteRenderer:
   m_Size: {x: 2.95, y: 3.06}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!212 &1719858453991475159
@@ -48941,7 +48941,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1794469743864278926
@@ -49754,7 +49754,7 @@ SpriteRenderer:
   m_Size: {x: 2.95, y: 3.06}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!212 &2946400471286802072
@@ -49806,7 +49806,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!224 &2948260807579995348
@@ -50422,7 +50422,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &3726271073224802897
@@ -50857,7 +50857,7 @@ SpriteRenderer:
   m_Size: {x: 1.34, y: 1.34}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &4148018942570940124
@@ -51152,7 +51152,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &4623111427825082960
@@ -51757,7 +51757,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!224 &5351088564445781081
@@ -52328,13 +52328,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 8bc7ab49ee7b34f4da13345bcf6d5dfe, type: 2}
   lifeInfuserSO: {fileID: 11400000, guid: 8fb6ba2920c5aa646bc77e9de7c28c8c, type: 2}
+  obstacleSprites: []
   attackPoints:
   - {fileID: 7693198899994582661}
   - {fileID: 481081385696814995}
   - {fileID: 7155062461781139294}
   timingIndicator: {fileID: 5291319356066254638}
   attackGroup: {fileID: 1595775112600088345}
-  isActive: 1
+  destroyEffectPrefab: {fileID: 0}
 --- !u!1001 &6112492995391703468
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52993,7 +52994,7 @@ SpriteRenderer:
   m_Size: {x: 1.55, y: 1.54}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &6851962927732244290
@@ -53104,7 +53105,7 @@ SpriteRenderer:
   m_Size: {x: 1.55, y: 1.54}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!224 &7095086810422319923
@@ -53644,13 +53645,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 8bc7ab49ee7b34f4da13345bcf6d5dfe, type: 2}
   lifeInfuserSO: {fileID: 11400000, guid: 8fb6ba2920c5aa646bc77e9de7c28c8c, type: 2}
+  obstacleSprites: []
   attackPoints:
   - {fileID: 6196432035847929802}
   - {fileID: 4148018942570940124}
   - {fileID: 6662652193830141457}
   timingIndicator: {fileID: 8526184167282634337}
   attackGroup: {fileID: 2961337458079649366}
-  isActive: 1
+  destroyEffectPrefab: {fileID: 0}
 --- !u!1 &7747872944511696107
 GameObject:
   m_ObjectHideFlags: 0
@@ -54085,7 +54087,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &8492768060846378457
@@ -54222,7 +54224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ad9d9a61c8e46cbbbab53583f8bf1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialObstaclePrefab: {fileID: 2380780527199600930, guid: 9f56ee78e58784b588f0ee53f7983580, type: 3}
+  tutorialObstaclePrefab: {fileID: 2380780527199600930, guid: c7cc80d2eee5c4b0d8d8a62d1dfb6e22, type: 3}
   spawnPositions:
   - {fileID: 345858816}
   - {fileID: 1563746595}
@@ -54364,7 +54366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 466704fc8359e4a3cae8844596e50707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  miniMapManager: {fileID: 0}
+  miniMapManager: {fileID: 1378804276}
   cursorIndicator: {fileID: 8765059433449552596}
   clickLight: {fileID: 5573198923401508140}
   movingLightEffect: {fileID: 6453452343881420155}
@@ -54724,7 +54726,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 989979249136696449, guid: ccaa864d779f8914da9931eb96558b12, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 71.39
+      value: 71.69
       objectReference: {fileID: 0}
     - target: {fileID: 989979249136696449, guid: ccaa864d779f8914da9931eb96558b12, type: 3}
       propertyPath: m_LocalPosition.z

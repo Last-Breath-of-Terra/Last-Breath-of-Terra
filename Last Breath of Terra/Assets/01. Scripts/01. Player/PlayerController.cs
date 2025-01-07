@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalScale;
     private Vector2 targetPosition;
     private float accelerationTimer;
-    private bool canMove = true;
+    public bool canMove = true;
     private bool isHoldingClick = false;
     private float footstepInterval = 0.5f;
     private float footstepTimer = 0f;

@@ -61,38 +61,43 @@ public class LifeRestorer : MonoBehaviour
             }
             else if (gameObject.GetComponent<PlayerController>().hp <= 0)
             {
-                Debug.Log("Deactivating obstacle");
-                //장애물 이동 멈추기
-                obstacleManager.StopAllObstacles();
-                //마우스 조작 변경
-                SwitchActionMap("Select");
-                //왼쪽 끝에서부터 설정
-                infuserNumber = 0;
-                //UpdateRectSize(infuserNumber, newSize);
-                //UI 활성화
-                DOTween.To(() => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale, x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x, new Vector3(1f, 1f, 1f), 0.1f);
-                lifeInfuserData.SetUIForInfuserStatus(true);
-                //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 1.0f);
-                //lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
-                for (int i = 0; i + infuserNumber < InfuserManager.Instance.activatedInfusers.Length; i++)
-                {
-                    if (InfuserManager.Instance.activatedInfusers[i + infuserNumber])
-                    {
-                        if (i + infuserNumber <= InfuserManager.Instance.activatedInfusers.Length)
-                        {
-                            SelectReviveLife(i);
-
-                        }
-                        break;
-                    }
-                }
-
-                //카메라 이동
-                infuserTrackedCamera.Follow = InfuserManager.Instance.infuser[infuserNumber].transform;
-                //infuserTrackedCamera.transform.position = lifeInfuserData.infuser[infuserNumber].transform.position;
-                infuserTrackedCamera.gameObject.SetActive(true);
+                Invoke("StartLifeRestorer", 3f);
             }
         }
+    }
+
+    private void StartLifeRestorer()
+    {
+        Debug.Log("Deactivating obstacle");
+        //장애물 이동 멈추기
+        obstacleManager.StopAllObstacles();
+        //마우스 조작 변경
+        SwitchActionMap("Select");
+        //왼쪽 끝에서부터 설정
+        infuserNumber = 0;
+        //UpdateRectSize(infuserNumber, newSize);
+        //UI 활성화
+        DOTween.To(() => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale, x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x, new Vector3(1f, 1f, 1f), 0.1f);
+        lifeInfuserData.SetUIForInfuserStatus(true);
+        //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 1.0f);
+        //lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
+        for (int i = 0; i + infuserNumber < InfuserManager.Instance.activatedInfusers.Length; i++)
+        {
+            if (InfuserManager.Instance.activatedInfusers[i + infuserNumber])
+            {
+                if (i + infuserNumber <= InfuserManager.Instance.activatedInfusers.Length)
+                {
+                    SelectReviveLife(i);
+
+                }
+                break;
+            }
+        }
+
+        //카메라 이동
+        infuserTrackedCamera.Follow = InfuserManager.Instance.infuser[infuserNumber].transform;
+        //infuserTrackedCamera.transform.position = lifeInfuserData.infuser[infuserNumber].transform.position;
+        infuserTrackedCamera.gameObject.SetActive(true);
     }
 
     public void SwitchActionMap(string actionMapName)

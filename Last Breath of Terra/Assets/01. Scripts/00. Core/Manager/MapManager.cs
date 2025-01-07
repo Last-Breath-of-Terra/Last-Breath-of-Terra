@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 
 public enum MAP_TYPE
 {
+    Tutorial,
     Gravel,
     Sand,
     Wood,
@@ -29,6 +30,11 @@ public class MapManager
     public void UpdateCurrentMapType()
     {
         string sceneName = SceneManager.GetActiveScene().name;
+
+        if (sceneName.Contains("Tutorial"))
+        {
+            currentMapType = MAP_TYPE.Tutorial;
+        }
 
         if (sceneName.Contains("AlphaTest"))
         {

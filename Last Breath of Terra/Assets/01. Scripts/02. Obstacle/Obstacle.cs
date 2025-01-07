@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +14,7 @@ public class Obstacle : MonoBehaviour
     public Transform[] attackPoints;
     public Transform timingIndicator;
     public GameObject attackGroup;
+    public bool isActive = true;
 
     private ParticleSystem moveParticles;
     private Rigidbody2D _rb;
@@ -22,7 +22,6 @@ public class Obstacle : MonoBehaviour
     private int currentHitCount = 0;
     private float currentSpeed;
     private bool isHovered = false;
-    private bool isActive = true;
     private List<Transform> clickedPoints = new List<Transform>();
     private Dictionary<Transform, bool> attackPointStates = new Dictionary<Transform, bool>();
 
@@ -46,8 +45,12 @@ public class Obstacle : MonoBehaviour
     private void OnEnable()
     {
         isActive = true;
-        GameManager.Instance._obstacleManager.RegisterObstacle(this);
-        AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(), transform);
+
+        if (GameManager.Map.GetCurrentMapType() == MAP_TYPE.Tutorial)
+        {
+            GameManager.Instance._obstacleManager.RegisterObstacle(this);
+            AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(), transform);
+        }
         
         currentHitCount = 0;
         currentSpeed = data.speed;
@@ -62,6 +65,7 @@ public class Obstacle : MonoBehaviour
     private void OnDisable()
     {
         isActive = false;
+
         GameManager.Instance._obstacleManager.UnregisterObstacle(this);
     }
 
@@ -70,7 +74,6 @@ public class Obstacle : MonoBehaviour
         if (isActive)
         {
             MoveTowardsPlayer();
-            HandleMouseHover();
         }
     }
 
@@ -100,25 +103,19 @@ public class Obstacle : MonoBehaviour
     #endregion
 
     #region Hover and Attack Methods
-    private void HandleMouseHover()
+    public void SetHovered(bool hovered)
     {
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        if (isHovered == hovered) return;
 
-        RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
+        isHovered = hovered;
 
-        bool isCurrentlyHovered = hit.collider != null && hit.collider.gameObject == gameObject;
-        if (isHovered != isCurrentlyHovered)
+        if (isHovered)
         {
-            isHovered = isCurrentlyHovered;
-            if (isHovered)
-            {
-                GameManager.Instance._obstacleManager.SlowDownAllObstacles();
-            }
-            else
-            {
-                GameManager.Instance._obstacleManager.ResetAllObstaclesSpeed();
-            }
+            GameManager.Instance._obstacleManager.SlowDownAllObstacles();
+        }
+        else
+        {
+            GameManager.Instance._obstacleManager.ResetAllObstaclesSpeed();
         }
 
         HandleHoverEffect();
@@ -147,7 +144,7 @@ public class Obstacle : MonoBehaviour
     {
         foreach (Transform point in attackPoints)
         {
-            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && !clickedPoints.Contains(point))
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.3f && !clickedPoints.Contains(point))
             {
                 return true;
             }
@@ -206,7 +203,7 @@ public class Obstacle : MonoBehaviour
     {
         foreach (Transform point in attackPoints)
         {
-            if (Vector3.Distance(timingIndicator.position, point.position) < 0.1f && attackPointStates[point])
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.3f && attackPointStates[point])
             {
                 string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
                 AudioManager.instance.PlaySFX(audioName, gameObject.GetComponent<AudioSource>(), transform);
@@ -244,15 +241,16 @@ public class Obstacle : MonoBehaviour
     #endregion
 
     #region Obstacle Management Methods
-    private void DeactivateObstacle()
+    protected virtual void DeactivateObstacle()
     {
         gameObject.SetActive(false);
     }
 
     public void ReactivateObstacle(Vector3 newPosition)
     {
-        gameObject.SetActive(true);
         transform.position = newPosition;
+        ResetAttackState();
+        gameObject.SetActive(true);
     }
 
     public void SetSpeedToZero()
@@ -271,8 +269,15 @@ public class Obstacle : MonoBehaviour
     }
     #endregion
 
-    private void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.transform.CompareTag("Player"))
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.isTrigger)
+        {
+            isHovered = true;
+            HandleHoverEffect();
+            GameManager.Instance._obstacleManager.SlowDownAllObstacles();
+        }
+        else if (collision.transform.CompareTag("Player"))
         {
             lifeInfuserSO.StopInfusion(collision.GetComponent<AudioSource>());
 
@@ -287,6 +292,16 @@ public class Obstacle : MonoBehaviour
             Invoke(nameof(ReactivatePlayerMovement), 1f);
 
             DeactivateObstacle();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.isTrigger)
+        {
+            isHovered = false;
+            HandleHoverEffect();
+            GameManager.Instance._obstacleManager.ResetAllObstaclesSpeed();
         }
     }
 

@@ -63,8 +63,10 @@ public class TeleportManager : MonoBehaviour
 
     IEnumerator Fade(int targetID, Vector3 teleportDirection)
     {
-        DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
+        player.GetComponent<Rigidbody2D>().gravityScale = 0;
 
+        int teleportOffset = 2;
+        DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
         float f = 0f;
         while (f <= 1f)
         {
@@ -72,9 +74,20 @@ public class TeleportManager : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
             fadeImage.color = new Color(0f, 0f, 0f, f);
         }
-        //animator.SetBool("MoveToPortal", false);
-        animator.Play("Idle");
-        player.transform.position = teleportSet[targetID].transform.position + 2 * teleportDirection;
+        animator.SetBool("MoveToPortal", false);
+        //animator.Play("Idle");
+        if (teleportDirection == new Vector3(0, 1, 0))
+        {
+            teleportOffset = 3;
+            player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
+            DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + new Vector3(2, 0, 0), 2.5f);
+        }
+        else
+        {
+            player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
+
+        }
+        player.GetComponent<Rigidbody2D>().gravityScale = 3;
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
         yield return new WaitForSeconds(0.5f);
         while (f > 0f)

@@ -4,21 +4,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.IO;
-
+using UnityEngine.SceneManagement;
 
 
 public class StageClear : MonoBehaviour
 {
     public DataManager dataManager;
-    
+
+    private void Start()
+    {
+        dataManager = FindObjectOfType<DataManager>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision) 
     {
         int count = InfuserManager.Instance.activatedInfusers.Count(x => x);
         Debug.Log(count + " infusers activated");
-        if (count == 3) //추후 변경 필요
+        if (count >= 10) //추후 변경 필요
         {
             Debug.Log("stage cleared");
             DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 0, true);
+            SceneManager.LoadScene(2);
+
         }
     }
 }

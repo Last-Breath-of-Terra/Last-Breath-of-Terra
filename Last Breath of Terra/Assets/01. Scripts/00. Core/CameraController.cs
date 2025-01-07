@@ -6,6 +6,7 @@ public class CameraController : MonoBehaviour
     public PlayerController playerController;
     private CinemachineFramingTransposer framingTransposer;
 
+    public bool isYlockZone;
     void Start()
     {
         CinemachineVirtualCamera virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
@@ -24,14 +25,20 @@ public class CameraController : MonoBehaviour
     {
         if (framingTransposer != null && playerController != null)
         {
-            if (playerController.isGrounded)
+            if (!isYlockZone)
             {
-                framingTransposer.m_DeadZoneHeight = 0f;
+                if (playerController.isGrounded)
+                {
+                    framingTransposer.m_DeadZoneHeight = 0f;
+                }
+                else
+                {
+                    framingTransposer.m_DeadZoneHeight = 0.7f;
+                } 
             }
-            else
-            {
-                framingTransposer.m_DeadZoneHeight = 0.7f;
-            }
+            
         }
     }
+    
+    
 }

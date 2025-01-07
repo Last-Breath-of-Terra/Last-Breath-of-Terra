@@ -12,7 +12,7 @@ public class GameStart : MonoBehaviour
     {
         string playerName = gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
         DataManager.Instance.playerIndex = DataManager.Instance.FindPlayerIndexByName(playerName);
-        SceneManager.LoadScene("ShaderTest1");
+        SceneManager.LoadScene("StageSelection");
     }
     
 }

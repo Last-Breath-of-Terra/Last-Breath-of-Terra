@@ -8,6 +8,9 @@ TagManager:
   - Obstacle
   - Cursor
   - Wall
+  - LockXPositon
+  - LockYPositon
+  - ChangeLensSize
   layers:
   - Default
   - TransparentFX

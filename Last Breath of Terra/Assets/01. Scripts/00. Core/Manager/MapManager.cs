@@ -36,7 +36,7 @@ public class MapManager
             currentMapType = MAP_TYPE.Tutorial;
         }
 
-        if (sceneName.Contains("AlphaTest"))
+        if (sceneName.Contains("gravel"))
         {
             currentMapType = MAP_TYPE.Gravel;
         }

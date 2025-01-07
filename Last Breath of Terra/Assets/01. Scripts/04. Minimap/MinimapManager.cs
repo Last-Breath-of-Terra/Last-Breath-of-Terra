@@ -136,41 +136,25 @@ public class MiniMapManager : MonoBehaviour
                     : InfuserManager.Instance.LifeInfuserSO.inactiveIcon;
             }
         }
-        // for (int i = 0; i < minimapObjectIcons.Count; i++)
-        // {
-        //     MinimapObjectController controller = minimapObjectIcons[i].GetComponent<MinimapObjectController>();
-        //     controller.SetActive(InfuserManager.Instance.activatedInfusers[i]);
-        // }
     }
 
     private void UpdateObjectIconPosition(GameObject icon, Vector3 worldPosition)
     {
-        // Vector2 mapArea = new Vector2(Vector3.Distance(left.position, right.position), Vector3.Distance(bottom.position, top.position));
-        // Vector2 objPos = new Vector2(Vector3.Distance(left.position, new Vector3(worldPosition.x, 0f, 0f)), Vector3.Distance(bottom.position, new Vector3(0f, worldPosition.y, 0f)));
-        // Vector2 normalPos = new Vector2(objPos.x / mapArea.x, objPos.y / mapArea.y);
-
-        // icon.GetComponent<RectTransform>().anchoredPosition = new Vector2(
-        //     minimapImage.rectTransform.sizeDelta.x * normalPos.x,
-        //     minimapImage.rectTransform.sizeDelta.y * normalPos.y
-        // );
         Vector2 mapArea = new Vector2(
         right.position.x - left.position.x, 
         top.position.y - bottom.position.y
         );
 
-        // 월드 좌표 -> 미니맵 상대 좌표 변환
         Vector2 objPos = new Vector2(
             worldPosition.x - left.position.x, 
             worldPosition.y - bottom.position.y
         );
 
-        // 정규화된 좌표 계산
         Vector2 normalPos = new Vector2(
             Mathf.Clamp01(objPos.x / mapArea.x),
             Mathf.Clamp01(objPos.y / mapArea.y)
         );
 
-        // UI 좌표 변환
         RectTransform iconRect = icon.GetComponent<RectTransform>();
         if (iconRect != null)
         {

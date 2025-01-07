@@ -30,6 +30,12 @@ public class UIManager : MonoBehaviour
         UpdateCursorIndicator();
     }
 
+    public Vector2 GetMouseWorldPosition()
+    {
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        return Camera.main.ScreenToWorldPoint(mousePosition);
+    }
+
     private void UpdateSoundPanValue()
     {
         AudioSource audioSource = gameObject.GetComponent<AudioSource>();

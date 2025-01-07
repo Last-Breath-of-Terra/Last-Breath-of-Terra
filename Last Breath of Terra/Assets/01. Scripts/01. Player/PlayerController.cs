@@ -27,6 +27,10 @@ public class PlayerController : MonoBehaviour
     private float footstepInterval = 0.5f;
     private float footstepTimer = 0f;
 
+    private bool isOnWall = false;
+    private bool isClimbing = false;
+    private float climbSpeed = 3f;
+
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -44,7 +48,11 @@ public class PlayerController : MonoBehaviour
     {
         HandleAcceleration();
 
-        if (isHoldingClick && canMove)
+        if (isOnWall)
+        {
+            HandleWallActions();
+        }
+        else if (isHoldingClick && canMove)
         {
             UpdateTargetPosition();
             Move();
@@ -97,6 +105,25 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void HandleWallActions()
+    {
+        Vector2 worldPosition = GameManager.Instance._ui.GetMouseWorldPosition();
+
+        if (IsAtWallTop())
+        {
+            AutoMoveAfterWallTop();
+            return;
+        }
+        else if (worldPosition.y > transform.position.y + 0.5f && !isClimbing)
+        {
+            ClimbWall();
+        }
+        else if (worldPosition.y < transform.position.y - 0.5f)
+        {
+            FallOffWall();
+        }
+    }
+
     private void HandleFootstepSound()
     {
         footstepTimer += Time.deltaTime;
@@ -107,6 +134,105 @@ public class PlayerController : MonoBehaviour
             AudioManager.instance.PlayRandomPlayer("footstep_" + GameManager.Map.GetCurrentMapType() + "_", 0);// gameObject.GetComponent<AudioSource>(), transform);
         }
     }
+
+    #region Wall Climbing System
+    private bool IsAtWallTop()
+    {
+        float wallTopY = GetWallTopY();
+
+        if (wallTopY == float.MaxValue)
+        {
+            return true;
+        }
+
+        return transform.position.y >= wallTopY;
+    }
+
+    private float GetWallTopY()
+    {
+        Collider2D wallCollider = GetWallCollider();
+        if (wallCollider != null)
+        {
+            return wallCollider.bounds.max.y;
+        }
+        return float.MaxValue;
+    }
+
+    private Collider2D GetWallCollider()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, 0.5f, LayerMask.GetMask("Wall"));
+        return hit.collider;
+    }
+
+    private void AutoMoveAfterWallTop()
+    {
+        if (!isClimbing) return;
+
+        isClimbing = false;
+        isOnWall = false;
+
+        _rb.gravityScale = 0f;
+
+        float upwardDistance = 2f;
+        float forwardDistance = 0.5f;
+        float direction = transform.localScale.x > 0 ? 1 : -1;
+
+        Vector3 targetPosition = new Vector3(
+            transform.position.x + (forwardDistance * direction),
+            transform.position.y + upwardDistance,
+            transform.position.z
+        );
+
+        Debug.Log(targetPosition);
+
+        transform.DOMove(targetPosition, 0.5f).OnComplete(() =>
+        {
+            ResetWallState();
+        });
+    }
+
+    private void StickToWall()
+    {
+        isOnWall = true;
+        isClimbing = false;
+        _rb.velocity = Vector2.zero;
+        _rb.gravityScale = 0f;
+        //_animator.SetBool("StickToWall", true);
+    }
+
+    private void ClimbWall()
+    {
+        if (IsAtWallTop())
+        {
+            ResetWallState();
+            return;
+        }
+
+        isClimbing = true;
+        _rb.velocity = new Vector2(0, climbSpeed);
+        //_animator.SetBool("Climb", true);
+    }
+
+    private void FallOffWall()
+    {
+        isOnWall = false;
+        isClimbing = false;
+        _rb.gravityScale = 3f;
+        _rb.velocity = Vector2.zero;
+        //_animator.SetBool("StickToWall", false);
+        //_animator.SetBool("Climb", false);
+    }
+
+    private void ResetWallState()
+    {
+        isOnWall = false;
+        isClimbing = false;
+        _rb.gravityScale = 3f;
+        _rb.velocity = Vector2.zero;
+        //_animator.SetBool("StickToWall", false);
+        //_animator.SetBool("Climb", false);
+    }
+    #endregion
 
     #region InputSystem
     private void OnMovePerformed(InputAction.CallbackContext context)
@@ -141,8 +267,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
     {
+        if (isClimbing)
+            return;
+
         if (isGrounded && canMove)
         {
+            _rb.velocity = new Vector2(_rb.velocity.x, 0);
+
             _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
             isGrounded = false;
 
@@ -197,9 +328,24 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            if (!isOnWall && _rb.velocity.y <= 0)
+            {
+                StickToWall();
+            }
+        }
+        else if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            FallOffWall();
         }
     }
 }

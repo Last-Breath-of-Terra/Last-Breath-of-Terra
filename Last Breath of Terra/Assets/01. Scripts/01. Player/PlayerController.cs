@@ -80,6 +80,8 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
+        if (!isGrounded || !canMove || isOnWall) return;
+
         float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
 
         if (distanceX > 0.1f)
@@ -107,17 +109,15 @@ public class PlayerController : MonoBehaviour
 
     private void HandleWallActions()
     {
+        if (!isOnWall || !isHoldingClick) return;
+
         Vector2 worldPosition = GameManager.Instance._ui.GetMouseWorldPosition();
 
-        if (IsAtWallTop())
-        {
-            AutoMoveAfterWallTop();
-            return;
-        }
-        else if (worldPosition.y > transform.position.y + 0.5f && !isClimbing)
+        if (worldPosition.y > transform.position.y + 0.5f)
         {
             ClimbWall();
         }
+
         else if (worldPosition.y < transform.position.y - 0.5f)
         {
             FallOffWall();
@@ -195,6 +195,9 @@ public class PlayerController : MonoBehaviour
     {
         isOnWall = true;
         isClimbing = false;
+
+        _animator.SetBool("Walk", false);
+
         _rb.velocity = Vector2.zero;
         _rb.gravityScale = 0f;
         //_animator.SetBool("StickToWall", true);
@@ -204,7 +207,7 @@ public class PlayerController : MonoBehaviour
     {
         if (IsAtWallTop())
         {
-            ResetWallState();
+            AutoMoveAfterWallTop();
             return;
         }
 
@@ -217,8 +220,17 @@ public class PlayerController : MonoBehaviour
     {
         isOnWall = false;
         isClimbing = false;
+
+        //나중에 콜라이더 문제 해결이 안 될 경우 활성화
+        //isGrounded = false;
+
         _rb.gravityScale = 3f;
-        _rb.velocity = Vector2.zero;
+       
+        float backwardForce = 2f;
+        float direction = transform.localScale.x > 0 ? -1 : 1;
+
+        _rb.velocity = new Vector2(backwardForce * direction, -2f);
+
         //_animator.SetBool("StickToWall", false);
         //_animator.SetBool("Climb", false);
     }
@@ -227,16 +239,17 @@ public class PlayerController : MonoBehaviour
     {
         isOnWall = false;
         isClimbing = false;
+
         _rb.gravityScale = 3f;
         _rb.velocity = Vector2.zero;
-        //_animator.SetBool("StickToWall", false);
-        //_animator.SetBool("Climb", false);
     }
     #endregion
 
     #region InputSystem
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
+        if (!canMove) return;
+        
         if (context.performed && canMove)
         {
             Invoke("StartMoving", 0.3f);
@@ -256,18 +269,36 @@ public class PlayerController : MonoBehaviour
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         isHoldingClick = false;
+
+        GameManager.Instance._ui.ReleaseClick();
+        
+        if (isOnWall)
+        {
+            if (isClimbing)
+            {
+                FallOffWall();
+            }
+            else
+            {
+                isOnWall = false;
+                isClimbing = false;
+                _rb.gravityScale = 3f;
+                _rb.velocity = Vector2.zero;
+            }
+        }
+
         _rb.velocity = new Vector2(0, _rb.velocity.y);
         _animator.SetBool("Walk", false);
+
         AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
         AudioManager.instance.PlaySFX("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
-        GameManager.Instance._ui.ReleaseClick();
 
         CancelInvoke("StartMoving");
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
     {
-        if (isClimbing)
+        if (!canMove || isClimbing)
             return;
 
         if (isGrounded && canMove)
@@ -326,6 +357,20 @@ public class PlayerController : MonoBehaviour
         canMove = value;
     }
 
+    private IEnumerator HandleLandingDelay()
+    {
+        //_animator.SetBool("Land", true);
+        canMove = false;
+
+        yield return new WaitForSeconds(3f);
+
+        //_animator.SetBool("Land", false);
+        isGrounded = true;
+        canMove = true;
+
+         _rb.velocity = new Vector2(0, _rb.velocity.y);
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Wall"))
@@ -335,9 +380,21 @@ public class PlayerController : MonoBehaviour
                 StickToWall();
             }
         }
-        else if (collision.gameObject.CompareTag("Ground"))
+        
+        if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = true;
+            if (!isGrounded)
+            {
+                Debug.Log(_rb.velocity.y);
+                if (_rb.velocity.y < -5f)
+                {
+                    StartCoroutine(HandleLandingDelay());
+                }
+                else
+                {
+                    isGrounded = true;
+                }
+            }
         }
     }
 
@@ -345,7 +402,25 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Wall"))
         {
-            FallOffWall();
+            if (isOnWall)
+            {
+                FallOffWall();
+            }
+        }
+        
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+
+            if (Mathf.Abs(_rb.velocity.x) < 0.1f)
+            {
+                _rb.velocity = new Vector2(0, _rb.velocity.y);
+            }
+            else
+            {
+                float fallDirection = transform.localScale.x > 0 ? 1 : -1;
+                _rb.velocity = new Vector2(fallDirection * currentSpeed, _rb.velocity.y);
+            }
         }
     }
 }

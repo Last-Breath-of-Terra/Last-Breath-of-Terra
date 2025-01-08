@@ -19,6 +19,7 @@ public class Obstacle : MonoBehaviour
 
     protected bool isHovered = false;
     protected bool isRotating = true;
+    [SerializeField]
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D _rb;
     private Vector3 initialTimingIndicatorPos;

@@ -4,22 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 
 
 public class Tutorial : MonoBehaviour
 {
     public GameObject door;
     public GameObject obstacle;
+    public GameObject revivalPractice;
     private void Update()
     {
         int count = InfuserManager.Instance.activatedInfusers.Count(x => x);
-        Debug.Log(count + " infusers activated");
         if (count >= 5) //추후 변경 필요
         {
-            Debug.Log("stage cleared");
-            //DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 0, true);
-            //SceneManager.LoadScene(2);
             door.SetActive(false);
+            if (revivalPractice != null)
+            {
+                revivalPractice.SetActive(true);
+            }
         }
         else
         {
@@ -32,7 +34,12 @@ public class Tutorial : MonoBehaviour
         {
             gameObject.GetComponent<PlayerController>().canMove = false;
             obstacle.SetActive(true);
-            other.gameObject.SetActive(false);
+            Destroy(other.gameObject);
+        }
+
+        if (other.gameObject.name == "TutorialClear")
+        {
+            SceneManager.LoadScene("StageSelection");
         }
         
     }

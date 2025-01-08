@@ -33,7 +33,6 @@ public class TeleportManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        teleportSet = new GameObject[20];
     }
 
     private void Start()

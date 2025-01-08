@@ -14,7 +14,6 @@ public class TeleportManager : MonoBehaviour
     
     public static TeleportManager Instance;
     public GameObject[] teleportSet;
-    public TeleportSO teleportSO;
     public PolygonCollider2D[] camBorders;
     public CinemachineVirtualCamera virtualCamera;
     public Image fadeImage;

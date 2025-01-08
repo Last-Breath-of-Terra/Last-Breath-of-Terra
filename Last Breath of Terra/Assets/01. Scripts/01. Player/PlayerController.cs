@@ -333,15 +333,33 @@ public class PlayerController : MonoBehaviour
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
-            RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
-            if (hit.collider != null)
+            RaycastHit2D[] hits = Physics2D.RaycastAll(worldPosition, Vector2.zero);
+            
+            foreach (var hit in hits)
             {
+                if (hit.collider == null) continue;
+
                 Obstacle obstacle = hit.collider.GetComponent<Obstacle>();
+
+                if (obstacle == null)
+                {
+                    obstacle = hit.collider.transform.parent?.GetComponent<Obstacle>();
+                }
+
                 if (obstacle != null)
                 {
                     obstacle.OnPlayerAttack();
                 }
             }
+            
+            // if (hit.collider != null)
+            // {
+            //     Obstacle obstacle = hit.collider.transform.parent?.GetComponent<Obstacle>();
+            //     if (obstacle != null)
+            //     {
+            //         obstacle.OnPlayerAttack();
+            //     }
+            // }
         }
     }
     #endregion

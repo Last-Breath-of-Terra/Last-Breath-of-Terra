@@ -10,6 +10,10 @@ public class TutorialObstacle : Obstacle
 
     private void Update()
     {
+        if (isHovered && isRotating)
+        {
+            RotateTimingIndicator();
+        }
     }
 
     protected override void DeactivateObstacle()

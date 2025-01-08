@@ -46,7 +46,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Clear: 0
-    - _Enabled: 1
+    - _Enabled: 0
     - _GlowIntensity: 0
     - _Outline: 0.005
     - _Thickness: 3.35

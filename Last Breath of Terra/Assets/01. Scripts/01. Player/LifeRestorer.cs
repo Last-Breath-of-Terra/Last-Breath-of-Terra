@@ -186,6 +186,12 @@ public class LifeRestorer : MonoBehaviour
         InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.5f);
         InfuserManager.Instance.activatedInfusers[infuserNumber] = false;
         InfuserManager.Instance.canInfusion[infuserNumber] = true;
+        Invoke("Revival", 1f);
+    }
+
+    private void Revival()
+    {
+        
 
         //UI 비활성화
         lifeInfuserData.SetUIForInfuserStatus(false);

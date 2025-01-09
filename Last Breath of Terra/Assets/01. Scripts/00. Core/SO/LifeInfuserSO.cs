@@ -40,6 +40,7 @@ public class LifeInfuserSO : ScriptableObject
      */
     public virtual void StartInfusion(int infuserNumber, GameObject targetInfuser)
     {
+        Debug.Log("start infusion");
         InfuserManager.Instance.infuserActivationCanvas.gameObject.transform.position = targetInfuser.transform.position;
         SetUIForInfuserStatus(true);
         InfuserManager.Instance.infuserActivationCanvas.gameObject.SetActive(true);

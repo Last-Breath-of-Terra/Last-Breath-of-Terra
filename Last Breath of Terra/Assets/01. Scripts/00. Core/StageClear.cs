@@ -24,7 +24,7 @@ public class StageClear : MonoBehaviour
         {
             Debug.Log("stage cleared");
             DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 0, true);
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene("StageSelection");
 
         }
     }

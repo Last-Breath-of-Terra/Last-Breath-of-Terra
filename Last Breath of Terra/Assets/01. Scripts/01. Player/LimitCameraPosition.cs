@@ -33,7 +33,7 @@ public class LimitCameraPosition : MonoBehaviour
             {
                 LockCameraXPosition();
             }
-            else if (gameObject.CompareTag("LockXPositon"))
+            else if (gameObject.CompareTag("LockYPositon"))
             {
                 LockCameraYPosition();
             }
@@ -76,12 +76,12 @@ public class LimitCameraPosition : MonoBehaviour
     private void LockCameraYPosition()
     {
         cameraController.isYlockZone = true;
-        Debug.Log("Fixing camera X position");
+        Debug.Log("Fixing camera Y position");
         framingTransposer.m_DeadZoneHeight = 1f;
     }
     private void UnlockCameraYPosition(){
         cameraController.isYlockZone = false;
-        Debug.Log("Unlocking camera X position");
+        Debug.Log("Unlocking camera Y position");
         framingTransposer.m_DeadZoneHeight = 0;
     }
     private void ChangeCameraLensSize(float targetLensSize)

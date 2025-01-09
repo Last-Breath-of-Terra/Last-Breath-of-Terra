@@ -14,6 +14,7 @@ public class InfuserManager : MonoBehaviour
     public GameObject[] infuser;
     public bool[] activatedInfusers;
     public bool[] canInfusion;
+    public int infusionCount;
 
     [Header("UI")] public GameObject infuserStatus; //활성화 여부 확인 상단 UI
     public Transform[] infuserStatusChild;
@@ -32,9 +33,9 @@ public class InfuserManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        infuser = new GameObject[10];
-        activatedInfusers = new bool[10];
-        canInfusion = new bool[10];
+        infuser = new GameObject[infusionCount];
+        activatedInfusers = new bool[infusionCount];
+        canInfusion = new bool[infusionCount];
     }
 
     private void Start()

@@ -407,11 +407,12 @@ public class PlayerController : MonoBehaviour
         {
             _rb.velocity = new Vector2(0, _rb.velocity.y);
             _rb.angularVelocity = 0;
+
+            currentSpeed = data.baseSpeed;
+
             _animator.SetBool("Walk", false);
             _animator.SetBool("Run", false);
         }
-
-        UpdateAnimationState();
     }
 
     private void UpdateTargetPosition()
@@ -467,20 +468,20 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (currentSpeed > 5f)
-        {
-            if (!_animator.GetBool("Run"))
-            {
-                _animator.SetBool("Run", true);
-                _animator.SetBool("Walk", false);
-            }
-        }
-        else if (currentSpeed > 0.01f)
+        if (currentSpeed > 2f)
         {
             if (!_animator.GetBool("Walk"))
             {
                 _animator.SetBool("Walk", true);
                 _animator.SetBool("Run", false);
+            }
+        }
+        else if (currentSpeed > 5f)
+        {
+            if (!_animator.GetBool("Run"))
+            {
+                _animator.SetBool("Run", true);
+                _animator.SetBool("Walk", false);
             }
         }
         else

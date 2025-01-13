@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public PlayerSO data;
     public float hp;
     public bool isGrounded = true;
+    public bool canMove = true;
 
     [SerializeField] private float currentSpeed;
     
@@ -22,7 +23,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalScale;
     private Vector2 targetPosition;
     private float accelerationTimer;
-    public bool canMove = true;
     private bool isHoldingClick = false;
     private float footstepInterval = 0.5f;
     private float footstepTimer = 0f;
@@ -86,7 +86,8 @@ public class PlayerController : MonoBehaviour
 
     #region Handle System
     private void HandleAcceleration()
-    {
+    {   
+        // 마지막 이전 버전
         if (isHoldingClick)
         {
             float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
@@ -387,6 +388,7 @@ public class PlayerController : MonoBehaviour
 
         if (distanceX > 0.5f)
         {
+            // 기존 방법
             float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
 
             if (isGrounded)
@@ -468,20 +470,20 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (currentSpeed > 2f)
-        {
-            if (!_animator.GetBool("Walk"))
-            {
-                _animator.SetBool("Walk", true);
-                _animator.SetBool("Run", false);
-            }
-        }
-        else if (currentSpeed > 5f)
+        if (currentSpeed > 5f)
         {
             if (!_animator.GetBool("Run"))
             {
                 _animator.SetBool("Run", true);
                 _animator.SetBool("Walk", false);
+            }
+        }
+        else if (currentSpeed > 2f)
+        {
+            if (!_animator.GetBool("Walk"))
+            {
+                _animator.SetBool("Walk", true);
+                _animator.SetBool("Run", false);
             }
         }
         else
@@ -507,18 +509,22 @@ public class PlayerController : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Ground"))
         {
-            if (!isGrounded)
+            if (!isGrounded && _rb.velocity.y <= 0)
             {
-                float fallHeight = fallStartY - transform.position.y;
-                fallStartY = 0f;
+                float groundY = collision.contacts[0].point.y;
+                if (groundY < transform.position.y)
+                {
+                    float fallHeight = fallStartY - transform.position.y;
+                    fallStartY = 0f;
 
-                if (fallHeight > 5f)
-                {
-                    StartCoroutine(HandleLandingDelay());
-                }
-                else
-                {
-                    isGrounded = true;
+                    if (fallHeight > 5f)
+                    {
+                        StartCoroutine(HandleLandingDelay());
+                    }
+                    else
+                    {
+                        isGrounded = true;
+                    }
                 }
             }
         }

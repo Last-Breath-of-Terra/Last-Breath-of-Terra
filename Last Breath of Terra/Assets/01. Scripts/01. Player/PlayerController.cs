@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public PlayerSO data;
     public float hp;
     public bool isGrounded = true;
+    public bool canMove = true;
 
     [SerializeField] private float currentSpeed;
     
@@ -22,7 +23,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalScale;
     private Vector2 targetPosition;
     private float accelerationTimer;
-    public bool canMove = true;
     private bool isHoldingClick = false;
     private float footstepInterval = 0.5f;
     private float footstepTimer = 0f;
@@ -84,31 +84,24 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Attack"].performed -= OnAttackPerformed;
     }
 
-    private void Move()
-    {
-        if (!isGrounded || !canMove || isOnWall) return;
-
-        float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
-
-        if (distanceX > 0.1f)
-        {
-            float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
-            _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
-
-            transform.localScale = new Vector3(direction * Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
-        }
-        else
-        {
-            _rb.velocity = new Vector2(0, _rb.velocity.y);
-            return;
-        }
-    }
-
+    #region Handle System
     private void HandleAcceleration()
-    {
+    {   
+        // 마지막 이전 버전
         if (isHoldingClick)
         {
-            accelerationTimer += Time.deltaTime;
+            float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
+
+            if ((direction > 0 && _rb.velocity.x < 0) || (direction < 0 && _rb.velocity.x > 0))
+            {
+                accelerationTimer -= Time.deltaTime * 2f;
+                if (accelerationTimer < 0) accelerationTimer = 0f;
+            }
+            else
+            {
+                accelerationTimer += Time.deltaTime;
+            }
+
             currentSpeed = Mathf.Lerp(data.baseSpeed, data.maxSpeed, accelerationTimer / data.accelerationTime);
         }
         else
@@ -116,6 +109,18 @@ public class PlayerController : MonoBehaviour
             accelerationTimer = 0f;
             currentSpeed = data.baseSpeed;
         }
+
+        // 이전 버전
+        // if (isHoldingClick)
+        // {
+        //     accelerationTimer += Time.deltaTime;
+        //     currentSpeed = Mathf.Lerp(data.baseSpeed, data.maxSpeed, accelerationTimer / data.accelerationTime);
+        // }
+        // else
+        // {
+        //     accelerationTimer = 0f;
+        //     currentSpeed = data.baseSpeed;
+        // }
     }
 
     private void HandleWallActions()
@@ -145,6 +150,7 @@ public class PlayerController : MonoBehaviour
             AudioManager.instance.PlayRandomPlayer("footstep_" + GameManager.Map.GetCurrentMapType() + "_", 0);// gameObject.GetComponent<AudioSource>(), transform);
         }
     }
+    #endregion
 
     #region Wall Climbing System
     private bool IsAtWallTop()
@@ -287,7 +293,6 @@ public class PlayerController : MonoBehaviour
         {
             if (isClimbing)
             {
-                Debug.Log("check!!");
                 FallOffWall();
             }
             else
@@ -300,7 +305,9 @@ public class PlayerController : MonoBehaviour
         }
 
         _rb.velocity = new Vector2(0, _rb.velocity.y);
+
         _animator.SetBool("Walk", false);
+        _animator.SetBool("Run", false);
 
         AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
         AudioManager.instance.PlaySFX("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
@@ -315,7 +322,15 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded && canMove)
         {
-            _rb.velocity = new Vector2(_rb.velocity.x, 0);
+            float direction = transform.localScale.x > 0 ? 1 : -1;
+            if (currentSpeed > 2.1f)
+            {
+                _rb.velocity = new Vector2(direction * currentSpeed, 0);
+            }
+            else
+            {
+                _rb.velocity = new Vector2(_rb.velocity.x, 0);
+            }
 
             _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
             isGrounded = false;
@@ -364,6 +379,44 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
+    #region Moving System
+    private void Move()
+    {
+        if (!canMove || isOnWall) return;
+
+        float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
+
+        if (distanceX > 0.5f)
+        {
+            // 기존 방법
+            float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
+
+            if (isGrounded)
+            {
+                transform.localScale = new Vector3(direction * Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
+            }
+            else
+            {
+                direction = transform.localScale.x > 0 ? 1 : -1;
+            }
+
+            _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
+
+            UpdateAnimationState();
+
+        }
+        else
+        {
+            _rb.velocity = new Vector2(0, _rb.velocity.y);
+            _rb.angularVelocity = 0;
+
+            currentSpeed = data.baseSpeed;
+
+            _animator.SetBool("Walk", false);
+            _animator.SetBool("Run", false);
+        }
+    }
+
     private void UpdateTargetPosition()
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -371,6 +424,7 @@ public class PlayerController : MonoBehaviour
 
         if (Vector2.Distance(worldPosition, transform.position) <= 0.1f)
         {
+            _rb.velocity = Vector2.zero;
             return;
         }
 
@@ -405,6 +459,43 @@ public class PlayerController : MonoBehaviour
 
          _rb.velocity = new Vector2(0, _rb.velocity.y);
     }
+    #endregion
+
+    private void UpdateAnimationState()
+    {
+        if (!canMove || isOnWall)
+        {
+            _animator.SetBool("Walk", false);
+            _animator.SetBool("Run", false);
+            return;
+        }
+
+        if (currentSpeed > 5f)
+        {
+            if (!_animator.GetBool("Run"))
+            {
+                _animator.SetBool("Run", true);
+                _animator.SetBool("Walk", false);
+            }
+        }
+        else if (currentSpeed > 2f)
+        {
+            if (!_animator.GetBool("Walk"))
+            {
+                _animator.SetBool("Walk", true);
+                _animator.SetBool("Run", false);
+            }
+        }
+        else
+        {
+            if (_animator.GetBool("Walk") || _animator.GetBool("Run"))
+            {
+                _animator.SetBool("Walk", false);
+                _animator.SetBool("Run", false);
+            }
+        }
+    }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -418,28 +509,23 @@ public class PlayerController : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Ground"))
         {
-            if (!isGrounded)
+            if (!isGrounded && _rb.velocity.y <= 0)
             {
-                float fallHeight = fallStartY - transform.position.y;
-                fallStartY = 0f;
+                float groundY = collision.contacts[0].point.y;
+                if (groundY < transform.position.y)
+                {
+                    float fallHeight = fallStartY - transform.position.y;
+                    fallStartY = 0f;
 
-                if (fallHeight > 5f)
-                {
-                    StartCoroutine(HandleLandingDelay());
+                    if (fallHeight > 5f)
+                    {
+                        StartCoroutine(HandleLandingDelay());
+                    }
+                    else
+                    {
+                        isGrounded = true;
+                    }
                 }
-                else
-                {
-                    isGrounded = true;
-                }
-                // Debug.Log(_rb.velocity.y);
-                // if (_rb.velocity.y < -5f)
-                // {
-                //     StartCoroutine(HandleLandingDelay());
-                // }
-                // else
-                // {
-                //     isGrounded = true;
-                // }
             }
         }
     }

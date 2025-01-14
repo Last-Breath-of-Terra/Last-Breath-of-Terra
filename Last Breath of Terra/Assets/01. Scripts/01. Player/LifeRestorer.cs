@@ -53,14 +53,15 @@ public class LifeRestorer : MonoBehaviour
     {
         if (collision.transform.CompareTag("Obstacle"))
         {
-            //부활에 사용할 생명력?이 남아있지 않다면
+            var playerController = gameObject.GetComponent<PlayerController>();
+
             if (!InfuserManager.Instance.activatedInfusers.Any(infuser => infuser))
             {
-                Debug.Log("Activating obstacle");
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
-            else if (gameObject.GetComponent<PlayerController>().hp <= 0)
+            else if (playerController.hp <= 0)
             {
+                playerController.SetKnockdownState(true);
                 Invoke("StartLifeRestorer", 3f);
             }
         }
@@ -191,8 +192,6 @@ public class LifeRestorer : MonoBehaviour
 
     private void Revival()
     {
-        
-
         //UI 비활성화
         lifeInfuserData.SetUIForInfuserStatus(false);
         //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 0.2f);
@@ -213,7 +212,10 @@ public class LifeRestorer : MonoBehaviour
         {
             나중에 추가..
         }*/
-        //장애물 이동 활성화
+        //장애물 이동 활성화 ?? 이거 뭐지
+
+        var playerController = gameObject.GetComponent<PlayerController>();
+        playerController.SetKnockdownState(false);
         obstacleManager.ResetAllObstaclesSpeed();
     }
 

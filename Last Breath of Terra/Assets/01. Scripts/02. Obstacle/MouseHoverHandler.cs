@@ -20,7 +20,7 @@ public class MouseHoverHandler : MonoBehaviour
         int hoverLayerMask = LayerMask.GetMask("obstacleHover");
         RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero, Mathf.Infinity, hoverLayerMask);
 
-        if (hit.collider != null)
+        if (hit.collider != null && hit.collider.gameObject == gameObject)
         {
             parentObstacle.SetHovered(true);
         }

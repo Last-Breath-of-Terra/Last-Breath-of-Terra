@@ -64,6 +64,8 @@ public class PlayerController : MonoBehaviour
         {
             fallStartY = transform.position.y;
         }
+
+        HandleFalling();
     }
     
     private void OnEnable()
@@ -213,7 +215,7 @@ public class PlayerController : MonoBehaviour
         isOnWall = true;
         isClimbing = false;
 
-        _animator.SetBool("Walk", false);
+        _animator.SetBool("isWalking", false);
 
         _rb.velocity = Vector2.zero;
         _rb.gravityScale = 0f;
@@ -242,14 +244,12 @@ public class PlayerController : MonoBehaviour
         //isGrounded = false;
 
         _rb.gravityScale = 3f;
+        _animator.SetBool("isFalling", true);
        
         float backwardForce = 2f;
         float direction = transform.localScale.x > 0 ? -1 : 1;
 
         _rb.velocity = new Vector2(backwardForce * direction, -2f);
-
-        //_animator.SetBool("StickToWall", false);
-        //_animator.SetBool("Climb", false);
     }
 
     private void ResetWallState()
@@ -279,7 +279,7 @@ public class PlayerController : MonoBehaviour
         if (canMove)
         {
             isHoldingClick = true;
-            _animator.SetBool("Walk", true);
+            _animator.SetBool("isWalking", true);
         }
     }
 
@@ -306,8 +306,8 @@ public class PlayerController : MonoBehaviour
 
         _rb.velocity = new Vector2(0, _rb.velocity.y);
 
-        _animator.SetBool("Walk", false);
-        _animator.SetBool("Run", false);
+        _animator.SetBool("isWalking", false);
+        _animator.SetBool("isRunning", false);
 
         AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
         AudioManager.instance.PlaySFX("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
@@ -406,8 +406,8 @@ public class PlayerController : MonoBehaviour
 
             currentSpeed = data.baseSpeed;
 
-            _animator.SetBool("Walk", false);
-            _animator.SetBool("Run", false);
+            _animator.SetBool("isWalking", false);
+            _animator.SetBool("isRunning", false);
         }
     }
 
@@ -434,21 +434,45 @@ public class PlayerController : MonoBehaviour
     {
         if (!value)
         {
-            _animator.SetBool("Walk", false);
+            _animator.SetBool("isWalking", false);
             GameManager.Instance._ui.ReleaseClick();
         }
         canMove = value;
     }
 
+    private void HandleFalling()
+    {
+        if (!isGrounded && _rb.velocity.y < 0f)
+        {
+            if (!isOnWall && !isClimbing)
+            {
+                _animator.SetBool("isFalling", true);
+            }
+
+            if (fallStartY == 0f)
+            {
+                fallStartY = transform.position.y;
+            }
+        }
+        else
+        {
+            if (isGrounded || _rb.velocity.y >= 0f)
+            {
+                _animator.SetBool("isFalling", false);
+            }
+    }
+    }
+
     private IEnumerator HandleLandingDelay()
     {
-        //_animator.SetBool("Land", true);
+        _animator.SetBool("isFalling", false);
+        _animator.SetBool("isLanding", true);
         isGrounded = true;
         canMove = false;
 
         yield return new WaitForSeconds(3f);
 
-        //_animator.SetBool("Land", false);
+        _animator.SetBool("isLanding", false);
         canMove = true;
 
          _rb.velocity = new Vector2(0, _rb.velocity.y);
@@ -459,37 +483,50 @@ public class PlayerController : MonoBehaviour
     {
         if (!canMove || isOnWall)
         {
-            _animator.SetBool("Walk", false);
-            _animator.SetBool("Run", false);
+            _animator.SetBool("isWalking", false);
+            _animator.SetBool("isRunning", false);
             return;
         }
 
         if (currentSpeed > 5f)
         {
-            if (!_animator.GetBool("Run"))
+            if (!_animator.GetBool("isRunning"))
             {
-                _animator.SetBool("Run", true);
-                _animator.SetBool("Walk", false);
+                _animator.SetBool("isRunning", true);
+                _animator.SetBool("isWalking", false);
             }
         }
         else if (currentSpeed > 2f)
         {
-            if (!_animator.GetBool("Walk"))
+            if (!_animator.GetBool("isWalking"))
             {
-                _animator.SetBool("Walk", true);
-                _animator.SetBool("Run", false);
+                _animator.SetBool("isWalking", true);
+                _animator.SetBool("isRunning", false);
             }
         }
         else
         {
-            if (_animator.GetBool("Walk") || _animator.GetBool("Run"))
+            if (_animator.GetBool("isWalking") || _animator.GetBool("isRunning"))
             {
-                _animator.SetBool("Walk", false);
-                _animator.SetBool("Run", false);
+                _animator.SetBool("isWalking", false);
+                _animator.SetBool("isRunning", false);
             }
         }
     }
 
+    public void SetActivatingState(bool isActivating)
+    {
+        _animator.SetBool("isWalking", false);
+        _animator.SetBool("isRunning", false);
+        _animator.SetBool("isFalling", false);
+
+        _animator.SetBool("isActivating", isActivating);
+    }
+
+    public void SetKnockdownState(bool isKnockdown)
+    {
+        _animator.SetBool("isKnockdown", isKnockdown);
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -510,6 +547,7 @@ public class PlayerController : MonoBehaviour
                 {
                     float fallHeight = fallStartY - transform.position.y;
                     fallStartY = 0f;
+                    _animator.SetBool("isFalling", false);
 
                     if (fallHeight > 5f)
                     {

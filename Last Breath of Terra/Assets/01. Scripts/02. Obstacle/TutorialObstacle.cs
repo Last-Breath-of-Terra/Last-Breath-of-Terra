@@ -18,6 +18,9 @@ public class TutorialObstacle : Obstacle
 
     protected override void DeactivateObstacle()
     {
+        GameObject effect = Instantiate(destroyEffectPrefab, transform.position, Quaternion.identity);
+        Destroy(effect, 2f);
+        
         gameObject.SetActive(false);
         OnObstacleDisabled?.Invoke(this);
     }

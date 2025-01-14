@@ -49,18 +49,6 @@ public class LifeInfuserSO : ScriptableObject
         AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
         //infuserActivationUI.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infuserActivationUI, infuserNumber));
     }
-    public void SpawnObstacle(GameObject[] obstacleSprites)
-    {
-        foreach (GameObject obstacle in obstacleSprites)
-        {
-            obstacle.SetActive(true); // 각 GameObject 활성화
-            Obstacle obstacleComponent = obstacle.GetComponent<Obstacle>();
-            if (obstacleComponent != null)
-            {
-                obstacleComponent.ReactivateObstacle(obstacle.transform.position);
-            }
-        }
-    }
 
     /*
      * 활성화 완료 시 호출

@@ -9,7 +9,48 @@ using UnityEngine;
 
 public class ObstacleManager : MonoBehaviour
 {
+    public GameObject obstaclePrefab;
+    public int poolSize = 10;
+
     private List<Obstacle> allObstacles = new List<Obstacle>();
+    private Transform obstacleParent;
+
+    private void Start()
+    {
+        GameObject parentObject = new GameObject("Obstacles");
+        obstacleParent = parentObject.transform;
+
+        InitializeObstaclePool();
+    }
+
+    private void InitializeObstaclePool()
+    {
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject obstacleObj = Instantiate(obstaclePrefab);
+            obstacleObj.transform.SetParent(obstacleParent);
+            
+            obstacleObj.SetActive(false); 
+            Obstacle obstacle = obstacleObj.GetComponent<Obstacle>();
+
+            RegisterObstacle(obstacle);
+        }
+    }
+
+    public Obstacle GetObstacle()
+    {
+        foreach (Obstacle obstacle in allObstacles)
+        {
+            if (!obstacle.gameObject.activeInHierarchy)
+            {
+                obstacle.gameObject.SetActive(true);
+                return obstacle;
+            }
+        }
+
+        Debug.LogWarning("모든 장애물이 사용 중입니다!");
+        return null;
+    }
 
     public void RegisterObstacle(Obstacle obstacle)
     {
@@ -19,12 +60,9 @@ public class ObstacleManager : MonoBehaviour
         }
     }
 
-    public void UnregisterObstacle(Obstacle obstacle)
+    public void ReturnObstacle(Obstacle obstacle)
     {
-        if (allObstacles.Contains(obstacle))
-        {
-            allObstacles.Remove(obstacle);
-        }
+        obstacle.gameObject.SetActive(false);
     }
 
     public void StopAllObstacles()

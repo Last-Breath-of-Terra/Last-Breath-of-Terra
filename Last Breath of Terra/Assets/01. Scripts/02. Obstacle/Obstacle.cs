@@ -29,7 +29,7 @@ public class Obstacle : MonoBehaviour
     private List<Transform> clickedPoints = new List<Transform>();
     private Dictionary<Transform, bool> attackPointStates = new Dictionary<Transform, bool>();
 
-    private void Start()
+    private void Awake()
     {
         _rb = this.GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -238,11 +238,7 @@ public class Obstacle : MonoBehaviour
 
     private void ResetAttackState()
     {
-        if (timingIndicator != null)
-        {
-            timingIndicator.localPosition = initialTimingIndicatorPos;
-        }
-
+        timingIndicator.localPosition = initialTimingIndicatorPos;
         currentHitCount = 0;
 
         foreach (Transform point in attackPoints)

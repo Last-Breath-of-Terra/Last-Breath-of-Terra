@@ -17,18 +17,16 @@ public class MouseHoverHandler : MonoBehaviour
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(worldPosition, Vector2.zero);
-        bool isCurrentlyHovered = false;
+        int hoverLayerMask = LayerMask.GetMask("obstacleHover");
+        RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero, Mathf.Infinity, hoverLayerMask);
 
-        foreach (var hit in hits)
+        if (hit.collider != null)
         {
-            if (hit.collider != null && hit.collider.gameObject == gameObject)
-            {
-                isCurrentlyHovered = true;
-                break;
-            }
+            parentObstacle.SetHovered(true);
         }
-
-        parentObstacle.SetHovered(isCurrentlyHovered);
+        else
+        {
+            parentObstacle.SetHovered(false);
+        }
     }
 }

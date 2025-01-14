@@ -257,6 +257,7 @@ MonoBehaviour:
   - {fileID: 6719746487878657740}
   - {fileID: 4082392446713929217}
   timingIndicator: {fileID: 1333905242434506353}
+  targetPoint: {fileID: 0}
   attackGroup: {fileID: 5605050973237194310}
   destroyEffectPrefab: {fileID: 2955623459812423943, guid: f5507a8c6a22c404ab324980c4e8a11b, type: 3}
 --- !u!82 &1856818411440103085
@@ -455,7 +456,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7270705082966723041
 Transform:
   m_ObjectHideFlags: 0
@@ -791,9 +792,9 @@ GameObject:
   - component: {fileID: 6033693940444347221}
   - component: {fileID: 5149452624591856619}
   - component: {fileID: 3189487482933257717}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: MouseHoverTrigger
-  m_TagString: Obstacle
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

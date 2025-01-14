@@ -14,17 +14,18 @@ using UnityEngine.Rendering.Universal;
 public class LifeInfuser : MonoBehaviour
 {
     public LifeInfuserSO lifeInfuserData;
-    public GameObject[] obstacleSprites;
+    public Transform[] obstacleSpawnPoints;
     public int infuserNumber;
     public int infuserType;
+    public float spawnDelay = 1f;
+    public float spawnInterval = 2f;
+    public Transform arrivalPoint;
     //public bool[] canInfusion;
+    
     private Tween startTween;
-
+    private Coroutine obstacleSpawnCoroutine;
     private PlayerController _playerController;
     private Material mat;
-    private Tween enableTween;
-    private Tween thicknessTween;
-    private Bloom bloom;
 
     private void Start()
     {
@@ -60,7 +61,11 @@ public class LifeInfuser : MonoBehaviour
         }
         DOTween.To(() => lifeInfuserData.defaultLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
         lifeInfuserData.StartInfusion(infuserNumber, gameObject);
-        lifeInfuserData.SpawnObstacle(obstacleSprites);
+        
+        if (obstacleSpawnCoroutine == null)
+        {
+            obstacleSpawnCoroutine = StartCoroutine(SpawnObstaclesPeriodically());
+        }
         
         GameManager.Instance._shaderManager.PlayInfusionSequence(
             mat, 
@@ -70,9 +75,35 @@ public class LifeInfuser : MonoBehaviour
         );
     }
 
+    private IEnumerator SpawnObstaclesPeriodically()
+    {
+        yield return new WaitForSeconds(spawnDelay);
+
+        while (true)
+        {
+            SpawnObstacle();
+            yield return new WaitForSeconds(spawnInterval);
+        }
+    }
+
+    private void SpawnObstacle()
+    {
+        if (obstacleSpawnPoints == null || obstacleSpawnPoints.Length == 0) return;
+
+        int randomIndex = UnityEngine.Random.Range(0, obstacleSpawnPoints.Length);
+        Transform spawnPoint = obstacleSpawnPoints[randomIndex];
+
+        Obstacle obstacle = GameManager.Instance._obstacleManager.GetObstacle();
+        if (obstacle != null)
+        {
+            obstacle.transform.position = spawnPoint.position;
+            obstacle.targetPoint = arrivalPoint;
+            obstacle.ReactivateObstacle(spawnPoint.position);
+        }
+    }
+
     private void CompleteInfusion()
     {
-        Debug.Log("완료되었습니당!");
         GameManager.Instance._shaderManager.CompleteInfusionEffect(
         mat,
         Camera.main.GetComponent<Volume>(),
@@ -85,6 +116,12 @@ public class LifeInfuser : MonoBehaviour
             if (_playerController != null)
             {
                 _playerController.SetCanMove(true);
+            }
+
+            if (obstacleSpawnCoroutine != null)
+            {
+                StopCoroutine(obstacleSpawnCoroutine);
+                obstacleSpawnCoroutine = null;
             }
         });
     }

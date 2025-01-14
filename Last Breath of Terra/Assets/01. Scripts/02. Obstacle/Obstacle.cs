@@ -14,12 +14,12 @@ public class Obstacle : MonoBehaviour
     public Sprite[] obstacleSprites;
     public Transform[] attackPoints;
     public Transform timingIndicator;
+    public Transform targetPoint;
     public GameObject attackGroup;
     public GameObject destroyEffectPrefab;
 
     protected bool isHovered = false;
     protected bool isRotating = true;
-    [SerializeField]
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D _rb;
     private Vector3 initialTimingIndicatorPos;
@@ -29,7 +29,7 @@ public class Obstacle : MonoBehaviour
     private List<Transform> clickedPoints = new List<Transform>();
     private Dictionary<Transform, bool> attackPointStates = new Dictionary<Transform, bool>();
 
-    private void Start()
+    private void Awake()
     {
         _rb = this.GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -48,6 +48,11 @@ public class Obstacle : MonoBehaviour
 
     private void OnEnable()
     {
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
+
         isActive = true;
 
         if (GameManager.Map.GetCurrentMapType() == MAP_TYPE.Tutorial)
@@ -69,15 +74,13 @@ public class Obstacle : MonoBehaviour
     private void OnDisable()
     {
         isActive = false;
-
-        GameManager.Instance._obstacleManager.UnregisterObstacle(this);
     }
 
     private void Update()
     {
         if (isActive)
         {
-            MoveTowardsPlayer();
+            MoveTowardsTarget();
         }
 
         if (isHovered && isRotating)
@@ -87,15 +90,12 @@ public class Obstacle : MonoBehaviour
     }
 
     #region Movement Methods
-    private void MoveTowardsPlayer()
+    private void MoveTowardsTarget()
     {
-        Vector3 direction = (GameManager.Instance.playerTr.position - transform.position).normalized;
-        float distanceToPlayer = Vector3.Distance(transform.position, GameManager.Instance.playerTr.position);
-        
-        if (distanceToPlayer > data.stopDistance)
-        {
-            transform.position += direction * currentSpeed * Time.deltaTime;
-        }
+        if (targetPoint == null) return;
+
+        Vector3 direction = (targetPoint.position - transform.position).normalized;
+        transform.position += direction * currentSpeed * Time.deltaTime;
     }
     #endregion
 
@@ -238,11 +238,7 @@ public class Obstacle : MonoBehaviour
 
     private void ResetAttackState()
     {
-        if (timingIndicator != null)
-        {
-            timingIndicator.localPosition = initialTimingIndicatorPos;
-        }
-
+        timingIndicator.localPosition = initialTimingIndicatorPos;
         currentHitCount = 0;
 
         foreach (Transform point in attackPoints)
@@ -273,7 +269,7 @@ public class Obstacle : MonoBehaviour
         GameObject effect = Instantiate(destroyEffectPrefab, transform.position, Quaternion.identity);
         Destroy(effect, 2f);
 
-        gameObject.SetActive(false);
+        GameManager.Instance._obstacleManager.ReturnObstacle(this);
     }
 
     public void ReactivateObstacle(Vector3 newPosition)
@@ -307,7 +303,13 @@ public class Obstacle : MonoBehaviour
             HandleHoverEffect();
             GameManager.Instance._obstacleManager.SlowDownAllObstacles();
         }
-        else if (collision.transform.CompareTag("Player"))
+
+        if (collision.CompareTag("InfuserObject"))
+        {
+            DeactivateObstacle();
+        }
+        
+        if (collision.transform.CompareTag("Player"))
         {
             lifeInfuserSO.StopInfusion(collision.GetComponent<AudioSource>());
 

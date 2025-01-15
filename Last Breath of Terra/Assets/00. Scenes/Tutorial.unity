@@ -464,6 +464,7 @@ MonoBehaviour:
   virtualCamera: {fileID: 651167934}
   fadeImage: {fileID: 380302801519020982}
   fadeDuration: 1
+  parallaxBackgroundObject: {fileID: 0}
 --- !u!4 &163201283
 Transform:
   m_ObjectHideFlags: 0
@@ -657,11 +658,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeInfuserData: {fileID: 11400000, guid: 16e2f725b91c66142bb0654d826a5b39, type: 2}
-  obstacleSprites:
-  - {fileID: 0}
-  - {fileID: 0}
+  obstacleSpawnPoints: []
   infuserNumber: 0
   infuserType: 0
+  spawnDelay: 1
+  spawnInterval: 2
+  arrivalPoint: {fileID: 0}
 --- !u!212 &165459618
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1821,11 +1823,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeInfuserData: {fileID: 11400000, guid: 16e2f725b91c66142bb0654d826a5b39, type: 2}
-  obstacleSprites:
-  - {fileID: 0}
-  - {fileID: 0}
+  obstacleSpawnPoints: []
   infuserNumber: 0
   infuserType: 0
+  spawnDelay: 1
+  spawnInterval: 2
+  arrivalPoint: {fileID: 0}
 --- !u!212 &590505388
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2605,7 +2608,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &918052102
 Transform:
   m_ObjectHideFlags: 0
@@ -2755,7 +2758,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1103400905
 Transform:
   m_ObjectHideFlags: 0
@@ -3097,11 +3100,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeInfuserData: {fileID: 11400000, guid: 16e2f725b91c66142bb0654d826a5b39, type: 2}
-  obstacleSprites:
-  - {fileID: 0}
-  - {fileID: 0}
+  obstacleSpawnPoints: []
   infuserNumber: 0
   infuserType: 0
+  spawnDelay: 1
+  spawnInterval: 2
+  arrivalPoint: {fileID: 0}
 --- !u!212 &1133467354
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3226,8 +3230,8 @@ Transform:
   m_GameObject: {fileID: 1156693723}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 55.25, y: -7.97, z: -0.0874}
-  m_LocalScale: {x: 1.6645399, y: 1.6645399, z: 1.6645399}
+  m_LocalPosition: {x: 55.2468, y: -8.8824, z: -0.0874}
+  m_LocalScale: {x: 3.4184442, y: 3.4184442, z: 3.4184442}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 918052102}
@@ -3273,8 +3277,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a768c0d86831fe74981d7ae2fefe451a, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.3529412}
+  m_Sprite: {fileID: 21300000, guid: b6c64c1fa64e298498528b036197d525, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -17041,7 +17045,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_Origin: {x: -224, y: -64, z: 0}
   m_Size: {x: 415, y: 231, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -17526,11 +17530,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeInfuserData: {fileID: 11400000, guid: 16e2f725b91c66142bb0654d826a5b39, type: 2}
-  obstacleSprites:
-  - {fileID: 0}
-  - {fileID: 0}
+  obstacleSpawnPoints: []
   infuserNumber: 0
   infuserType: 0
+  spawnDelay: 1
+  spawnInterval: 2
+  arrivalPoint: {fileID: 0}
 --- !u!212 &1393578370
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -50120,7 +50125,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_Origin: {x: -224, y: -64, z: 0}
   m_Size: {x: 414, y: 231, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -50562,8 +50567,8 @@ Transform:
   m_GameObject: {fileID: 1679405175}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 281.7298, y: 9.17, z: -0.0874}
-  m_LocalScale: {x: 1.556068, y: 1.556068, z: 1.556068}
+  m_LocalPosition: {x: 281.339, y: 26.8125, z: -0.0874}
+  m_LocalScale: {x: 2.6259022, y: 2.6259022, z: 2.6259022}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 918052102}
@@ -50609,12 +50614,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 0100462c1b5c66d4b98596c57da2d8a2, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.3529412}
+  m_Sprite: {fileID: 21300000, guid: a768c0d86831fe74981d7ae2fefe451a, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 126.60363, y: 14.279999}
+  m_Size: {x: 81.53487, y: 35.99}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -52790,11 +52795,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeInfuserData: {fileID: 11400000, guid: 16e2f725b91c66142bb0654d826a5b39, type: 2}
-  obstacleSprites:
-  - {fileID: 0}
-  - {fileID: 0}
+  obstacleSpawnPoints: []
   infuserNumber: 0
   infuserType: 0
+  spawnDelay: 1
+  spawnInterval: 2
+  arrivalPoint: {fileID: 0}
 --- !u!60 &1939532131991265180
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -54285,11 +54291,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6256871501048152519, guid: ea412903f790648489e69e608c73d1e9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 283.98
+      value: 266.7
       objectReference: {fileID: 0}
     - target: {fileID: 6256871501048152519, guid: ea412903f790648489e69e608c73d1e9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 73.6
+      value: 89.6
       objectReference: {fileID: 0}
     - target: {fileID: 6256871501048152519, guid: ea412903f790648489e69e608c73d1e9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -55711,11 +55717,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 989979249136696449, guid: ccaa864d779f8914da9931eb96558b12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 284.81
+      value: 257.3
       objectReference: {fileID: 0}
     - target: {fileID: 989979249136696449, guid: ccaa864d779f8914da9931eb96558b12, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 59.45
+      value: 66.2
       objectReference: {fileID: 0}
     - target: {fileID: 989979249136696449, guid: ccaa864d779f8914da9931eb96558b12, type: 3}
       propertyPath: m_LocalPosition.z
@@ -56400,6 +56406,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82b3d98870d05495b9c55db17f583412, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstaclePrefab: {fileID: 0}
+  poolSize: 10
 --- !u!222 &8567719906016143156
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56745,11 +56753,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 989979249136696449, guid: ccaa864d779f8914da9931eb96558b12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 264.67
+      value: 220.5
       objectReference: {fileID: 0}
     - target: {fileID: 989979249136696449, guid: ccaa864d779f8914da9931eb96558b12, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 71.69
+      value: 83.5
       objectReference: {fileID: 0}
     - target: {fileID: 989979249136696449, guid: ccaa864d779f8914da9931eb96558b12, type: 3}
       propertyPath: m_LocalPosition.z
@@ -56806,11 +56814,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1458581446684516670, guid: ceccecf8f3ea705409d677ea832095dc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 263.17
+      value: 265.4
       objectReference: {fileID: 0}
     - target: {fileID: 1458581446684516670, guid: ceccecf8f3ea705409d677ea832095dc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 60.54
+      value: 104.5
       objectReference: {fileID: 0}
     - target: {fileID: 1458581446684516670, guid: ceccecf8f3ea705409d677ea832095dc, type: 3}
       propertyPath: m_LocalPosition.z

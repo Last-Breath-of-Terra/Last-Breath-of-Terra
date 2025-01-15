@@ -57,6 +57,7 @@ public class LifeInfuser : MonoBehaviour
         if (_playerController != null)
         {
             AudioManager.instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(), gameObject.transform);
+            _playerController.SetActivatingState(true);
             _playerController.SetCanMove(false);
         }
         DOTween.To(() => lifeInfuserData.defaultLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
@@ -115,6 +116,7 @@ public class LifeInfuser : MonoBehaviour
 
             if (_playerController != null)
             {
+                _playerController.SetActivatingState(false);
                 _playerController.SetCanMove(true);
             }
 

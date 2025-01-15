@@ -29,8 +29,14 @@ public class PlayerController : MonoBehaviour
 
     private bool isOnWall = false;
     private bool isClimbing = false;
+    private bool isFallingDelay = false;
     private float climbSpeed = 3f;
     private float fallStartY = 0f;
+    private float moveDelayAfterFall = 2f;
+
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float groundCheckRadius = 0.1f;
+    [SerializeField] private Transform groundCheckPoint;
 
     void Awake()
     {
@@ -67,6 +73,11 @@ public class PlayerController : MonoBehaviour
 
         HandleFalling();
     }
+
+    void FixedUpdate()
+    {
+        UpdateGroundedState();
+    }
     
     private void OnEnable()
     {
@@ -90,7 +101,7 @@ public class PlayerController : MonoBehaviour
     private void HandleAcceleration()
     {   
         // 마지막 이전 버전
-        if (isHoldingClick)
+        if (isHoldingClick && !isFallingDelay && !isClimbing)
         {
             float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
 
@@ -144,6 +155,9 @@ public class PlayerController : MonoBehaviour
 
     private void HandleFootstepSound()
     {
+        if (!isGrounded || _rb.velocity.magnitude < 0.1f)
+            return;
+
         footstepTimer += Time.deltaTime;
 
         if (footstepTimer >= footstepInterval)
@@ -215,8 +229,10 @@ public class PlayerController : MonoBehaviour
         isOnWall = true;
         isClimbing = false;
 
+        _animator.SetBool("isJumping", false);
+        _animator.SetBool("isRunning", false);
         _animator.SetBool("isWalking", false);
-
+        _animator.SetBool("isClimbing", true);
         _rb.velocity = Vector2.zero;
         _rb.gravityScale = 0f;
         //_animator.SetBool("StickToWall", true);
@@ -232,30 +248,45 @@ public class PlayerController : MonoBehaviour
 
         isClimbing = true;
         _rb.velocity = new Vector2(0, climbSpeed);
-        //_animator.SetBool("Climb", true);
     }
 
     private void FallOffWall()
     {
         isOnWall = false;
         isClimbing = false;
+        canMove = false;
+        isFallingDelay = true;
 
         //나중에 콜라이더 문제 해결이 안 될 경우 활성화
         //isGrounded = false;
 
         _rb.gravityScale = 3f;
         _animator.SetBool("isFalling", true);
+        _animator.SetBool("isClimbing", false);
        
         float backwardForce = 2f;
         float direction = transform.localScale.x > 0 ? -1 : 1;
 
         _rb.velocity = new Vector2(backwardForce * direction, -2f);
+
+        StartCoroutine(EnableMovementAfterDelay());
+    }
+
+    private IEnumerator EnableMovementAfterDelay()
+    {
+        yield return new WaitForSeconds(moveDelayAfterFall);
+
+        _animator.SetBool("isLanding", false);
+        canMove = true;
+        isFallingDelay = false;
     }
 
     private void ResetWallState()
     {
         isOnWall = false;
         isClimbing = false;
+
+        _animator.SetBool("isClimbing", false);
 
         _rb.gravityScale = 3f;
         _rb.velocity = Vector2.zero;
@@ -306,6 +337,7 @@ public class PlayerController : MonoBehaviour
 
         _rb.velocity = new Vector2(0, _rb.velocity.y);
 
+        _animator.SetBool("isClimbing", false);
         _animator.SetBool("isWalking", false);
         _animator.SetBool("isRunning", false);
 
@@ -334,6 +366,7 @@ public class PlayerController : MonoBehaviour
 
             _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
             isGrounded = false;
+            _animator.SetBool("isJumping", true);
 
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
@@ -376,7 +409,7 @@ public class PlayerController : MonoBehaviour
     #region Moving System
     private void Move()
     {
-        if (!canMove || isOnWall) return;
+        if (!canMove || isOnWall || isFallingDelay) return;
 
         float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
 
@@ -446,6 +479,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!isOnWall && !isClimbing)
             {
+                _animator.SetBool("isJumping", false);
                 _animator.SetBool("isFalling", true);
             }
 
@@ -465,6 +499,8 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator HandleLandingDelay()
     {
+        if (!isGrounded || _rb.velocity.y < 0) yield break;
+
         _animator.SetBool("isFalling", false);
         _animator.SetBool("isLanding", true);
         isGrounded = true;
@@ -478,6 +514,16 @@ public class PlayerController : MonoBehaviour
          _rb.velocity = new Vector2(0, _rb.velocity.y);
     }
     #endregion
+
+    private void UpdateGroundedState()
+    {
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
+
+        if (isGrounded)
+        {
+            fallStartY = 0f;
+        }
+    }
 
     private void UpdateAnimationState()
     {
@@ -548,10 +594,13 @@ public class PlayerController : MonoBehaviour
                     float fallHeight = fallStartY - transform.position.y;
                     fallStartY = 0f;
                     _animator.SetBool("isFalling", false);
+                    _animator.SetBool("isWalking", false);
+                    _animator.SetBool("isRunning", false);
 
                     if (fallHeight > 5f)
                     {
                         StartCoroutine(HandleLandingDelay());
+                        return;
                     }
                     else
                     {

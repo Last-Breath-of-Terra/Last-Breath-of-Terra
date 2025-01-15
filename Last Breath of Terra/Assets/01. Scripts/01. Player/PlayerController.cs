@@ -578,7 +578,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Wall"))
         {
-            if (!isOnWall && _rb.velocity.y <= 0)
+            if (!isOnWall)
             {
                 StickToWall();
             }

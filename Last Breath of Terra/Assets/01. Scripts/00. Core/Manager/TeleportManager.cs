@@ -88,10 +88,16 @@ public class TeleportManager : MonoBehaviour
             player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
 
         }
-
-        AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        AudioManager.instance.FadeInBGM(1f);
-        AudioManager.instance.FadeInAmbience(1f);
+        if(AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID)){
+            AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+            AudioManager.instance.FadeInAmbience(1f);
+        }
+        else
+        {
+            AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+            AudioManager.instance.FadeInBGM(1f);
+            AudioManager.instance.FadeInAmbience(1f);
+        }
 
         // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         if (parallaxBackgroundObject != null)

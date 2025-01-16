@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
+    [HideInInspector] public Dictionary<int, string> mapAmbienceDict;
 
     private ScenesManager scenesManager;
 
@@ -17,7 +18,6 @@ public class AudioManager : MonoBehaviour
 
     [Header("Ambience")] private AudioClip[] ambienceInitClips;
     private Dictionary<string, AudioClip> ambienceAudioClips;
-    private Dictionary<int, string> mapAmbienceDict;
     private AudioSource ambienceSource;
     private float ambienceVolume = 1.0f;
 
@@ -180,11 +180,10 @@ public class AudioManager : MonoBehaviour
                 if (mapAmbienceDict.ContainsKey(mapID))
                 {
                     ambienceName = mapAmbienceDict[mapID];
-                    bgmSource.Stop();
+                    bgmSource.volume = 0;
                 }
                 else
                 {
-                    bgmSource.Play();
                     ambienceName = "ambi_livingroom";
                 }
                 break;

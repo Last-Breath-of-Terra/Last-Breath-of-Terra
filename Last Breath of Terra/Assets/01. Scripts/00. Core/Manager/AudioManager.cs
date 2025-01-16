@@ -8,7 +8,6 @@ using Random = System.Random;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
-
     public GameObject player;
 
     //Ambience BGM Foley SFX
@@ -101,7 +100,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        PlayBGM("BGM");
+        PlayBGMForCurrentMap();
         PlayAmbience("ambi_livingroom");
     }
 
@@ -113,6 +112,62 @@ public class AudioManager : MonoBehaviour
             bgmSource.volume = bgmVolume;
             bgmSource.Play();
         }
+    }
+
+    public void PlayBGMForCurrentMap()
+    {
+        SCENE_TYPE currentMap = GameManager.ScenesManager.GetCurrentMapType();
+
+        string bgmName = "";
+
+        switch (currentMap)
+        {
+            case SCENE_TYPE.Tutorial:
+                bgmName = "Tutorial_BGM";
+                break;
+            case SCENE_TYPE.Gravel:
+                bgmName = "Stage1_Gravel_BGM";
+                break;
+            case SCENE_TYPE.Sand:
+                bgmName = "BGM_Sand";
+                break;
+            case SCENE_TYPE.Wood:
+                bgmName = "BGM_Wood";
+                break;
+            default:
+                bgmName = "BGM_Default";
+                break;
+        }
+
+        PlayBGM(bgmName);
+    }
+
+    public void PlayAmbienceForCurrentMap()
+    {
+        SCENE_TYPE currentMap = GameManager.ScenesManager.GetCurrentMapType();
+
+        string bgmName = "";
+
+        switch (currentMap)
+        {
+            case SCENE_TYPE.Tutorial:
+                bgmName = "Tutorial_BGM";
+                break;
+            case SCENE_TYPE.Gravel:
+                bgmName = "Stage1_Gravel_BGM";
+                break;
+            case SCENE_TYPE.Sand:
+                bgmName = "BGM_Sand";
+                break;
+            case SCENE_TYPE.Wood:
+                bgmName = "BGM_Wood";
+                break;
+            default:
+                bgmName = "BGM_Default";
+                break;
+        }
+
+        PlayBGM(bgmName);
     }
 
     public void PlayAmbience(string ambienceName)

@@ -18,7 +18,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float currentSpeed;
     
-    private Rigidbody2D _rb;
+    public Rigidbody2D _rb;
+    public bool isJumping;
     private Animator _animator;
     private Vector3 originalScale;
     private Vector2 targetPosition;
@@ -163,7 +164,7 @@ public class PlayerController : MonoBehaviour
         if (footstepTimer >= footstepInterval)
         {
             footstepTimer = 0f;
-            AudioManager.instance.PlayRandomPlayer("footstep_" + GameManager.Map.GetCurrentMapType() + "_", 0);// gameObject.GetComponent<AudioSource>(), transform);
+            AudioManager.instance.PlayRandomPlayer("footstep_" + GameManager.ScenesManager.GetCurrentMapType() + "_", 0);// gameObject.GetComponent<AudioSource>(), transform);
         }
     }
     #endregion
@@ -193,7 +194,9 @@ public class PlayerController : MonoBehaviour
 
     private Collider2D GetWallCollider()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right, 0.5f, LayerMask.GetMask("Wall"));
+        float direction = transform.localScale.x > 0 ? 1 : -1;
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right * direction, 0.5f, LayerMask.GetMask("Wall"));
         return hit.collider;
     }
 
@@ -216,7 +219,7 @@ public class PlayerController : MonoBehaviour
             transform.position.z
         );
 
-        Debug.Log(targetPosition);
+        _animator.SetBool("isClimbing", false);
 
         transform.DOMove(targetPosition, 0.5f).OnComplete(() =>
         {
@@ -322,27 +325,19 @@ public class PlayerController : MonoBehaviour
         
         if (isOnWall)
         {
-            if (isClimbing)
-            {
-                FallOffWall();
-            }
-            else
-            {
-                isOnWall = false;
-                isClimbing = false;
-                _rb.gravityScale = 3f;
-                _rb.velocity = Vector2.zero;
-            }
+            FallOffWall();
         }
-
-        _rb.velocity = new Vector2(0, _rb.velocity.y);
+        else
+        {
+            _rb.velocity = new Vector2(0, _rb.velocity.y);
+        }
 
         _animator.SetBool("isClimbing", false);
         _animator.SetBool("isWalking", false);
         _animator.SetBool("isRunning", false);
 
         AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
-        AudioManager.instance.PlaySFX("footstep_" + GameManager.Map.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
+        AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
 
         CancelInvoke("StartMoving");
     }
@@ -354,6 +349,7 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded && canMove)
         {
+            isJumping = true;
             float direction = transform.localScale.x > 0 ? 1 : -1;
             if (currentSpeed > 2.1f)
             {
@@ -588,6 +584,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!isGrounded && _rb.velocity.y <= 0)
             {
+                isJumping = false;
                 float groundY = collision.contacts[0].point.y;
                 if (groundY < transform.position.y)
                 {

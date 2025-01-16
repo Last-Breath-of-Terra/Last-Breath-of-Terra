@@ -55,7 +55,7 @@ public class Obstacle : MonoBehaviour
 
         isActive = true;
 
-        if (GameManager.Map.GetCurrentMapType() == MAP_TYPE.Tutorial)
+        if (GameManager.ScenesManager.GetCurrentMapType() == SCENE_TYPE.Tutorial)
         {
             GameManager.Instance._obstacleManager.RegisterObstacle(this);
             AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(), transform);
@@ -118,7 +118,7 @@ public class Obstacle : MonoBehaviour
         HandleHoverEffect();
     }
 
-    private void HandleHoverEffect()
+    protected void HandleHoverEffect()
     {
         attackGroup.SetActive(isHovered);
     }

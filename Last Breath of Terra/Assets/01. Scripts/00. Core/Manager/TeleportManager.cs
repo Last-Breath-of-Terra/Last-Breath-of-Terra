@@ -90,6 +90,8 @@ public class TeleportManager : MonoBehaviour
 
         }
 
+        AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+
         // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         if (parallaxBackgroundObject != null)
         {

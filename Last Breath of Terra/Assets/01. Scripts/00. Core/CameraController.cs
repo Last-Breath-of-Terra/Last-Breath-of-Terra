@@ -31,10 +31,14 @@ public class CameraController : MonoBehaviour
                 {
                     framingTransposer.m_DeadZoneHeight = 0f;
                 }
+                else if (playerController._rb.velocity.y < 0f && !playerController.isJumping)
+                {
+                    framingTransposer.m_DeadZoneHeight = 0f;
+                }
                 else
                 {
                     framingTransposer.m_DeadZoneHeight = 0.7f;
-                } 
+                }
             }
             
         }

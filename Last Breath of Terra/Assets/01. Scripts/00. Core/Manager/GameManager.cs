@@ -13,9 +13,9 @@ public class GameManager : MonoBehaviour
     
     public Transform playerTr;
 
-    private MapManager _map;
+    private ScenesManager _scenesManager;
 
-    public static MapManager Map { get { return Instance._map; } }
+    public static ScenesManager ScenesManager { get { return Instance._scenesManager; } }
 
 
     void Awake()
@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
-        _map = new MapManager();
+        _scenesManager = new ScenesManager();
     }
 
     void Start()

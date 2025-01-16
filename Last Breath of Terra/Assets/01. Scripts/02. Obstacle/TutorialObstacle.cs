@@ -24,4 +24,13 @@ public class TutorialObstacle : Obstacle
         gameObject.SetActive(false);
         OnObstacleDisabled?.Invoke(this);
     }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.isTrigger)
+        {
+            isHovered = false;
+            HandleHoverEffect();
+        }
+    }
 }

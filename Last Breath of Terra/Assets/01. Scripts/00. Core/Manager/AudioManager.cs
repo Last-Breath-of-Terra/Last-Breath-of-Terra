@@ -8,7 +8,7 @@ using Random = System.Random;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
-
+    public ScenesManager scenes;
     public GameObject player;
 
     //Ambience BGM Foley SFX
@@ -19,6 +19,7 @@ public class AudioManager : MonoBehaviour
 
     [Header("Ambience")] private AudioClip[] ambienceInitClips;
     private Dictionary<string, AudioClip> ambienceAudioClips;
+    private Dictionary<int, string> mapAmbienceDict;
     private AudioSource ambienceSource;
     private float ambienceVolume = 1.0f;
 
@@ -84,6 +85,15 @@ public class AudioManager : MonoBehaviour
         ambienceSource.volume = ambienceVolume;
         ambienceSource.loop = true;
         ambienceSource.playOnAwake = false;
+        mapAmbienceDict = new Dictionary<int, string>()
+        {
+            { 2, "stage_01_map_02" },
+            { 4, "stage_01_map_04_06" },
+            { 6, "stage_01_map_04_06"},
+            { 7, "stage_01_map_07_10"},
+            { 9, "stage_01_map_09"},
+            { 10, "stage_01_map_07_10"},
+        };
 
         #endregion
 
@@ -101,7 +111,7 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        PlayBGM("BGM");
+        PlayBGMForCurrentScene();
         PlayAmbience("ambi_livingroom");
     }
 
@@ -113,6 +123,74 @@ public class AudioManager : MonoBehaviour
             bgmSource.volume = bgmVolume;
             bgmSource.Play();
         }
+    }
+
+    public void PlayBGMForCurrentScene()
+    {
+        SCENE_TYPE currentScene = GameManager.ScenesManager.GetCurrentSceneType();
+
+        string bgmName = "";
+
+        switch (currentScene)
+        {
+            case SCENE_TYPE.Intro:
+                bgmName = "Intro_BGM";
+                break;
+            case SCENE_TYPE.Tutorial:
+                bgmName = "Tutorial_BGM";
+                break;
+            case SCENE_TYPE.Gravel:
+                bgmName = "Stage1_Gravel_BGM";
+                break;
+            case SCENE_TYPE.Sand:
+                bgmName = "BGM_Sand";
+                break;
+            case SCENE_TYPE.Wood:
+                bgmName = "BGM_Wood";
+                break;
+            default:
+                bgmName = "BGM_Default";
+                break;
+        }
+
+        PlayBGM(bgmName);
+    }
+
+    public void PlayAmbienceForSceneAndMap(int mapID)
+    {
+        SCENE_TYPE currentScene = GameManager.ScenesManager.GetCurrentSceneType();
+        
+        string ambienceName = "";
+
+        switch (currentScene)
+        {
+            case SCENE_TYPE.Tutorial:
+                ambienceName = "ambi_livingroom";
+                break;
+            case SCENE_TYPE.Gravel:
+                if (mapAmbienceDict.ContainsKey(mapID))
+                {
+                    ambienceName = mapAmbienceDict[mapID];
+                    bgmSource.Stop();
+                }
+                else
+                {
+                    bgmSource.Play();
+                    ambienceName = "ambi_livingroom";
+                }
+                break;
+            case SCENE_TYPE.Sand:
+                ambienceName = "AM";
+                break;
+            case SCENE_TYPE.Wood:
+                ambienceName = "AM";
+                break;
+            default:
+                ambienceName = "ambi_livingroom";
+                break;
+        }
+
+        PlayAmbience(ambienceName);
     }
 
     public void PlayAmbience(string ambienceName)

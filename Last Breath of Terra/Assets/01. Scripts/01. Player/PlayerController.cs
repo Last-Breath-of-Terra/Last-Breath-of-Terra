@@ -164,7 +164,7 @@ public class PlayerController : MonoBehaviour
         if (footstepTimer >= footstepInterval)
         {
             footstepTimer = 0f;
-            AudioManager.instance.PlayRandomPlayer("footstep_" + GameManager.ScenesManager.GetCurrentMapType() + "_", 0);// gameObject.GetComponent<AudioSource>(), transform);
+            AudioManager.instance.PlayRandomPlayer("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_", 0);// gameObject.GetComponent<AudioSource>(), transform);
         }
     }
     #endregion
@@ -337,7 +337,7 @@ public class PlayerController : MonoBehaviour
         _animator.SetBool("isRunning", false);
 
         AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
-        AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentMapType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
+        AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
 
         CancelInvoke("StartMoving");
     }
@@ -584,6 +584,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!isGrounded && _rb.velocity.y <= 0)
             {
+                AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
                 isJumping = false;
                 float groundY = collision.contacts[0].point.y;
                 if (groundY < transform.position.y)

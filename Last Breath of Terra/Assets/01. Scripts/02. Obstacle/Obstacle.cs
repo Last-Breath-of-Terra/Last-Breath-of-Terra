@@ -55,7 +55,7 @@ public class Obstacle : MonoBehaviour
 
         isActive = true;
 
-        if (GameManager.ScenesManager.GetCurrentMapType() == SCENE_TYPE.Tutorial)
+        if (GameManager.ScenesManager.GetCurrentSceneType() == SCENE_TYPE.Tutorial)
         {
             GameManager.Instance._obstacleManager.RegisterObstacle(this);
             AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(), transform);

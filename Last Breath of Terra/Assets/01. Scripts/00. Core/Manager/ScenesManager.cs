@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 
 public enum SCENE_TYPE
 {
+    Intro,
     Tutorial,
     Gravel,
     Sand,
@@ -20,7 +21,7 @@ public enum SCENE_TYPE
 
 public class ScenesManager
 {
-    private SCENE_TYPE currentMapType;
+    private SCENE_TYPE currentSceneType;
 
     public ScenesManager()
     {
@@ -31,32 +32,36 @@ public class ScenesManager
     {
         string sceneName = SceneManager.GetActiveScene().name;
 
-        if (sceneName.Contains("Tutorial"))
+        if (sceneName.Contains("Intro"))
         {
-            currentMapType = SCENE_TYPE.Tutorial;
+            currentSceneType = SCENE_TYPE.Intro;
+        }
+        else if (sceneName.Contains("Tutorial"))
+        {
+            currentSceneType = SCENE_TYPE.Tutorial;
         }
         else if (sceneName.Contains("gravel"))
         {
-            currentMapType = SCENE_TYPE.Gravel;
+            currentSceneType = SCENE_TYPE.Gravel;
         }
         else if (sceneName.Contains("sand"))
         {
-            currentMapType = SCENE_TYPE.Sand;
+            currentSceneType = SCENE_TYPE.Sand;
         }
         else if (sceneName.Contains("wood"))
         {
-            currentMapType = SCENE_TYPE.Wood;
+            currentSceneType = SCENE_TYPE.Wood;
         }
         else
         {
-            currentMapType = SCENE_TYPE.Gravel;
+            currentSceneType = SCENE_TYPE.Gravel;
 
             //currentMapType = MAP_TYPE.Default;
         }
     }
 
-    public SCENE_TYPE GetCurrentMapType()
+    public SCENE_TYPE GetCurrentSceneType()
     {
-        return currentMapType;
+        return currentSceneType;
     }
 }

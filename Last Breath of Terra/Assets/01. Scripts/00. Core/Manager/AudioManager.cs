@@ -1,15 +1,13 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
-using Random = System.Random;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
-    public ScenesManager scenes;
-    public GameObject player;
+
+    private ScenesManager scenesManager;
 
     //Ambience BGM Foley SFX
     [Header("BGM")] private AudioClip[] BGMInitClips;
@@ -48,6 +46,15 @@ public class AudioManager : MonoBehaviour
         }
 
         AudioInit();
+        scenesManager = new ScenesManager();
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void Start()
+    {
+        PlayBGMForCurrentScene();
+        PlayAmbience("ambi_livingroom");
     }
 
     private void AudioInit()
@@ -109,10 +116,10 @@ public class AudioManager : MonoBehaviour
         #endregion
     }
 
-    private void Start()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        scenesManager.UpdateCurrentSceneType();
         PlayBGMForCurrentScene();
-        PlayAmbience("ambi_livingroom");
     }
 
     public void PlayBGM(string bgmName)
@@ -127,14 +134,16 @@ public class AudioManager : MonoBehaviour
 
     public void PlayBGMForCurrentScene()
     {
-        SCENE_TYPE currentScene = GameManager.ScenesManager.GetCurrentSceneType();
+        SCENE_TYPE currentScene = scenesManager.GetCurrentSceneType();
+
+        Debug.Log(currentScene);
 
         string bgmName = "";
 
         switch (currentScene)
         {
-            case SCENE_TYPE.Intro:
-                bgmName = "Intro_BGM";
+            case SCENE_TYPE.Title:
+                bgmName = "Title_BGM";
                 break;
             case SCENE_TYPE.Tutorial:
                 bgmName = "Tutorial_BGM";
@@ -158,7 +167,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayAmbienceForSceneAndMap(int mapID)
     {
-        SCENE_TYPE currentScene = GameManager.ScenesManager.GetCurrentSceneType();
+        SCENE_TYPE currentScene = scenesManager.GetCurrentSceneType();
         
         string ambienceName = "";
 
@@ -203,12 +212,31 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void FadeOutBGM(float duration)
+    {
+        DOTween.To(() => bgmSource.volume, x => bgmSource.volume = x, 0f, duration);
+    }
+
+    public void FadeInBGM(float duration)
+    {
+        DOTween.To(() => bgmSource.volume, x => bgmSource.volume = x, 0.5f, duration);
+    }
+
+    public void FadeOutAmbience(float duration)
+    {
+        DOTween.To(() => ambienceSource.volume, x => ambienceSource.volume = x, 0f, duration);
+    }
+
+    public void FadeInAmbience(float duration)
+    {
+        DOTween.To(() => ambienceSource.volume, x => ambienceSource.volume = x, 1f, duration);
+    }
 
     public void PlaySFX(string sfxName, AudioSource audioSource, Transform soundTransform)
     {
         if (SFXAudioClips.ContainsKey(sfxName))
         {
-            float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f, -1.0f, 1.0f);
             audioSource.panStereo = panValue;
             audioSource.volume = sfxVolume;
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
@@ -221,7 +249,7 @@ public class AudioManager : MonoBehaviour
         sfxName += randomIndex;
         if (SFXAudioClips.ContainsKey(sfxName))
         {
-            float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f, -1.0f, 1.0f);
             audioSource.panStereo = panValue;
             audioSource.volume = sfxVolume;
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
@@ -232,7 +260,7 @@ public class AudioManager : MonoBehaviour
     {
         if (SFXAudioClips.ContainsKey(sfxName))
         {
-            AudioSource audioSource = player.GetComponent<AudioSource>();
+            AudioSource audioSource = GameManager.Instance.playerTr.gameObject.GetComponent<AudioSource>();
             audioSource.panStereo = -1;
             audioSource.volume = sfxVolume;
             audioSource.clip = SFXAudioClips[sfxName];
@@ -247,7 +275,7 @@ public class AudioManager : MonoBehaviour
     public void PlayPlayer(string audioName, float panValue)
     {
         currentTween.Kill();
-        AudioSource audioSource = player.GetComponent<AudioSource>();
+        AudioSource audioSource = GameManager.Instance.playerTr.gameObject.GetComponent<AudioSource>();
         audioSource.Stop();
         audioSource.panStereo = panValue;
         audioSource.PlayOneShot(SFXAudioClips[audioName]);
@@ -257,7 +285,7 @@ public class AudioManager : MonoBehaviour
         int randomIndex = UnityEngine.Random.Range(1, 3);
         audioName += randomIndex;
         currentTween.Kill();
-        AudioSource audioSource = player.GetComponent<AudioSource>();
+        AudioSource audioSource = GameManager.Instance.playerTr.gameObject.GetComponent<AudioSource>();
         audioSource.Stop();
         audioSource.panStereo = panValue;
         Debug.Log(audioName);
@@ -269,7 +297,7 @@ public class AudioManager : MonoBehaviour
         if (SFXAudioClips.ContainsKey(audioName))
         {
             audioSource.clip = SFXAudioClips[audioName];
-            float panValue = Mathf.Clamp((soundTransform.position.x - player.transform.position.x) / 2.0f, -1.0f, 1.0f);
+            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f, -1.0f, 1.0f);
             audioSource.panStereo = panValue;
             audioSource.Play();
         }

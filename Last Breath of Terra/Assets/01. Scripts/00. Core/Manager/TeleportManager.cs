@@ -1,10 +1,6 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Image = UnityEngine.UI.Image;
 using DG.Tweening;
 
@@ -67,6 +63,9 @@ public class TeleportManager : MonoBehaviour
     {
         player.GetComponent<Rigidbody2D>().gravityScale = 0;
 
+        AudioManager.instance.FadeOutBGM(1f);
+        AudioManager.instance.FadeOutAmbience(1f);
+
         int teleportOffset = 2;
         DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
         float f = 0f;
@@ -91,6 +90,8 @@ public class TeleportManager : MonoBehaviour
         }
 
         AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        AudioManager.instance.FadeInBGM(1f);
+        AudioManager.instance.FadeInAmbience(1f);
 
         // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         if (parallaxBackgroundObject != null)

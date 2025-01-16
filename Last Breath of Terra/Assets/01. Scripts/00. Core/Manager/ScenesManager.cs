@@ -1,8 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -11,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public enum SCENE_TYPE
 {
-    Intro,
+    Title,
     Tutorial,
     Gravel,
     Sand,
@@ -32,9 +27,9 @@ public class ScenesManager
     {
         string sceneName = SceneManager.GetActiveScene().name;
 
-        if (sceneName.Contains("Intro"))
+        if (sceneName.Contains("Title"))
         {
-            currentSceneType = SCENE_TYPE.Intro;
+            currentSceneType = SCENE_TYPE.Title;
         }
         else if (sceneName.Contains("Tutorial"))
         {

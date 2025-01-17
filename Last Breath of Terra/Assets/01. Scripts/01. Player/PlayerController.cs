@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     private float footstepInterval = 0.5f;
     private float footstepTimer = 0f;
 
+    private bool isGroundedTemp = false;
     private bool isOnWall = false;
     private bool isClimbing = false;
     private bool isFallingDelay = false;
@@ -349,6 +350,7 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded && canMove)
         {
+            fallStartY = transform.position.y;
             isJumping = true;
             float direction = transform.localScale.x > 0 ? 1 : -1;
             if (currentSpeed > 2.1f)
@@ -499,7 +501,8 @@ public class PlayerController : MonoBehaviour
 
         _animator.SetBool("isFalling", false);
         _animator.SetBool("isLanding", true);
-        isGrounded = true;
+        //isGrounded = true;
+        isGroundedTemp = true;
         canMove = false;
 
         yield return new WaitForSeconds(3f);
@@ -514,11 +517,6 @@ public class PlayerController : MonoBehaviour
     private void UpdateGroundedState()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
-
-        if (isGrounded)
-        {
-            fallStartY = 0f;
-        }
     }
 
     private void UpdateAnimationState()
@@ -582,7 +580,8 @@ public class PlayerController : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Ground"))
         {
-            if (!isGrounded && _rb.velocity.y <= 0)
+            //이부분 수정 필요... 아래에서 위로 땅과 닿아도 실행됨..ㅠ
+            if (!isGroundedTemp && _rb.velocity.y <= 0)
             {
                 AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
                 isJumping = false;
@@ -590,7 +589,7 @@ public class PlayerController : MonoBehaviour
                 if (groundY < transform.position.y)
                 {
                     float fallHeight = fallStartY - transform.position.y;
-                    fallStartY = 0f;
+
                     _animator.SetBool("isFalling", false);
                     _animator.SetBool("isWalking", false);
                     _animator.SetBool("isRunning", false);
@@ -602,7 +601,7 @@ public class PlayerController : MonoBehaviour
                     }
                     else
                     {
-                        isGrounded = true;
+                        isGroundedTemp = true;
                     }
                 }
             }
@@ -622,6 +621,9 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+            isGroundedTemp = false;
+
+            fallStartY = transform.position.y;
 
             if (Mathf.Abs(_rb.velocity.x) < 0.1f)
             {

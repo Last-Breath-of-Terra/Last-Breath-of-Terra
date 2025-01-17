@@ -120,6 +120,7 @@ public class AudioManager : MonoBehaviour
     {
         scenesManager.UpdateCurrentSceneType();
         PlayBGMForCurrentScene();
+        UpdatePlayerAuidoSettingsByScene();
     }
 
     public void PlayBGM(string bgmName)
@@ -265,6 +266,44 @@ public class AudioManager : MonoBehaviour
             audioSource.clip = SFXAudioClips[sfxName];
             audioSource.Play();
             currentTween = DOTween.To(() => -1f, x => audioSource.panStereo = x, 1f, infusionDuration);
+        }
+    }
+
+    /*
+     * 씬 & 맵에 따라 플레이어 오디오 세팅
+     */
+    public void UpdatePlayerAuidoSettingsByMap(int mapID)
+    {
+        if (mapAmbienceDict.ContainsKey(mapID))
+        {
+            GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = true;
+            GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 40f;
+            GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 60f;
+        }
+        else
+        {
+            GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = false;
+            GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 10f;
+            GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 15f;
+        }
+    }
+
+    public void UpdatePlayerAuidoSettingsByScene()
+    {
+        SCENE_TYPE currentScene = scenesManager.GetCurrentSceneType();
+
+        switch(currentScene)
+        {
+            case SCENE_TYPE.Tutorial:
+                GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = true;
+                GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 40f;
+                GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 60f;
+                break;
+            default:
+                GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = false;
+                GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 10f;
+                GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 15f;
+                break;
         }
     }
 

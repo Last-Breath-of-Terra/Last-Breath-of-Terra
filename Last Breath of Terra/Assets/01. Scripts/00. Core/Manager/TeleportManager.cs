@@ -62,7 +62,8 @@ public class TeleportManager : MonoBehaviour
     IEnumerator Fade(int targetID, Vector3 teleportDirection)
     {
         player.GetComponent<Rigidbody2D>().gravityScale = 0;
-
+        
+        // 오디오 세팅!!
         AudioManager.instance.FadeOutBGM(1f);
         AudioManager.instance.FadeOutAmbience(1f);
 
@@ -88,7 +89,11 @@ public class TeleportManager : MonoBehaviour
             player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
 
         }
-        if(AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID)){
+
+        // 오디오 세팅!!
+        AudioManager.instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        if(AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
+        {
             AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
             AudioManager.instance.FadeInAmbience(1f);
         }

@@ -1,14 +1,7 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
-using UnityEngine.Serialization;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 
 public class LifeInfuser : MonoBehaviour
@@ -65,7 +58,8 @@ public class LifeInfuser : MonoBehaviour
         
         if (obstacleSpawnCoroutine == null)
         {
-            obstacleSpawnCoroutine = StartCoroutine(SpawnObstaclesPeriodically());
+            if(GameManager.ScenesManager.GetCurrentSceneType().ToString() != "Tutorial")
+                obstacleSpawnCoroutine = StartCoroutine(SpawnObstaclesPeriodically());
         }
         
         GameManager.Instance._shaderManager.PlayInfusionSequence(

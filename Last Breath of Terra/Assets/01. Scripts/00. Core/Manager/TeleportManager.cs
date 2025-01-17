@@ -1,10 +1,6 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Image = UnityEngine.UI.Image;
 using DG.Tweening;
 
@@ -66,6 +62,10 @@ public class TeleportManager : MonoBehaviour
     IEnumerator Fade(int targetID, Vector3 teleportDirection)
     {
         player.GetComponent<Rigidbody2D>().gravityScale = 0;
+        
+        // 오디오 세팅!!
+        AudioManager.instance.FadeOutBGM(1f);
+        AudioManager.instance.FadeOutAmbience(1f);
 
         int teleportOffset = 2;
         DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
@@ -90,7 +90,19 @@ public class TeleportManager : MonoBehaviour
 
         }
 
-        AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        // 오디오 세팅!!
+        AudioManager.instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        if(AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
+        {
+            AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+            AudioManager.instance.FadeInAmbience(1f);
+        }
+        else
+        {
+            AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+            AudioManager.instance.FadeInBGM(1f);
+            AudioManager.instance.FadeInAmbience(1f);
+        }
 
         // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         if (parallaxBackgroundObject != null)

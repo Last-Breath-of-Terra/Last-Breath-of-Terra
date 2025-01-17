@@ -27,6 +27,13 @@ public class Teleport : MonoBehaviour
     public int mapID;
     public int teleportID;
     public int targetID;
+    
+    //※※※※※※※※※※※※※※※임시 코드※※※※※※※※※※※※※※※※※※※※※※※※※
+    public Transform targetPos;
+    private bool isTeleporting = false;
+
+    //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
+
     private GameObject player;
 
     private void Start()
@@ -38,10 +45,22 @@ public class Teleport : MonoBehaviour
     {
         if (collision.transform.CompareTag("Player"))
         {
+            isTeleporting = true;
             TeleportManager.Instance.MoveToPortal();
             TeleportManager.Instance.CoFade(targetID, directionOffsets[portalDirection]);
+            //※※※※※※※※※※※※※※※임시 코드※※※※※※※※※※※※※※※※※※※※※※※※※
+            StartCoroutine(ResetTeleportingFlag());
+            //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
             //player.transform.position = TeleportManager.Instance.teleportSO.portals[targetID];
             //TeleportManager.Instance.ChangeCamera(targetID / 2);
         }
     }
+
+    //※※※※※※※※※※※※※※※임시 코드※※※※※※※※※※※※※※※※※※※※※※※※※
+    private IEnumerator ResetTeleportingFlag()
+    {
+        yield return new WaitForSeconds(1.5f);
+        isTeleporting = false;
+    }
+    //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
 }

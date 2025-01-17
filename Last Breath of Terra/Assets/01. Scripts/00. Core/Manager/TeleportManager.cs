@@ -63,7 +63,7 @@ public class TeleportManager : MonoBehaviour
     {
         player.GetComponent<Rigidbody2D>().gravityScale = 0;
         
-        // 오디오 세팅!!
+        //※※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         AudioManager.instance.FadeOutBGM(1f);
         AudioManager.instance.FadeOutAmbience(1f);
 
@@ -80,9 +80,10 @@ public class TeleportManager : MonoBehaviour
         //animator.Play("Idle");
         if (teleportDirection == new Vector3(0, 1, 0))
         {
-            teleportOffset = 3;
-            player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
-            DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + new Vector3(2, 0, 0), 2.5f);
+            player.transform.position = teleportSet[targetID].GetComponent<Teleport>().targetPos.position;
+            // teleportOffset = 3;
+            // player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
+            // DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + new Vector3(2, 0, 0), 2.5f);
         }
         else
         {
@@ -90,7 +91,7 @@ public class TeleportManager : MonoBehaviour
 
         }
 
-        // 오디오 세팅!!
+        // ※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         AudioManager.instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
         if(AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
         {

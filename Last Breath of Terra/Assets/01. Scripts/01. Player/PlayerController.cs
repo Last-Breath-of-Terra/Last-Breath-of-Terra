@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private bool isFallingDelay = false;
     private float climbSpeed = 3f;
     private float fallStartY = 0f;
-    private float moveDelayAfterFall = 2f;
+    private float moveDelayAfterFall = 0.5f;
 
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float groundCheckRadius = 0.1f;

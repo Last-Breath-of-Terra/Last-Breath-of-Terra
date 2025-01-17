@@ -32,9 +32,10 @@ public class PlayerController : MonoBehaviour
     private bool isOnWall = false;
     private bool isClimbing = false;
     private bool isFallingDelay = false;
-    private float climbSpeed = 3f;
+    private float climbSpeed = 3f; //나중에 SO로 빼기
     private float fallStartY = 0f;
-    private float moveDelayAfterFall = 0.5f;
+    private float moveDelayAfterFall = 0.5f; //나중에 SO로 빼기
+    private bool isSignificantFall = false; // 카메라 때문에 추가
 
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float groundCheckRadius = 0.1f;
@@ -485,6 +486,15 @@ public class PlayerController : MonoBehaviour
             {
                 fallStartY = transform.position.y;
             }
+
+            if (fallStartY - transform.position.y > 2f)
+            {
+                isSignificantFall = true;
+            }
+        }
+        else if(isGrounded)
+        {
+            isSignificantFall = false;
         }
         else
         {
@@ -492,7 +502,7 @@ public class PlayerController : MonoBehaviour
             {
                 _animator.SetBool("isFalling", false);
             }
-    }
+        }
     }
 
     private IEnumerator HandleLandingDelay()
@@ -505,7 +515,7 @@ public class PlayerController : MonoBehaviour
         isGroundedTemp = true;
         canMove = false;
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(moveDelayAfterFall);
 
         _animator.SetBool("isLanding", false);
         canMove = true;
@@ -566,6 +576,11 @@ public class PlayerController : MonoBehaviour
     public void SetKnockdownState(bool isKnockdown)
     {
         _animator.SetBool("isKnockdown", isKnockdown);
+    }
+
+    public bool IsSignificantFall()
+    {
+        return isSignificantFall;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -27,6 +27,7 @@ public class Teleport : MonoBehaviour
     public int mapID;
     public int teleportID;
     public int targetID;
+    public bool isRight;
     
     //※※※※※※※※※※※※※※※임시 코드※※※※※※※※※※※※※※※※※※※※※※※※※
     public Transform targetPos;

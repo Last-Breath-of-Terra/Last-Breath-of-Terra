@@ -6,8 +6,6 @@ using DG.Tweening;
 
 public class TeleportManager : MonoBehaviour
 {
-    
-    
     public static TeleportManager Instance;
     public GameObject[] teleportSet;
     public PolygonCollider2D[] camBorders;
@@ -49,6 +47,7 @@ public class TeleportManager : MonoBehaviour
             confiner = virtualCamera.gameObject.AddComponent<CinemachineConfiner2D>();
             Debug.Log("CinemachineConfiner component added.");
         }
+
         Debug.Log("mapID" + mapID);
         virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = camBorders[mapID];
     }
@@ -56,19 +55,19 @@ public class TeleportManager : MonoBehaviour
     public void CoFade(int targetID, Vector3 teleportDirection)
     {
         StartCoroutine(Fade(targetID, teleportDirection));
-        
     }
 
     IEnumerator Fade(int targetID, Vector3 teleportDirection)
     {
         player.GetComponent<Rigidbody2D>().gravityScale = 0;
-        
+
         //※※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         AudioManager.instance.FadeOutBGM(1f);
         AudioManager.instance.FadeOutAmbience(1f);
 
         int teleportOffset = 2;
-        DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
+        DOTween.To(() => player.transform.position, x => player.transform.position = x,
+            player.transform.position + teleportDirection * 2, 1f);
         float f = 0f;
         while (f <= 1f)
         {
@@ -76,6 +75,7 @@ public class TeleportManager : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
             fadeImage.color = new Color(0f, 0f, 0f, f);
         }
+
         animator.SetBool("MoveToPortal", false);
         //animator.Play("Idle");
         if (teleportDirection == new Vector3(0, 1, 0))
@@ -83,22 +83,41 @@ public class TeleportManager : MonoBehaviour
             //player.transform.position = teleportSet[targetID].GetComponent<Teleport>().targetPos.position;
             teleportOffset = 3;
             player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
-            DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + new Vector3(2, 0, 0), 2.5f);
+            //DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + new Vector3(2, 0, 0), 2.5f);
+
+            Vector3 startPosition = player.transform.position;
+            Vector3 targetPosition;
+            
+            if (teleportSet[targetID].GetComponent<Teleport>().isRight)
+            {
+                targetPosition = startPosition + new Vector3(2, 0, 0);
+            }
+            else
+            {
+                targetPosition = startPosition - new Vector3(2, 0, 0);
+            }
+
+            // 중간 높이 포인트 설정 (포물선의 정점)
+            Vector3 controlPoint = startPosition + new Vector3(1, 2, 0);
+
+            Vector3[] path = new Vector3[] { startPosition, controlPoint, targetPosition };
+
+            player.transform.DOPath(path, 3f, PathType.CatmullRom).SetEase(Ease.InOutQuad);
         }
         else if (teleportDirection == new Vector3(0, -1, 0))
         {
             animator.Play("Idle");
-            player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
+            player.transform.position =
+                teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
         }
         else
         {
             player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
-
         }
 
         // ※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         AudioManager.instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        if(AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
+        if (AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
         {
             AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
             AudioManager.instance.FadeInAmbience(1f);
@@ -131,7 +150,7 @@ public class TeleportManager : MonoBehaviour
                 parallaxBackgroundObject.transform.position = new Vector3(
                     player.transform.position.x,
                     player.transform.position.y,
-                    parallaxBackgroundObject.transform.position.z 
+                    parallaxBackgroundObject.transform.position.z
                 );
             }
             else
@@ -144,7 +163,6 @@ public class TeleportManager : MonoBehaviour
             Debug.LogWarning("ParallaxBackground object is not assigned in the Inspector.");
         }
         // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-
 
 
         player.GetComponent<Rigidbody2D>().gravityScale = 3;
@@ -160,7 +178,6 @@ public class TeleportManager : MonoBehaviour
         fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
         player.GetComponent<PlayerController>().canMove = true;
-
     }
 
     public void MoveToPortal()
@@ -168,8 +185,5 @@ public class TeleportManager : MonoBehaviour
         player.GetComponent<PlayerController>().canMove = false;
         Debug.Log("MoveToPortal called");
         animator.SetBool("MoveToPortal", true);
-
-        
     }
-    
 }

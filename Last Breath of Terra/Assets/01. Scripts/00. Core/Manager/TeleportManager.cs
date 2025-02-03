@@ -80,10 +80,15 @@ public class TeleportManager : MonoBehaviour
         //animator.Play("Idle");
         if (teleportDirection == new Vector3(0, 1, 0))
         {
-            player.transform.position = teleportSet[targetID].GetComponent<Teleport>().targetPos.position;
-            // teleportOffset = 3;
-            // player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
-            // DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + new Vector3(2, 0, 0), 2.5f);
+            //player.transform.position = teleportSet[targetID].GetComponent<Teleport>().targetPos.position;
+            teleportOffset = 3;
+            player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
+            DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + new Vector3(2, 0, 0), 2.5f);
+        }
+        else if (teleportDirection == new Vector3(0, -1, 0))
+        {
+            animator.Play("Idle");
+            player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
         }
         else
         {

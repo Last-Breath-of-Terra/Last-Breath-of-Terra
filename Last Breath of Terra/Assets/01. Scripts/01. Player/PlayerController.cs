@@ -14,32 +14,27 @@ public class PlayerController : MonoBehaviour
     public PlayerSO data;
     public float hp;
     public bool isGrounded = true;
+    public bool isJumping;
     public bool canMove = true;
 
-    [SerializeField] private float currentSpeed;
+    [SerializeField] private float currentSpeed = 0f;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private Transform groundCheckPoint;
     
-    public Rigidbody2D _rb;
-    public bool isJumping;
+    private Rigidbody2D _rb;
     private Animator _animator;
     private Vector3 originalScale;
     private Vector2 targetPosition;
     private float accelerationTimer;
-    private bool isHoldingClick = false;
+    private float fallStartY = 0f;
     private float footstepInterval = 0.5f;
     private float footstepTimer = 0f;
 
-    private bool isGroundedTemp = false;
+    private bool isHoldingClick = false;
     private bool isOnWall = false;
     private bool isClimbing = false;
     private bool isFallingDelay = false;
-    private float climbSpeed = 3f; //나중에 SO로 빼기
-    private float fallStartY = 0f;
-    private float moveDelayAfterFall = 0.5f; //나중에 SO로 빼기
-    private bool isSignificantFall = false; // 카메라 때문에 추가
-
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float groundCheckRadius = 0.1f;
-    [SerializeField] private Transform groundCheckPoint;
+    private bool isSignificantFall = false;
 
     void Awake()
     {
@@ -49,20 +44,23 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        currentSpeed = data.baseSpeed;
         originalScale = transform.localScale;
         hp = data.hp;
     }
 
     void Update()
     {
+        UpdateAnimationState();
+
+        if (!canMove) return;
+
         HandleAcceleration();
 
         if (isOnWall)
         {
             HandleWallActions();
         }
-        else if (isHoldingClick && canMove)
+        else if (isHoldingClick)
         {
             UpdateTargetPosition();
             Move();
@@ -103,7 +101,6 @@ public class PlayerController : MonoBehaviour
     #region Handle System
     private void HandleAcceleration()
     {   
-        // 마지막 이전 버전
         if (isHoldingClick && !isFallingDelay && !isClimbing)
         {
             float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
@@ -118,25 +115,13 @@ public class PlayerController : MonoBehaviour
                 accelerationTimer += Time.deltaTime;
             }
 
-            currentSpeed = Mathf.Lerp(data.baseSpeed, data.maxSpeed, accelerationTimer / data.accelerationTime);
+            currentSpeed = Mathf.Lerp(0f, data.maxSpeed, accelerationTimer / data.accelerationTime);
         }
         else
         {
             accelerationTimer = 0f;
-            currentSpeed = data.baseSpeed;
+            currentSpeed = 0f;
         }
-
-        // 이전 버전
-        // if (isHoldingClick)
-        // {
-        //     accelerationTimer += Time.deltaTime;
-        //     currentSpeed = Mathf.Lerp(data.baseSpeed, data.maxSpeed, accelerationTimer / data.accelerationTime);
-        // }
-        // else
-        // {
-        //     accelerationTimer = 0f;
-        //     currentSpeed = data.baseSpeed;
-        // }
     }
 
     private void HandleWallActions()
@@ -235,12 +220,9 @@ public class PlayerController : MonoBehaviour
         isClimbing = false;
 
         _animator.SetBool("isJumping", false);
-        _animator.SetBool("isRunning", false);
-        _animator.SetBool("isWalking", false);
         _animator.SetBool("isClimbing", true);
         _rb.velocity = Vector2.zero;
         _rb.gravityScale = 0f;
-        //_animator.SetBool("StickToWall", true);
     }
 
     private void ClimbWall()
@@ -252,7 +234,7 @@ public class PlayerController : MonoBehaviour
         }
 
         isClimbing = true;
-        _rb.velocity = new Vector2(0, climbSpeed);
+        _rb.velocity = new Vector2(0, data.climbSpeed);
     }
 
     private void FallOffWall()
@@ -261,9 +243,6 @@ public class PlayerController : MonoBehaviour
         isClimbing = false;
         canMove = false;
         isFallingDelay = true;
-
-        //나중에 콜라이더 문제 해결이 안 될 경우 활성화
-        //isGrounded = false;
 
         _rb.gravityScale = 3f;
         _animator.SetBool("isFalling", true);
@@ -279,7 +258,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator EnableMovementAfterDelay()
     {
-        yield return new WaitForSeconds(moveDelayAfterFall);
+        yield return new WaitForSeconds(data.moveDelayAfterFall);
 
         _animator.SetBool("isLanding", false);
         canMove = true;
@@ -298,31 +277,24 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region InputSystem
+    #region Input System
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
-        if (!canMove) return;
-        
         if (context.performed && canMove)
         {
             Invoke("StartMoving", 0.3f);
-            UpdateTargetPosition();
         }
     }
 
     private void StartMoving()
     {
-        if (canMove)
-        {
-            isHoldingClick = true;
-            _animator.SetBool("isWalking", true);
-        }
+        isHoldingClick = true;
+        UpdateTargetPosition();
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext context)
     {
         isHoldingClick = false;
-
         GameManager.Instance._ui.ReleaseClick();
         
         if (isOnWall)
@@ -333,10 +305,6 @@ public class PlayerController : MonoBehaviour
         {
             _rb.velocity = new Vector2(0, _rb.velocity.y);
         }
-
-        _animator.SetBool("isClimbing", false);
-        _animator.SetBool("isWalking", false);
-        _animator.SetBool("isRunning", false);
 
         AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
         AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
@@ -351,8 +319,11 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded && canMove)
         {
-            fallStartY = transform.position.y;
             isJumping = true;
+            _animator.SetBool("isJumping", true);
+
+            fallStartY = transform.position.y;
+
             float direction = transform.localScale.x > 0 ? 1 : -1;
             if (currentSpeed > 2.1f)
             {
@@ -364,8 +335,6 @@ public class PlayerController : MonoBehaviour
             }
 
             _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
-            isGrounded = false;
-            _animator.SetBool("isJumping", true);
 
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
@@ -411,12 +380,10 @@ public class PlayerController : MonoBehaviour
         if (!canMove || isOnWall || isFallingDelay) return;
 
         float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
+        float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
 
         if (distanceX > 0.5f)
         {
-            // 기존 방법
-            float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
-
             if (isGrounded)
             {
                 transform.localScale = new Vector3(direction * Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
@@ -428,18 +395,11 @@ public class PlayerController : MonoBehaviour
 
             _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
 
-            UpdateAnimationState();
-
         }
         else
-        {
+        {            
             _rb.velocity = new Vector2(0, _rb.velocity.y);
-            _rb.angularVelocity = 0;
-
-            currentSpeed = data.baseSpeed;
-
-            _animator.SetBool("isWalking", false);
-            _animator.SetBool("isRunning", false);
+            currentSpeed = 0f;
         }
     }
 
@@ -447,10 +407,10 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        float distanceX = Mathf.Abs(worldPosition.x - transform.position.x);
 
         if (Vector2.Distance(worldPosition, transform.position) <= 0.1f)
         {
-            _rb.velocity = Vector2.zero;
             return;
         }
 
@@ -460,16 +420,6 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance._ui.HandleClickLight(worldPosition);
         }
-    }
-
-    public void SetCanMove(bool value)
-    {
-        if (!value)
-        {
-            _animator.SetBool("isWalking", false);
-            GameManager.Instance._ui.ReleaseClick();
-        }
-        canMove = value;
     }
 
     private void HandleFalling()
@@ -508,75 +458,43 @@ public class PlayerController : MonoBehaviour
     private IEnumerator HandleLandingDelay()
     {
         if (!isGrounded || _rb.velocity.y < 0) yield break;
-
-        _animator.SetBool("isFalling", false);
-        _animator.SetBool("isLanding", true);
-        //isGrounded = true;
-        isGroundedTemp = true;
         canMove = false;
 
-        yield return new WaitForSeconds(moveDelayAfterFall);
-
-        _animator.SetBool("isLanding", false);
+        yield return new WaitForSeconds(data.moveDelayAfterFall);
         canMove = true;
+        _animator.SetBool("isLanding", false);
 
-         _rb.velocity = new Vector2(0, _rb.velocity.y);
+        _rb.velocity = new Vector2(0, _rb.velocity.y);
     }
     #endregion
 
     private void UpdateGroundedState()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckRadius, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, groundLayer);
     }
-
     private void UpdateAnimationState()
     {
-        if (!canMove || isOnWall)
-        {
-            _animator.SetBool("isWalking", false);
-            _animator.SetBool("isRunning", false);
-            return;
-        }
-
-        if (currentSpeed > 5f)
-        {
-            if (!_animator.GetBool("isRunning"))
-            {
-                _animator.SetBool("isRunning", true);
-                _animator.SetBool("isWalking", false);
-            }
-        }
-        else if (currentSpeed > 2f)
-        {
-            if (!_animator.GetBool("isWalking"))
-            {
-                _animator.SetBool("isWalking", true);
-                _animator.SetBool("isRunning", false);
-            }
-        }
-        else
-        {
-            if (_animator.GetBool("isWalking") || _animator.GetBool("isRunning"))
-            {
-                _animator.SetBool("isWalking", false);
-                _animator.SetBool("isRunning", false);
-            }
-        }
+        _animator.SetFloat("currentSpeed", currentSpeed);
     }
 
+    #region External Control System
     public void SetActivatingState(bool isActivating)
     {
-        _animator.SetBool("isWalking", false);
-        _animator.SetBool("isRunning", false);
-        _animator.SetBool("isFalling", false);
-
         _animator.SetBool("isActivating", isActivating);
     }
-
     public void SetKnockdownState(bool isKnockdown)
     {
         _animator.SetBool("isKnockdown", isKnockdown);
     }
+    public void SetCanMove(bool value)
+    {
+        if (!value)
+        {
+            GameManager.Instance._ui.ReleaseClick();
+        }
+        canMove = value;
+    }
+    #endregion
 
     public bool IsSignificantFall()
     {
@@ -587,7 +505,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Wall"))
         {
-            if (!isOnWall)
+            if(!isOnWall)
             {
                 StickToWall();
             }
@@ -595,29 +513,21 @@ public class PlayerController : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Ground"))
         {
-            //이부분 수정 필요... 아래에서 위로 땅과 닿아도 실행됨..ㅠ
-            if (!isGroundedTemp && _rb.velocity.y <= 0)
+            foreach (ContactPoint2D contact in collision.contacts)
             {
-                AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
-                isJumping = false;
-                float groundY = collision.contacts[0].point.y;
-                if (groundY < transform.position.y)
+                if (contact.point.y < transform.position.y)
                 {
-                    float fallHeight = fallStartY - transform.position.y;
-
+                    AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
                     _animator.SetBool("isFalling", false);
-                    _animator.SetBool("isWalking", false);
-                    _animator.SetBool("isRunning", false);
 
+                    isJumping = false;
+
+                    float fallHeight = fallStartY - transform.position.y;
                     if (fallHeight > 5f)
                     {
                         StartCoroutine(HandleLandingDelay());
-                        return;
                     }
-                    else
-                    {
-                        isGroundedTemp = true;
-                    }
+                    return;
                 }
             }
         }
@@ -635,9 +545,6 @@ public class PlayerController : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = false;
-            isGroundedTemp = false;
-
             fallStartY = transform.position.y;
 
             if (Mathf.Abs(_rb.velocity.x) < 0.1f)

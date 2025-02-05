@@ -6,9 +6,9 @@ using UnityEngine;
 public class PlayerSO : ScriptableObject
 {
     public float hp = 100f;
-    public float baseSpeed = 1f;
-    public float maxSpeed = 6f;
+    public float maxSpeed = 8f;
     public float accelerationTime = 5f;
     public float jumpForce = 5f;
-    public float dashForce = 10f;
+    public float climbSpeed = 3f;
+    public float moveDelayAfterFall = 0.5f;
 }

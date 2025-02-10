@@ -11,35 +11,65 @@ using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
+    private enum AnimationState {
+        Idle,
+        Walk,
+        Run,
+        Jump,
+        Fall,
+        Landing,
+        Climbing,
+        Knockdown,
+        Activating,
+        MoveToPortal
+    }
+    private AnimationState currentAnimState = AnimationState.Idle;
+
+    #region Fields
+
+    [Header("Player Data")]
     public PlayerSO data;
     public float hp;
+
+    [Header("Movement Settings")]
     public bool isGrounded = true;
-    public bool isJumping;
+    public bool isJumping = false;
     public bool canMove = true;
 
     [SerializeField] private float currentSpeed = 0f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Transform groundCheckPoint;
     
+    // Components
     private Rigidbody2D _rb;
     private Animator _animator;
+    private AudioSource _audioSource;
+    private PlayerInput _playerInput;
+
+    // Initial state value
     private Vector3 originalScale;
     private Vector2 targetPosition;
-    private float accelerationTimer;
+
+    // Timers & Thresholds
+    private float moveAccelerationTimer;
     private float fallStartY = 0f;
     private float footstepInterval = 0.5f;
     private float footstepTimer = 0f;
 
+    // Input and Movement State
     private bool isHoldingClick = false;
     private bool isOnWall = false;
     private bool isClimbing = false;
     private bool isFallingDelay = false;
     private bool isSignificantFall = false;
+    #endregion
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
+        _playerInput = GetComponent<PlayerInput>();
     }
 
     void Start()
@@ -50,11 +80,28 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        UpdateAnimationState();
+        UpdateAnimatorParameters();
 
         if (!canMove) return;
 
-        HandleAcceleration();
+        if (isHoldingClick)
+        {
+            UpdateTargetPosition();
+        }
+
+        if (!isGrounded && _rb.velocity.y < 0f && fallStartY == 0f)
+        {
+            fallStartY = transform.position.y;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        UpdateGroundedState();
+        UpdateAcceleration();
+        
+        UpdateFalling();
+        UpdateFallingSpeed();
 
         if (isOnWall)
         {
@@ -62,44 +109,40 @@ public class PlayerController : MonoBehaviour
         }
         else if (isHoldingClick)
         {
-            UpdateTargetPosition();
             Move();
-            HandleFootstepSound();
+            UpdateFootstepSound();
         }
-
-        if (!isGrounded && _rb.velocity.y < 0f && fallStartY == 0f)
-        {
-            fallStartY = transform.position.y;
-        }
-
-        HandleFalling();
-    }
-
-    void FixedUpdate()
-    {
-        UpdateGroundedState();
     }
     
     private void OnEnable()
     {
-        var playerInput = GetComponent<PlayerInput>();
-        playerInput.actions["Move"].performed += OnMovePerformed;
-        playerInput.actions["Move"].canceled += OnMoveCanceled;
-        playerInput.actions["Jump"].performed += OnJumpPerformed;
-        playerInput.actions["Attack"].performed += OnAttackPerformed;
+        _playerInput.actions["Move"].performed += OnMovePerformed;
+        _playerInput.actions["Move"].canceled += OnMoveCanceled;
+        _playerInput.actions["Jump"].performed += OnJumpPerformed;
+        _playerInput.actions["Attack"].performed += OnAttackPerformed;
     }
 
     private void OnDisable()
     {
-        var playerInput = GetComponent<PlayerInput>();
-        playerInput.actions["Move"].performed -= OnMovePerformed;
-        playerInput.actions["Move"].canceled -= OnMoveCanceled;
-        playerInput.actions["Jump"].performed -= OnJumpPerformed;
-        playerInput.actions["Attack"].performed -= OnAttackPerformed;
+        _playerInput.actions["Move"].performed -= OnMovePerformed;
+        _playerInput.actions["Move"].canceled -= OnMoveCanceled;
+        _playerInput.actions["Jump"].performed -= OnJumpPerformed;
+        _playerInput.actions["Attack"].performed -= OnAttackPerformed;
     }
 
-    #region Handle System
-    private void HandleAcceleration()
+    #region Update Methods
+    private void UpdateAnimatorParameters()
+    {
+        _animator.SetFloat("currentSpeed", currentSpeed);
+        UpdateAnimationState();
+    }
+
+    private void UpdateGroundedState()
+    {
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, groundLayer);
+    }
+
+    private void UpdateAcceleration()
     {   
         if (isHoldingClick && !isFallingDelay && !isClimbing)
         {
@@ -107,23 +150,141 @@ public class PlayerController : MonoBehaviour
 
             if ((direction > 0 && _rb.velocity.x < 0) || (direction < 0 && _rb.velocity.x > 0))
             {
-                accelerationTimer -= Time.deltaTime * 2f;
-                if (accelerationTimer < 0) accelerationTimer = 0f;
+                moveAccelerationTimer -= Time.deltaTime * 2f;
+                if (moveAccelerationTimer < 0) moveAccelerationTimer = 0f;
             }
             else
             {
-                accelerationTimer += Time.deltaTime;
+                moveAccelerationTimer += Time.deltaTime;
             }
 
-            currentSpeed = Mathf.Lerp(0f, data.maxSpeed, accelerationTimer / data.accelerationTime);
+            currentSpeed = Mathf.Lerp(0f, data.maxSpeed, moveAccelerationTimer / data.moveAccelerationTime);
         }
         else
         {
-            accelerationTimer = 0f;
+            moveAccelerationTimer = 0f;
             currentSpeed = 0f;
         }
     }
 
+    private void UpdateFalling()
+    {
+        if (!isGrounded && _rb.velocity.y < -1f)
+        {
+            if (!isOnWall && !isClimbing)
+            {
+                ChangeAnimationState(AnimationState.Fall);
+            }
+
+            if (fallStartY == 0f)
+            {
+                fallStartY = transform.position.y;
+            }
+
+            float fallHeight = fallStartY - transform.position.y;
+            isSignificantFall = fallHeight > 2f;
+        }
+        else if(isGrounded)
+        {
+            isSignificantFall = false;
+        }
+    }
+
+    private void UpdateFallingSpeed()
+    {
+        if (_rb.velocity.y < 0)
+        {
+            float newFallSpeed = _rb.velocity.y - data.fallAccelerationTime * Time.fixedDeltaTime;
+            _rb.velocity = new Vector2(_rb.velocity.x, Mathf.Max(newFallSpeed, -data.maxFallSpeed));
+        }
+    }
+
+    private IEnumerator HandleLandingDelay()
+    {
+        if (!isGrounded || _rb.velocity.y < 0) yield break;
+        canMove = false;
+        ChangeAnimationState(AnimationState.Landing);
+
+        yield return new WaitForSeconds(data.moveDelayAfterFall);
+        canMove = true;
+        ChangeAnimationState(AnimationState.Idle);
+
+        _rb.velocity = new Vector2(0, _rb.velocity.y);
+    }
+
+    private void UpdateFootstepSound()
+    {
+        if (!isGrounded || _rb.velocity.magnitude < 0.1f)
+            return;
+
+        footstepTimer += Time.deltaTime;
+
+        if (footstepTimer >= footstepInterval)
+        {
+            footstepTimer = 0f;
+            AudioManager.instance.PlayRandomPlayer(GetFootstepClipPrefix(), 0);
+        }
+    }
+    #endregion
+
+    #region Animation State Machine Methods
+    private void UpdateAnimationState() {
+        // if (currentAnimState == AnimationState.Knockdown ||
+        //     currentAnimState == AnimationState.Activating ||
+        //     currentAnimState == AnimationState.MoveToPortal)
+        //     return;
+
+        // if (!isGrounded) {
+        //     if (_rb.velocity.y < 0) {
+        //         ChangeAnimationState(AnimationState.Fall);
+        //     }
+        // }
+    }
+
+    private void ChangeAnimationState(AnimationState newState) {
+        if (currentAnimState == newState) return;
+        currentAnimState = newState;
+
+        _animator.ResetTrigger("Jump");
+        _animator.ResetTrigger("Landing");
+        _animator.SetBool("isKnockdown", false);
+        _animator.SetBool("isActivating", false);
+        _animator.SetBool("MoveToPortal", false);
+        _animator.SetBool("isFalling", false);
+        _animator.SetBool("isClimbing", false);
+
+        switch (newState) {
+            case AnimationState.Idle:
+            case AnimationState.Walk:
+            case AnimationState.Run:
+                break;
+            case AnimationState.Jump:
+                _animator.SetTrigger("Jump");
+                break;
+            case AnimationState.Fall:
+                _animator.SetBool("isFalling", true);
+                break;
+            case AnimationState.Landing:
+                _animator.SetTrigger("Landing");
+                break;
+            case AnimationState.Climbing:
+                _animator.SetBool("isClimbing", true);
+                break;
+            case AnimationState.Knockdown:
+                _animator.SetBool("isKnockdown", true);
+                break;
+            case AnimationState.Activating:
+                _animator.SetBool("isActivating", true);
+                break;
+            case AnimationState.MoveToPortal:
+                _animator.SetBool("MoveToPortal", true);
+                break;
+        }
+    }
+
+    #endregion
+
+    #region Wall Climbing Methods
     private void HandleWallActions()
     {
         if (!isOnWall || !isHoldingClick) return;
@@ -141,90 +302,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleFootstepSound()
-    {
-        if (!isGrounded || _rb.velocity.magnitude < 0.1f)
-            return;
-
-        footstepTimer += Time.deltaTime;
-
-        if (footstepTimer >= footstepInterval)
-        {
-            footstepTimer = 0f;
-            AudioManager.instance.PlayRandomPlayer("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_", 0);// gameObject.GetComponent<AudioSource>(), transform);
-        }
-    }
-    #endregion
-
-    #region Wall Climbing System
-    private bool IsAtWallTop()
-    {
-        float wallTopY = GetWallTopY();
-
-        if (wallTopY == float.MaxValue)
-        {
-            return true;
-        }
-
-        return transform.position.y >= wallTopY;
-    }
-
-    private float GetWallTopY()
-    {
-        Collider2D wallCollider = GetWallCollider();
-        if (wallCollider != null)
-        {
-            return wallCollider.bounds.max.y;
-        }
-        return float.MaxValue;
-    }
-
-    private Collider2D GetWallCollider()
-    {
-        float direction = transform.localScale.x > 0 ? 1 : -1;
-
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right * direction, 0.5f, LayerMask.GetMask("Wall"));
-        return hit.collider;
-    }
-
-    private void AutoMoveAfterWallTop()
-    {
-        if (!isClimbing) return;
-
-        isClimbing = false;
-        isOnWall = false;
-
-        _rb.gravityScale = 0f;
-
-        float upwardDistance = 2f;
-        float forwardDistance = 0.5f;
-        float direction = transform.localScale.x > 0 ? 1 : -1;
-
-        Vector3 targetPosition = new Vector3(
-            transform.position.x + (forwardDistance * direction),
-            transform.position.y + upwardDistance,
-            transform.position.z
-        );
-
-        _animator.SetBool("isClimbing", false);
-
-        transform.DOMove(targetPosition, 0.5f).OnComplete(() =>
-        {
-            ResetWallState();
-        });
-    }
-
-    private void StickToWall()
-    {
-        isOnWall = true;
-        isClimbing = false;
-
-        _animator.SetBool("isJumping", false);
-        _animator.SetBool("isClimbing", true);
-        _rb.velocity = Vector2.zero;
-        _rb.gravityScale = 0f;
-    }
-
     private void ClimbWall()
     {
         if (IsAtWallTop())
@@ -234,7 +311,7 @@ public class PlayerController : MonoBehaviour
         }
 
         isClimbing = true;
-        _rb.velocity = new Vector2(0, data.climbSpeed);
+        _rb.velocity = new Vector2(0f, data.climbSpeed);
     }
 
     private void FallOffWall()
@@ -245,11 +322,10 @@ public class PlayerController : MonoBehaviour
         isFallingDelay = true;
 
         _rb.gravityScale = 3f;
-        _animator.SetBool("isFalling", true);
-        _animator.SetBool("isClimbing", false);
+        ChangeAnimationState(AnimationState.Fall);
        
         float backwardForce = 2f;
-        float direction = transform.localScale.x > 0 ? -1 : 1;
+        float direction = transform.localScale.x > 0 ? -1f : 1f;
 
         _rb.velocity = new Vector2(backwardForce * direction, -2f);
 
@@ -260,36 +336,81 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(data.moveDelayAfterFall);
 
-        _animator.SetBool("isLanding", false);
+        ChangeAnimationState(AnimationState.Landing);
         canMove = true;
         isFallingDelay = false;
     }
 
-    private void ResetWallState()
+    private void AutoMoveAfterWallTop()
     {
+        if (!isClimbing) return;
+
+        isClimbing = false;
         isOnWall = false;
+        _rb.gravityScale = 0f;
+
+        float upwardDistance = 2f;
+        float forwardDistance = 0.5f;
+        float direction = transform.localScale.x > 0 ? 1 : -1;
+
+        Vector3 targetPos = new Vector3(
+            transform.position.x + (forwardDistance * direction),
+            transform.position.y + upwardDistance,
+            transform.position.z
+        );
+
+        transform.DOMove(targetPos, 0.5f).OnComplete(() =>
+        {
+            ResetWallState();
+        });
+    }
+
+    private void StickToWall()
+    {
+        isOnWall = true;
         isClimbing = false;
 
-        _animator.SetBool("isClimbing", false);
+        ChangeAnimationState(AnimationState.Climbing);
+        _rb.velocity = Vector2.zero;
+        _rb.gravityScale = 0f;
+    }
 
+    private bool IsAtWallTop()
+    {
+        float wallTopY = GetWallTopY();
+
+        return wallTopY == float.MaxValue || transform.position.y >= wallTopY;
+    }
+
+    private float GetWallTopY()
+    {
+        Collider2D wallCollider = GetWallCollider();
+        return wallCollider != null ? wallCollider.bounds.max.y : float.MaxValue;
+    }
+
+    private Collider2D GetWallCollider()
+    {
+        float direction = transform.localScale.x > 0 ? 1 : -1;
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right * direction, 0.5f, LayerMask.GetMask("Wall"));
+        return hit.collider;
+    }
+
+    private void ResetWallState()
+    {
         _rb.gravityScale = 3f;
         _rb.velocity = Vector2.zero;
+        ChangeAnimationState(AnimationState.Idle);
     }
     #endregion
 
-    #region Input System
+    #region Input Handlers
     private void OnMovePerformed(InputAction.CallbackContext context)
     {
         if (context.performed && canMove)
         {
             Invoke("StartMoving", 0.3f);
         }
-    }
-
-    private void StartMoving()
-    {
-        isHoldingClick = true;
-        UpdateTargetPosition();
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext context)
@@ -307,7 +428,7 @@ public class PlayerController : MonoBehaviour
         }
 
         AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
-        AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
+        AudioManager.instance.PlaySFX(GetFootstepClipPrefix() + "4", gameObject.GetComponent<AudioSource>(), transform);
 
         CancelInvoke("StartMoving");
     }
@@ -317,10 +438,10 @@ public class PlayerController : MonoBehaviour
         if (!canMove || isClimbing)
             return;
 
-        if (isGrounded && canMove)
+        if (isGrounded)
         {
             isJumping = true;
-            _animator.SetBool("isJumping", true);
+            ChangeAnimationState(AnimationState.Jump);
 
             fallStartY = transform.position.y;
 
@@ -349,32 +470,42 @@ public class PlayerController : MonoBehaviour
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
-            RaycastHit2D[] hits = Physics2D.RaycastAll(worldPosition, Vector2.zero);
-            
-            Obstacle detectedObstacle = null;
-            foreach (var hit in hits)
+            Obstacle obstacle = DetectObstacleAtPosition(worldPosition);
+            if (obstacle != null)
             {
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("obstacleHover"))
-                {
-                    detectedObstacle = hit.collider.GetComponentInParent<Obstacle>();
-                    break;
-                }
-
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("obstacle"))
-                {
-                    detectedObstacle = hit.collider.GetComponent<Obstacle>();
-                }
-            }
-
-            if (detectedObstacle != null)
-            {
-                detectedObstacle.OnPlayerAttack();
+                obstacle.OnPlayerAttack();
             }
         }
     }
+
+    private void StartMoving()
+    {
+        isHoldingClick = true;
+        UpdateTargetPosition();
+    }
+
+    private Obstacle DetectObstacleAtPosition(Vector2 worldPosition)
+    {
+        RaycastHit2D[] hits = Physics2D.RaycastAll(worldPosition, Vector2.zero);
+        Obstacle detectedObstacle = null;
+        foreach (var hit in hits)
+        {
+            int layer = hit.collider.gameObject.layer;
+            if (layer == LayerMask.NameToLayer("obstacleHover"))
+            {
+                detectedObstacle = hit.collider.GetComponentInParent<Obstacle>();
+                break;
+            }
+            if (layer == LayerMask.NameToLayer("obstacle"))
+            {
+                detectedObstacle = hit.collider.GetComponent<Obstacle>();
+            }
+        }
+        return detectedObstacle;
+    }
     #endregion
 
-    #region Moving System
+    #region Movement Methods
     private void Move()
     {
         if (!canMove || isOnWall || isFallingDelay) return;
@@ -407,7 +538,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        float distanceX = Mathf.Abs(worldPosition.x - transform.position.x);
+        //float distanceX = Mathf.Abs(worldPosition.x - transform.position.x);
 
         if (Vector2.Distance(worldPosition, transform.position) <= 0.1f)
         {
@@ -421,70 +552,22 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance._ui.HandleClickLight(worldPosition);
         }
     }
-
-    private void HandleFalling()
-    {
-        if (!isGrounded && _rb.velocity.y < 0f)
-        {
-            if (!isOnWall && !isClimbing)
-            {
-                _animator.SetBool("isJumping", false);
-                _animator.SetBool("isFalling", true);
-            }
-
-            if (fallStartY == 0f)
-            {
-                fallStartY = transform.position.y;
-            }
-
-            if (fallStartY - transform.position.y > 2f)
-            {
-                isSignificantFall = true;
-            }
-        }
-        else if(isGrounded)
-        {
-            isSignificantFall = false;
-        }
-        else
-        {
-            if (isGrounded || _rb.velocity.y >= 0f)
-            {
-                _animator.SetBool("isFalling", false);
-            }
-        }
-    }
-
-    private IEnumerator HandleLandingDelay()
-    {
-        if (!isGrounded || _rb.velocity.y < 0) yield break;
-        canMove = false;
-
-        yield return new WaitForSeconds(data.moveDelayAfterFall);
-        canMove = true;
-        _animator.SetBool("isLanding", false);
-
-        _rb.velocity = new Vector2(0, _rb.velocity.y);
-    }
     #endregion
 
-    private void UpdateGroundedState()
-    {
-        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, 0.1f, groundLayer);
-    }
-    private void UpdateAnimationState()
-    {
-        _animator.SetFloat("currentSpeed", currentSpeed);
-    }
-
-    #region External Control System
+    #region External Control Methods
     public void SetActivatingState(bool isActivating)
     {
-        _animator.SetBool("isActivating", isActivating);
+        if (isActivating)
+            ChangeAnimationState(AnimationState.Activating);
+        else
+            ChangeAnimationState(AnimationState.Idle);
     }
     public void SetKnockdownState(bool isKnockdown)
     {
-        _animator.SetBool("isKnockdown", isKnockdown);
+        if (isKnockdown)
+            ChangeAnimationState(AnimationState.Knockdown);
+        else
+            ChangeAnimationState(AnimationState.Idle);
     }
     public void SetCanMove(bool value)
     {
@@ -494,12 +577,12 @@ public class PlayerController : MonoBehaviour
         }
         canMove = value;
     }
-    #endregion
 
     public bool IsSignificantFall()
     {
         return isSignificantFall;
     }
+    #endregion
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -517,9 +600,8 @@ public class PlayerController : MonoBehaviour
             {
                 if (contact.point.y < transform.position.y)
                 {
-                    AudioManager.instance.PlaySFX("footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_4", gameObject.GetComponent<AudioSource>(), transform);
-                    _animator.SetBool("isFalling", false);
-
+                    AudioManager.instance.PlaySFX(GetFootstepClipPrefix() + "4", _audioSource, transform);
+                    ChangeAnimationState(AnimationState.Idle);
                     isJumping = false;
 
                     float fallHeight = fallStartY - transform.position.y;
@@ -535,27 +617,31 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall"))
+        if (collision.gameObject.CompareTag("Wall") && isOnWall)
         {
-            if (isOnWall)
-            {
-                FallOffWall();
-            }
+            FallOffWall();
         }
         
-        if (collision.gameObject.CompareTag("Ground"))
+        else if (collision.gameObject.CompareTag("Ground"))
         {
             fallStartY = transform.position.y;
 
             if (Mathf.Abs(_rb.velocity.x) < 0.1f)
             {
-                _rb.velocity = new Vector2(0, _rb.velocity.y);
+                _rb.velocity = new Vector2(0f, _rb.velocity.y);
             }
             else
             {
-                float fallDirection = transform.localScale.x > 0 ? 1 : -1;
+                float fallDirection = transform.localScale.x > 0 ? 1f : -1f;
                 _rb.velocity = new Vector2(fallDirection * currentSpeed, _rb.velocity.y);
             }
         }
     }
+
+    #region Helper Methods
+    private string GetFootstepClipPrefix()
+    {
+        return "footstep_" + GameManager.ScenesManager.GetCurrentSceneType() + "_";
+    }
+    #endregion
 }

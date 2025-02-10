@@ -130,7 +130,6 @@ GameObject:
   - component: {fileID: 7241851658516843663}
   - component: {fileID: 1256753690429844500}
   - component: {fileID: 5590019560954141733}
-  - component: {fileID: 8959917781104500115}
   - component: {fileID: 7487946730215675304}
   - component: {fileID: 9069020833130384739}
   m_Layer: 3
@@ -307,14 +306,12 @@ MonoBehaviour:
   data: {fileID: 11400000, guid: 45b86c0c660e9429282d8e93a3edfec3, type: 2}
   hp: 0
   isGrounded: 1
+  isJumping: 0
   canMove: 1
   currentSpeed: 0
-  _rb: {fileID: 0}
-  isJumping: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 2048
-  groundCheckRadius: 0.1
   groundCheckPoint: {fileID: 1044917842855316037}
 --- !u!114 &7241851658516843663
 MonoBehaviour:
@@ -472,20 +469,6 @@ MonoBehaviour:
     m_Asset: {fileID: 0}
     m_Actions: []
     m_Bindings: []
---- !u!114 &8959917781104500115
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9170878541183709277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f26d7ea4cde22104e8fc9223f4177daa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxFallSpeed: 10
-  fallAcceleration: 2
 --- !u!167 &7487946730215675304
 AudioReverbZone:
   m_ObjectHideFlags: 0

@@ -8,7 +8,6 @@ using DG.Tweening;
 /// <summary>
 /// 플레이어의 움직임을 관리하는 스크립트
 /// </summary>
-
 public class PlayerController : MonoBehaviour
 {
     private enum AnimationState {
@@ -134,7 +133,6 @@ public class PlayerController : MonoBehaviour
     private void UpdateAnimatorParameters()
     {
         _animator.SetFloat("currentSpeed", currentSpeed);
-        UpdateAnimationState();
     }
 
     private void UpdateGroundedState()
@@ -157,6 +155,14 @@ public class PlayerController : MonoBehaviour
             {
                 moveAccelerationTimer += Time.deltaTime;
             }
+            
+            // *********************수정****************************
+            if (Vector2.Distance(targetPosition, transform.position) < 0.1f)
+            {
+                moveAccelerationTimer -= Time.deltaTime * 5f;
+                if (moveAccelerationTimer < 0) moveAccelerationTimer = 0f;
+            }
+            // ****************************************************
 
             currentSpeed = Mathf.Lerp(0f, data.maxSpeed, moveAccelerationTimer / data.moveAccelerationTime);
         }
@@ -228,19 +234,6 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Animation State Machine Methods
-    private void UpdateAnimationState() {
-        // if (currentAnimState == AnimationState.Knockdown ||
-        //     currentAnimState == AnimationState.Activating ||
-        //     currentAnimState == AnimationState.MoveToPortal)
-        //     return;
-
-        // if (!isGrounded) {
-        //     if (_rb.velocity.y < 0) {
-        //         ChangeAnimationState(AnimationState.Fall);
-        //     }
-        // }
-    }
-
     private void ChangeAnimationState(AnimationState newState) {
         if (currentAnimState == newState) return;
         currentAnimState = newState;
@@ -295,7 +288,10 @@ public class PlayerController : MonoBehaviour
         {
             ClimbWall();
         }
-
+        else if (IsAtWallTop()) // *********** 추가 **************
+        {
+            AutoMoveAfterWallTop();
+        }
         else if (worldPosition.y < transform.position.y - 0.5f)
         {
             FallOffWall();
@@ -343,7 +339,8 @@ public class PlayerController : MonoBehaviour
 
     private void AutoMoveAfterWallTop()
     {
-        if (!isClimbing) return;
+        // ************* 수정 ******************
+        if (!isClimbing && !IsAtWallTop()) return;
 
         isClimbing = false;
         isOnWall = false;
@@ -524,13 +521,31 @@ public class PlayerController : MonoBehaviour
                 direction = transform.localScale.x > 0 ? 1 : -1;
             }
 
-            _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
+            // *********************수정****************************
+            if (_rb.velocity.x * direction < 0)
+            {
+                _rb.velocity = new Vector2(direction * currentSpeed * 0.8f, _rb.velocity.y);
+            }
+            else
+            {
+                _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
+            }
+            // ****************************************************
+
+            // _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
 
         }
         else
         {            
-            _rb.velocity = new Vector2(0, _rb.velocity.y);
-            currentSpeed = 0f;
+            if (currentSpeed > 0.2f)
+            {
+                currentSpeed *= 0.8f;
+            }
+            else
+            {
+                _rb.velocity = new Vector2(0, _rb.velocity.y);
+                currentSpeed = 0f;
+            }
         }
     }
 
@@ -544,6 +559,16 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
+
+        // *********************수정****************************
+        float newDirection = Mathf.Sign(worldPosition.x - transform.position.x);
+        float currentDirection = Mathf.Sign(targetPosition.x - transform.position.x);
+
+        if (newDirection != currentDirection) // 방향 바뀔 때 감속
+        {
+            moveAccelerationTimer *= 0.5f;
+        }
+        // ***************************************************
 
         targetPosition = worldPosition;
 

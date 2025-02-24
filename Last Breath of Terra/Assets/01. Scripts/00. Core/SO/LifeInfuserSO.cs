@@ -45,7 +45,7 @@ public class LifeInfuserSO : ScriptableObject
         SetUIForInfuserStatus(true);
         InfuserManager.Instance.infuserActivationCanvas.gameObject.SetActive(true);
         
-        currentTween = DOTween.To(() => 0.126f, x => InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = x, 0.875f, infusionDuration);
+        currentTween = DOTween.To(() => 0f, x => InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = x, 1f, infusionDuration);
         AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
         //infuserActivationUI.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infuserActivationUI, infuserNumber));
     }

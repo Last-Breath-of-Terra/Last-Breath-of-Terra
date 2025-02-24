@@ -38,7 +38,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _ArcWidth: 0.5
-    - _FillAmount: 0.42
+    - _FillAmount: 0.32
     - _Float: -2.1
     m_Colors:
     - _Color: {r: 0, g: 1, b: 0.9063735, a: 0}

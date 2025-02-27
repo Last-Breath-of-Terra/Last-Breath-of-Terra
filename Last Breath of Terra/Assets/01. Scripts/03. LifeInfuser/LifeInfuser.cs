@@ -53,7 +53,7 @@ public class LifeInfuser : MonoBehaviour
             _playerController.SetActivatingState(true);
             _playerController.SetCanMove(false);
         }
-        DOTween.To(() => lifeInfuserData.defaultLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
+        DOTween.To(() => lifeInfuserData.defaultLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 1f);
         lifeInfuserData.StartInfusion(infuserNumber, gameObject);
         
         if (obstacleSpawnCoroutine == null)

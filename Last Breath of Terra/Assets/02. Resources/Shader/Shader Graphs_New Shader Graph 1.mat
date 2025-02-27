@@ -37,7 +37,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ArcWidth: 0.5
+    - _ArcWidth: 0.47
     - _FillAmount: 0.32
     - _Float: -2.1
     m_Colors:

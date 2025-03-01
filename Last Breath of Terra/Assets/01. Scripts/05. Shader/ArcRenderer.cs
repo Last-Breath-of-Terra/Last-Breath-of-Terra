@@ -45,7 +45,7 @@ public class ArcRenderer : MonoBehaviour
 
         for (int i = 0; i < visibleSegments; i++)
         {
-            float angle = Mathf.Lerp(0, Mathf.PI, i / (float)(segments - 1)); 
+            float angle = Mathf.Lerp(Mathf.PI, 0, i / (float)(segments - 1));
             positions[i] = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0);
         }
 

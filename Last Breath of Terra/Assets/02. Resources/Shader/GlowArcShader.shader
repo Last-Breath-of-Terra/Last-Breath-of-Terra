@@ -2,34 +2,32 @@ Shader "Custom/GlowArcShader"
 {
     Properties
     {
-        _Color ("Glow Color", Color) = (0, 1, 1, 1) // 기본 파란색 Glow
-        _GlowIntensity ("Glow Intensity", Range(0, 5)) = 3.0 // 강한 Glow
-        _BlurStrength ("Blur Strength", Range(0, 1)) = 0.5 // Glow 퍼짐 정도
+        _Color ("Glow Color", Color) = (0, 1, 1, 1) // Glow 색상
+        _GlowIntensity ("Glow Intensity", Range(0, 10)) = 5.0 // Glow 강도
+        _BlurStrength ("Blur Strength", Range(0, 2)) = 0.5 // Glow 퍼짐 정도
+        _GlowWidth ("Glow Width", Range(0, 1)) = 0.3 // 🔥 Glow 두께 조절
     }
     SubShader
     {
-        Tags
-        {
-            "Queue"="Transparent" "RenderType"="Transparent"
-        } //반투명 렌더링의 투명큐 + 투명한 오브젝트 처리..?
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" }
         Pass
         {
-            Blend SrcAlpha OneMinusSrcAlpha // 부드러운 Alpha Blending
-            ZWrite Off //깊이(depth) 업데이트 비활성화 < 겹쳐보이게?
-            Cull Off //모든 면을 렌더링
+            Blend One One // 🔥 Additive Blending → Glow가 강하게
+            ZWrite Off
+            Cull Off
 
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
 
-            struct appdata_t //입력구조체
+            struct appdata_t
             {
-                float4 vertex : POSITION; //3D 모델의 정점(position)
-                float2 uv : TEXCOORD0; // UV 좌표
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
             };
 
-            struct v2f //버텍스쉐이더에서 프래그먼트 쉐이더로 전달되는 구조체
+            struct v2f
             {
                 float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
@@ -38,8 +36,9 @@ Shader "Custom/GlowArcShader"
             float4 _Color;
             float _GlowIntensity;
             float _BlurStrength;
+            float _GlowWidth;
 
-            v2f vert(appdata_t v) //버텍스 쉐이더
+            v2f vert(appdata_t v)
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
@@ -47,15 +46,13 @@ Shader "Custom/GlowArcShader"
                 return o;
             }
 
-            
             fixed4 frag (v2f i) : SV_Target
             {
-                // UV 중심으로 Radial Blur 적용
-                float2 centeredUV = i.uv - 0.5;
-                float dist = length(centeredUV);
-
-                // Glow 강도를 거리에 따라 점점 약하게
-                float glow = exp(-dist * _BlurStrength * 5.0) * _GlowIntensity;
+                // 🔥 UV 기준으로 선을 따라 Glow가 퍼지도록 조절
+                float dist = abs(i.uv.y - 0.5); // Y축을 기준으로 거리 계산 (선 중심 기준)
+                
+                // Glow 강도를 선 중심에서 점진적으로 줄어들게
+                float glow = exp(-pow(dist / _GlowWidth, 2) * _BlurStrength * 5.0) * _GlowIntensity;
 
                 return float4(_Color.rgb * glow, glow);
             }

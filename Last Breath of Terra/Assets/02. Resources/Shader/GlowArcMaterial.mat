@@ -41,9 +41,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlurStrength: 0.5
+    - _BlurStrength: 1.05
     - _EnableExternalAlpha: 0
-    - _GlowIntensity: 3
+    - _GlowIntensity: 0.74
+    - _GlowWidth: 0.468
     - _Radius: 0.5
     m_Colors:
     - _Color: {r: 0.3254717, g: 0.9591578, b: 1, a: 0.50980395}

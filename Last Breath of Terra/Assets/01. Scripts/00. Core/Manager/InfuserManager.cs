@@ -15,11 +15,17 @@ public class InfuserManager : MonoBehaviour
     public bool[] activatedInfusers;
     public bool[] canInfusion;
     public int infusionCount;
+    public ParticleSystem objectParticle;
+    public float radius = 30f;
+
 
     [Header("UI")] public GameObject infuserStatus; //활성화 여부 확인 상단 UI
     public Transform[] infuserStatusChild;
     public Canvas infuserActivationCanvas;
     public Image infuserActivation;
+    public LineRenderer glowLineRenderer;  
+    public LineRenderer brightLineRenderer;  
+    public ParticleSystem gaugeParticle;   
 
     private void Awake()
     {
@@ -40,6 +46,16 @@ public class InfuserManager : MonoBehaviour
 
     private void Start()
     {
+        
+        //활성화 게이지 쉐이더 초기화
+        glowLineRenderer.positionCount = 0;
+        brightLineRenderer.positionCount = 0;
+
+        if (GetComponent<ParticleSystem>() != null)
+        {
+            GetComponent<ParticleSystem>().Stop();
+        }
+        
         foreach (Transform child in infuserStatusChild)
         {
             Image image = child.GetComponent<Image>();

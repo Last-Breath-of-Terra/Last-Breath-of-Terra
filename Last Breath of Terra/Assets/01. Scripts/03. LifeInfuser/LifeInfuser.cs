@@ -107,6 +107,7 @@ public class LifeInfuser : MonoBehaviour
             // Infusion 완료 후 처리
             lifeInfuserData.CompleteInfusion(infuserNumber, gameObject, infuserType);
             InfuserManager.Instance.canInfusion[infuserNumber] = false;
+            
 
             if (_playerController != null)
             {

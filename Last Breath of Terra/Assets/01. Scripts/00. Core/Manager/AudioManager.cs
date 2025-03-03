@@ -299,10 +299,12 @@ public class AudioManager : MonoBehaviour
                 GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 40f;
                 GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 60f;
                 break;
-            default:
+            case SCENE_TYPE.Gravel:
                 GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = false;
                 GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 10f;
                 GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 15f;
+                break;
+            default:
                 break;
         }
     }

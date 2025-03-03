@@ -49,9 +49,7 @@ public class ScenesManager
         }
         else
         {
-            currentSceneType = SCENE_TYPE.Gravel;
-
-            //currentMapType = MAP_TYPE.Default;
+            currentSceneType = SCENE_TYPE.Default;
         }
     }
 

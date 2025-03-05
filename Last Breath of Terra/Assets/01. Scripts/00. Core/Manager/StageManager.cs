@@ -7,8 +7,15 @@ public class StageManager : MonoBehaviour
 {
     public int stage;
     
-    public void ChangeStage(int stage)
+    public void ChangeStage(string stage)
     {
-        SceneManager.LoadScene(stage);
+        if(stage == "Tutorial")
+            SceneManager.LoadScene("Tutorial");
+        else
+        {
+            StoryManager.Instance.ActivateStoryForScene(stage);
+            SceneManager.LoadScene("StoryScene");
+        }
+        // SceneManager.LoadScene(stage);
     }
 }

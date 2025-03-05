@@ -4,6 +4,7 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEditor.Timeline.Actions;
 
@@ -59,9 +60,22 @@ public class LifeInfuserSO : ScriptableObject
         
         InfuserManager.Instance.glowLineRenderer.positionCount = 0;
         InfuserManager.Instance.brightLineRenderer.positionCount = 0;
+        /*for (float i = 0; i < 1f; i += 0.01f)
+        {
+            DrawArc(i, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.backLineRenderer);
+        }*/
         currentTween = DOTween.To(() => progress, x => progress = x, 1f, infusionDuration)
+            .OnStart(() => 
+            {
+                // 애니메이션 시작 전에 backLineRenderer를 한 번에 그린다 (progress = 1)
+                DrawArc(1f, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.backLineRenderer);
+            })
             //.SetEase(Ease.OutQuad) // 부드러운 속도 조절 (천천히 시작 → 빠르게 → 천천히 끝)
-            .OnUpdate(() => DrawArc(progress, targetInfuser.transform.position, InfuserManager.Instance.radius)) // 업데이트마다 DrawArc 호출
+            .OnUpdate(() => 
+            {
+                DrawArc(progress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.brightLineRenderer, InfuserManager.Instance.gaugeParticle);
+                DrawArc(progress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.glowLineRenderer);
+            })
             .OnComplete(() =>
             {
                 if (InfuserManager.Instance.gaugeParticle != null)
@@ -155,7 +169,7 @@ public class LifeInfuserSO : ScriptableObject
         }
     }
 
-    void DrawArc(float progress, Vector3 targetPosition, float radius)
+    void DrawArc(float progress, Vector3 targetPosition, float radius, LineRenderer lineRenderer, [CanBeNull] ParticleSystem gaugeParticle = null)
     {
         int visibleSegments = Mathf.FloorToInt(progress * lineRendererSegments);
         Vector3[] positions = new Vector3[visibleSegments];
@@ -166,19 +180,16 @@ public class LifeInfuserSO : ScriptableObject
             positions[i] = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius - 7f, 0) + targetPosition; // 위치 이동
         }
 
-        InfuserManager.Instance.glowLineRenderer.positionCount = visibleSegments;
-        InfuserManager.Instance.glowLineRenderer.SetPositions(positions);
+        lineRenderer.positionCount = visibleSegments;
+        lineRenderer.SetPositions(positions);
 
-        InfuserManager.Instance.brightLineRenderer.positionCount = visibleSegments;
-        InfuserManager.Instance.brightLineRenderer.SetPositions(positions);
-
-        if (InfuserManager.Instance.gaugeParticle != null && visibleSegments > 0)
+        if (gaugeParticle != null && visibleSegments > 0)
         {
             Vector3 lastPosition = positions[visibleSegments - 1];
-            InfuserManager.Instance.gaugeParticle.transform.position = lastPosition;
-            if (!InfuserManager.Instance.gaugeParticle.GetComponent<ParticleSystem>().isPlaying)
+            gaugeParticle.transform.position = lastPosition;
+            if (gaugeParticle.GetComponent<ParticleSystem>().isPlaying)
             {
-                InfuserManager.Instance.gaugeParticle.Play();
+                gaugeParticle.Play();
             }
         }
     }

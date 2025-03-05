@@ -25,6 +25,7 @@ public class InfuserManager : MonoBehaviour
     public Image infuserActivation;
     public LineRenderer glowLineRenderer;  
     public LineRenderer brightLineRenderer;  
+    public LineRenderer backLineRenderer;
     public ParticleSystem gaugeParticle;   
 
     private void Awake()

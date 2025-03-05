@@ -57,7 +57,7 @@ public class LifeRestorer : MonoBehaviour
 
             if (!InfuserManager.Instance.activatedInfusers.Any(infuser => infuser))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene("StageSelection");
             }
             else if (playerController.hp <= 0)
             {

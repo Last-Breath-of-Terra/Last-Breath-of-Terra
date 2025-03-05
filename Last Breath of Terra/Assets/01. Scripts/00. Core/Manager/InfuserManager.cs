@@ -21,7 +21,6 @@ public class InfuserManager : MonoBehaviour
 
     [Header("UI")] public GameObject infuserStatus; //활성화 여부 확인 상단 UI
     public Transform[] infuserStatusChild;
-    public Image infuserActivation;
     
     [Header("Arc")]
     public GameObject ArcEffect;

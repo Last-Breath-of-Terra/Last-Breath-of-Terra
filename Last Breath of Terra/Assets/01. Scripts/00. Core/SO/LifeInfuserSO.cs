@@ -99,7 +99,6 @@ public class LifeInfuserSO : ScriptableObject
         DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
         infusedLifeCount++;
         InfuserManager.Instance.ArcEffect.gameObject.SetActive(false);
-        InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = 0.126f;
         InfuserManager.Instance.activatedInfusers[infuserNumber] = true;
 
         SetUIForInfuserStatus(false);
@@ -115,7 +114,6 @@ public class LifeInfuserSO : ScriptableObject
         {
             currentTween.Kill();
             AudioManager.instance.StopCancelable(audioSource);
-            InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = 0;
             DOTween.To(() => targetLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x,
                 defaultLensSize, 0.3f);
             SetUIForInfuserStatus(false);

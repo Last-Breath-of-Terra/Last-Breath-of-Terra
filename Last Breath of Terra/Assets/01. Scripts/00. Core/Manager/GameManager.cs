@@ -86,5 +86,4 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("Player not found in the current scene.");
         }
     }
-
 }

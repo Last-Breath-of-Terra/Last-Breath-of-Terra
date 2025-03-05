@@ -30,7 +30,7 @@ public class LifeInfuserSO : ScriptableObject
     public Material defaultMaterial;
     public Material sacrificeMaterial;
 
-    public int lineRendererSegments = 80;
+    public int lineRendererSegments = 100;
 
     public int infusedLifeCount;
     private Tween currentTween;

@@ -47,10 +47,8 @@ public class LifeInfuserSO : ScriptableObject
     public virtual void StartInfusion(int infuserNumber, GameObject targetInfuser)
     {
         Debug.Log("start infusion");
-        InfuserManager.Instance.infuserActivationCanvas.gameObject.transform.position =
-            targetInfuser.transform.position;
         SetUIForInfuserStatus(true);
-        InfuserManager.Instance.infuserActivationCanvas.gameObject.SetActive(true);
+        InfuserManager.Instance.ArcEffect.gameObject.SetActive(true);
 
         //currentTween = DOTween.To(() => 0f, x => InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = x, 1f, infusionDuration);
         AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
@@ -100,7 +98,7 @@ public class LifeInfuserSO : ScriptableObject
         //state 복귀
         DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
         infusedLifeCount++;
-        InfuserManager.Instance.infuserActivationCanvas.gameObject.SetActive(false);
+        InfuserManager.Instance.ArcEffect.gameObject.SetActive(false);
         InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = 0.126f;
         InfuserManager.Instance.activatedInfusers[infuserNumber] = true;
 

@@ -100,6 +100,11 @@ public class LifeInfuser : MonoBehaviour
     private void CompleteInfusion()
     {
         lifeInfuserData.CompleteInfusion(infuserNumber, gameObject, infuserType);
+        if (_playerController != null)
+        {
+            _playerController.SetActivatingState(false);
+            _playerController.SetCanMove(true);
+        }
         
         GameManager.Instance._shaderManager.CompleteInfusionEffect(
         mat,
@@ -110,11 +115,7 @@ public class LifeInfuser : MonoBehaviour
             InfuserManager.Instance.canInfusion[infuserNumber] = false;
             
 
-            if (_playerController != null)
-            {
-                _playerController.SetActivatingState(false);
-                _playerController.SetCanMove(true);
-            }
+            
 
             if (obstacleSpawnCoroutine != null)
             {

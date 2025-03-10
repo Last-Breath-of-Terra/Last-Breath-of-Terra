@@ -94,10 +94,10 @@ GameObject:
   - component: {fileID: 7578914277012739383}
   - component: {fileID: 1727361869467118593}
   - component: {fileID: 6743859117064608632}
-  - component: {fileID: 1128684005527789153}
+  - component: {fileID: 82103489256299348}
   - component: {fileID: 1856818411440103085}
   m_Layer: 6
-  m_Name: Obstacle
+  m_Name: TutorialObstacle2
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,7 +234,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &1128684005527789153
+--- !u!114 &82103489256299348
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -243,15 +243,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2380780527199600930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb7d6c33ab5864155956664bfc28cfbe, type: 3}
+  m_Script: {fileID: 11500000, guid: f9254e68535d147c5b71396d7f2f0bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 8bc7ab49ee7b34f4da13345bcf6d5dfe, type: 2}
   lifeInfuserSO: {fileID: 11400000, guid: 8fb6ba2920c5aa646bc77e9de7c28c8c, type: 2}
   obstacleSprites:
-  - {fileID: 21300000, guid: 78b8ca01a408046ad9d416a4b8a87d1c, type: 3}
-  - {fileID: 21300000, guid: 82692300c65d04c5580f09db1fff67b5, type: 3}
-  - {fileID: 21300000, guid: 0fa4c4b6019014a8c9e3887a019cba93, type: 3}
+  - {fileID: 21300000, guid: eba4bc29ef155704cb7d4db4d1495a70, type: 3}
+  - {fileID: 21300000, guid: 75f5481a446a24b41a78022b216abf0f, type: 3}
+  - {fileID: 21300000, guid: f69b24f74cc291242b8d79ff7fe1fb7b, type: 3}
   attackPoints:
   - {fileID: 3544274121468092378}
   - {fileID: 6719746487878657740}

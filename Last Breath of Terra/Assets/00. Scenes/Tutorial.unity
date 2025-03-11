@@ -54481,6 +54481,8 @@ MonoBehaviour:
   activatedInfusers: 
   canInfusion: 
   infusionCount: 5
+  objectParticle: {fileID: 0}
+  radius: 30
   infuserStatus: {fileID: 2692770975875778495}
   infuserStatusChild:
   - {fileID: 5061976130459308752}
@@ -54493,8 +54495,11 @@ MonoBehaviour:
   - {fileID: 7931545267099502713}
   - {fileID: 3270020128058327500}
   - {fileID: 1597192809930073505}
-  infuserActivationCanvas: {fileID: 2285220455541909623}
-  infuserActivation: {fileID: 3804574577409933805}
+  ArcEffect: {fileID: 0}
+  glowLineRenderer: {fileID: 0}
+  brightLineRenderer: {fileID: 0}
+  backLineRenderer: {fileID: 0}
+  gaugeParticle: {fileID: 0}
 --- !u!1 &4112228862735658052
 GameObject:
   m_ObjectHideFlags: 0
@@ -54740,6 +54745,8 @@ MonoBehaviour:
   mapID: 1
   teleportID: 1
   targetID: 0
+  isRight: 0
+  targetPos: {fileID: 0}
 --- !u!4 &4878113497580691477
 Transform:
   m_ObjectHideFlags: 0
@@ -56116,6 +56123,8 @@ MonoBehaviour:
   mapID: 0
   teleportID: 0
   targetID: 1
+  isRight: 0
+  targetPos: {fileID: 0}
 --- !u!224 &7931545267099502713
 RectTransform:
   m_ObjectHideFlags: 0
@@ -56452,7 +56461,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0ad9d9a61c8e46cbbbab53583f8bf1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialObstaclePrefab: {fileID: 2380780527199600930, guid: c7cc80d2eee5c4b0d8d8a62d1dfb6e22, type: 3}
+  tutorialObstaclePrefab: {fileID: 2380780527199600930, guid: fa91eec808eec43c4aa6291de95e4344, type: 3}
   spawnPositions:
   - {fileID: 345858816}
   - {fileID: 1563746595}

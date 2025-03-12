@@ -147,42 +147,6 @@ public class TeleportManager : MonoBehaviour
             AudioManager.instance.FadeInBGM(1f);
             AudioManager.instance.FadeInAmbience(1f);
         }
-
-        // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-        if (parallaxBackgroundObject != null)
-        {
-            ParallaxBackground parallaxBackground = parallaxBackgroundObject.GetComponent<ParallaxBackground>();
-            if (parallaxBackground != null)
-            {
-                // teleportSet[targetID]의 mapID 값을 가져옴
-                Teleport teleport = teleportSet[targetID].GetComponent<Teleport>();
-                if (teleport != null)
-                {
-                    parallaxBackground.mapID = teleport.mapID;
-                }
-                else
-                {
-                    Debug.LogWarning("Teleport script not found on teleportSet[targetID].");
-                }
-
-                // 배경 위치를 플레이어 위치와 같게 설정
-                parallaxBackgroundObject.transform.position = new Vector3(
-                    player.transform.position.x,
-                    player.transform.position.y,
-                    parallaxBackgroundObject.transform.position.z
-                );
-            }
-            else
-            {
-                Debug.LogWarning("ParallaxBackground script not found on the referenced object.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("ParallaxBackground object is not assigned in the Inspector.");
-        }
-        // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-
         #endregion
         if (teleportDirection == new Vector3(0, 1, 0))
         {

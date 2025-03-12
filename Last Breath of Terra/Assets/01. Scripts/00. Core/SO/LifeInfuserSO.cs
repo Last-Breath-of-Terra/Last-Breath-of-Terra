@@ -49,6 +49,7 @@ public class LifeInfuserSO : ScriptableObject
         Debug.Log("start infusion");
         SetUIForInfuserStatus(true);
         InfuserManager.Instance.ArcEffect.gameObject.SetActive(true);
+        InfuserManager.Instance.gaugeParticle.Play();
 
         //currentTween = DOTween.To(() => 0f, x => InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = x, 1f, infusionDuration);
         AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);

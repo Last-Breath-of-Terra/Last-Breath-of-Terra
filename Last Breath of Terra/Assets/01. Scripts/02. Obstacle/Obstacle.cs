@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -120,7 +121,18 @@ public class Obstacle : MonoBehaviour
 
     protected void HandleHoverEffect()
     {
+        if (isHovered)
+        {
+            DOTween.To(() => 0f, x => attackGroup.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, x), 1f, 0.5f);
+        }
+        else
+        {
+            DOTween.To(() => 1f, x => attackGroup.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, x), 0f, 0.5f)
+                .OnComplete(() => { attackGroup.SetActive(isHovered); });
+
+        }
         attackGroup.SetActive(isHovered);
+
     }
 
     public void RotateTimingIndicator()

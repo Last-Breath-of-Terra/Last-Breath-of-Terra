@@ -27,6 +27,7 @@ public class Teleport : MonoBehaviour
     public int mapID;
     public int teleportID;
     public int targetID;
+    public bool isRight;
     
     //※※※※※※※※※※※※※※※임시 코드※※※※※※※※※※※※※※※※※※※※※※※※※
     public Transform targetPos;
@@ -49,7 +50,7 @@ public class Teleport : MonoBehaviour
             TeleportManager.Instance.MoveToPortal();
             TeleportManager.Instance.CoFade(targetID, directionOffsets[portalDirection]);
             //※※※※※※※※※※※※※※※임시 코드※※※※※※※※※※※※※※※※※※※※※※※※※
-            StartCoroutine(ResetTeleportingFlag());
+            //StartCoroutine(ResetTeleportingFlag());
             //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
             //player.transform.position = TeleportManager.Instance.teleportSO.portals[targetID];
             //TeleportManager.Instance.ChangeCamera(targetID / 2);

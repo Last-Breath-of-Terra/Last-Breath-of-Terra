@@ -39,7 +39,8 @@ public class Tutorial : MonoBehaviour
 
         if (other.gameObject.name == "TutorialClear")
         {
-            SceneManager.LoadScene("StageSelection");
+            StoryManager.Instance.ActivateStoryForScene("TutorialStory");
+            SceneManager.LoadScene("StoryScene");
         }
         
     }

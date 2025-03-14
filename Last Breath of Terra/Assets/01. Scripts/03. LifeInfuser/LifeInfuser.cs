@@ -53,7 +53,7 @@ public class LifeInfuser : MonoBehaviour
             _playerController.SetActivatingState(true);
             _playerController.SetCanMove(false);
         }
-        DOTween.To(() => lifeInfuserData.defaultLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 0.5f);
+        DOTween.To(() => lifeInfuserData.defaultLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 1f);
         lifeInfuserData.StartInfusion(infuserNumber, gameObject);
         
         if (obstacleSpawnCoroutine == null)
@@ -99,20 +99,23 @@ public class LifeInfuser : MonoBehaviour
 
     private void CompleteInfusion()
     {
+        lifeInfuserData.CompleteInfusion(infuserNumber, gameObject, infuserType);
+        if (_playerController != null)
+        {
+            _playerController.SetActivatingState(false);
+            _playerController.SetCanMove(true);
+        }
+        
         GameManager.Instance._shaderManager.CompleteInfusionEffect(
         mat,
         Camera.main.GetComponent<Volume>(),
         () =>
         {
             // Infusion 완료 후 처리
-            lifeInfuserData.CompleteInfusion(infuserNumber, gameObject, infuserType);
             InfuserManager.Instance.canInfusion[infuserNumber] = false;
+            
 
-            if (_playerController != null)
-            {
-                _playerController.SetActivatingState(false);
-                _playerController.SetCanMove(true);
-            }
+            
 
             if (obstacleSpawnCoroutine != null)
             {

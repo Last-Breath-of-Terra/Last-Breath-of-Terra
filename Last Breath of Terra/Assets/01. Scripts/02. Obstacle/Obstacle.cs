@@ -18,6 +18,7 @@ public class Obstacle : MonoBehaviour
     public Transform targetPoint;
     public GameObject attackGroup;
     public GameObject destroyEffectPrefab;
+    public GameObject bodyAttackEffectPrefab;
     public GameObject attackEffectPrefab;
     public GameObject smokeEffectPrefab;
 
@@ -129,17 +130,16 @@ public class Obstacle : MonoBehaviour
     {
         if (isHovered)
         {
+            attackGroup.SetActive(isHovered);
             DOTween.To(() => 0f, x => attackGroup.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, x), 1f,
                 0.5f);
         }
         else
         {
             DOTween.To(() => 1f, x => attackGroup.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, x), 0f,
-                    0.5f)
+                    0.2f)
                 .OnComplete(() => { attackGroup.SetActive(isHovered); });
         }
-
-        attackGroup.SetActive(isHovered);
     }
 
     public void RotateTimingIndicator()
@@ -232,14 +232,18 @@ public class Obstacle : MonoBehaviour
                 string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
                 AudioManager.instance.PlaySFX(audioName, gameObject.GetComponent<AudioSource>(), transform);
 
+                transform.DOShakePosition(0.5f, 0.1f);
+                GameObject attackEffect = Instantiate(attackEffectPrefab, point.position, Quaternion.identity);
+                GameObject bodyAttackEffect =
+                    Instantiate(bodyAttackEffectPrefab, transform.position, Quaternion.identity);
+                bodyAttackEffect.GetComponent<ParticleSystem>().Play();
+                attackEffect.GetComponent<ParticleSystem>().Play();
+                Destroy(bodyAttackEffect, 2f);
+                Destroy(attackEffect, 0.5f);
+
                 Color color = point.GetComponent<SpriteRenderer>().color;
                 color.a = 100f;
                 point.GetComponent<SpriteRenderer>().color = color;
-                transform.DOShakePosition(0.5f, 0.1f);
-                GameObject attackEffect = Instantiate(attackEffectPrefab, transform.position, Quaternion.identity);
-                attackEffect.transform.position = point.position;
-                attackEffect.GetComponent<ParticleSystem>().Play();
-                Destroy(attackEffect, 2f);
                 clickedPoints.Add(point);
                 currentHitCount++;
                 UpdateObstacleSprite();
@@ -250,11 +254,13 @@ public class Obstacle : MonoBehaviour
         if (currentHitCount >= data.clicksToDestroy)
         {
             GameObject smokeEffect = Instantiate(smokeEffectPrefab, transform.position, Quaternion.identity);
+            smokeEffect.transform.SetParent(gameObject.transform);
+            //smokeEffect.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.Linear);
             transform.DOScale(Vector3.zero, 1f).SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
                     DeactivateObstacle();
-                    Destroy(smokeEffect);
+                    //Destroy(smokeEffect);
                 });
             //Invoke("DeactivateObstacle", 0.1f);
             //DeactivateObstacle();

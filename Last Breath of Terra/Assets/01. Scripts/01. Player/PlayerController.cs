@@ -59,6 +59,7 @@ public class PlayerController : MonoBehaviour
     private bool isHoldingClick = false;
     private bool isOnWall = false;
     private bool isClimbing = false;
+    private bool isWallJumping = false;
     private bool isFallingDelay = false;
     private bool isSignificantFall = false;
     #endregion
@@ -280,7 +281,7 @@ public class PlayerController : MonoBehaviour
     #region Wall Climbing Methods
     private void HandleWallActions()
     {
-        if (!isOnWall || isJumping || !isHoldingClick) return;
+        if (!isOnWall || !isHoldingClick) return;
     
         Vector2 worldPosition = GameManager.Instance._ui.GetMouseWorldPosition();
 
@@ -308,25 +309,24 @@ public class PlayerController : MonoBehaviour
 
     private void JumpFromWall()
     {
-        if (!isOnWall) return;
+        if (!isOnWall)
+        {
+            return;
+        }
 
-        _rb.velocity = new Vector2(0f, 0f);
+        isWallJumping = true;
+        isOnWall = false;
 
         Vector2 mousePosition = Mouse.current.position.ReadValue();
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
 
         float jumpDirection = worldPosition.x > transform.position.x ? 1f : -1f;
-
-        //Vector2 jumpForce = new Vector2(jumpDirection * 8f, 3f);
-        //_rb.AddForce(jumpForce, ForceMode2D.Impulse);
         
         _rb.gravityScale = 3f;
-        _rb.velocity = new Vector2(jumpDirection * 8f, data.jumpForce);
+        _rb.velocity = new Vector2(jumpDirection * data.walljumpForce, data.jumpForce);
 
         ChangeAnimationState(AnimationState.Jump);
         transform.localScale = new Vector3(jumpDirection * Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
-
-        isJumping = true;
     }
 
     private void ClimbWall()
@@ -466,7 +466,7 @@ public class PlayerController : MonoBehaviour
         if (!canMove || isClimbing)
             return;
 
-        if (isOnWall && !isJumping)
+        if (isOnWall)
         {
             JumpFromWall();
         }
@@ -541,7 +541,7 @@ public class PlayerController : MonoBehaviour
     #region Movement Methods
     private void Move()
     {
-        if (!canMove || isOnWall || isFallingDelay || isClimbing) return;
+        if (!canMove || isOnWall || isFallingDelay || isClimbing || isWallJumping) return;
 
         float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
         float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
@@ -651,8 +651,9 @@ public class PlayerController : MonoBehaviour
         {
             if(!isOnWall)
             {
-                isJumping = false;
                 _rb.velocity = Vector2.zero;
+                isJumping = false;
+                isWallJumping = false;
                 StickToWall();
             }
         }
@@ -666,6 +667,7 @@ public class PlayerController : MonoBehaviour
                     AudioManager.instance.PlaySFX(GetFootstepClipPrefix() + "4", _audioSource, transform);
                     ChangeAnimationState(AnimationState.Idle);
                     isJumping = false;
+                    isWallJumping = false;
 
                     float fallHeight = fallStartY - transform.position.y;
                     if (fallHeight > 5f)
@@ -680,7 +682,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall") && isOnWall && !isJumping)
+        if (collision.gameObject.CompareTag("Wall") && !isWallJumping)
         {
             FallOffWall();
         }

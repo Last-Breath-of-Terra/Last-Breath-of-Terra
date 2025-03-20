@@ -59,6 +59,7 @@ public class PlayerController : MonoBehaviour
     private bool isHoldingClick = false;
     private bool isOnWall = false;
     private bool isClimbing = false;
+    private bool isWallJumping = false;
     private bool isFallingDelay = false;
     private bool isSignificantFall = false;
     #endregion
@@ -142,7 +143,7 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateAcceleration()
     {   
-        if (isHoldingClick && !isFallingDelay && !isClimbing)
+        if (isHoldingClick && !isFallingDelay && !isClimbing && !isOnWall)
         {
             float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
 
@@ -281,12 +282,20 @@ public class PlayerController : MonoBehaviour
     private void HandleWallActions()
     {
         if (!isOnWall || !isHoldingClick) return;
-
+    
         Vector2 worldPosition = GameManager.Instance._ui.GetMouseWorldPosition();
 
         if (worldPosition.y > transform.position.y + 0.5f)
         {
-            ClimbWall();
+            if (Mathf.Abs(worldPosition.x - transform.position.x) < 1f)
+            {
+                ClimbWall();
+            }
+            else
+            {
+                isClimbing = false;
+                _rb.velocity = new Vector2(0f, 0f);
+            }
         }
         else if (IsAtWallTop()) // *********** 추가 **************
         {
@@ -296,6 +305,28 @@ public class PlayerController : MonoBehaviour
         {
             FallOffWall();
         }
+    }
+
+    private void JumpFromWall()
+    {
+        if (!isOnWall)
+        {
+            return;
+        }
+
+        isWallJumping = true;
+        isOnWall = false;
+
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        float jumpDirection = worldPosition.x > transform.position.x ? 1f : -1f;
+        
+        _rb.gravityScale = 3f;
+        _rb.velocity = new Vector2(jumpDirection * data.walljumpForce, data.jumpForce);
+
+        ChangeAnimationState(AnimationState.Jump);
+        transform.localScale = new Vector3(jumpDirection * Mathf.Abs(originalScale.x), originalScale.y, originalScale.z);
     }
 
     private void ClimbWall()
@@ -308,6 +339,7 @@ public class PlayerController : MonoBehaviour
 
         isClimbing = true;
         _rb.velocity = new Vector2(0f, data.climbSpeed);
+        _rb.gravityScale = 0f;
     }
 
     private void FallOffWall()
@@ -368,7 +400,6 @@ public class PlayerController : MonoBehaviour
         isClimbing = false;
 
         ChangeAnimationState(AnimationState.Climbing);
-        _rb.velocity = Vector2.zero;
         _rb.gravityScale = 0f;
     }
 
@@ -435,7 +466,11 @@ public class PlayerController : MonoBehaviour
         if (!canMove || isClimbing)
             return;
 
-        if (isGrounded)
+        if (isOnWall)
+        {
+            JumpFromWall();
+        }
+        else if (isGrounded)
         {
             isJumping = true;
             ChangeAnimationState(AnimationState.Jump);
@@ -452,12 +487,13 @@ public class PlayerController : MonoBehaviour
                 _rb.velocity = new Vector2(_rb.velocity.x, 0);
             }
 
-            _rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
-
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-            GameManager.Instance._ui.HandleJumpLight(worldPosition);
+            //_rb.AddForce(Vector2.up * data.jumpForce, ForceMode2D.Impulse);
+            _rb.velocity = new Vector2(_rb.velocity.x, data.jumpForce);
         }
+
+        Vector2 mousePositionForLight = Mouse.current.position.ReadValue();
+        Vector2 worldPositionForLight = Camera.main.ScreenToWorldPoint(mousePositionForLight);
+        GameManager.Instance._ui.HandleJumpLight(worldPositionForLight);
     }
 
     private void OnAttackPerformed(InputAction.CallbackContext context)
@@ -505,7 +541,7 @@ public class PlayerController : MonoBehaviour
     #region Movement Methods
     private void Move()
     {
-        if (!canMove || isOnWall || isFallingDelay) return;
+        if (!canMove || isOnWall || isFallingDelay || isClimbing || isWallJumping) return;
 
         float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
         float direction = (targetPosition.x - transform.position.x) > 0 ? 1 : -1;
@@ -615,6 +651,9 @@ public class PlayerController : MonoBehaviour
         {
             if(!isOnWall)
             {
+                _rb.velocity = Vector2.zero;
+                isJumping = false;
+                isWallJumping = false;
                 StickToWall();
             }
         }
@@ -628,6 +667,7 @@ public class PlayerController : MonoBehaviour
                     AudioManager.instance.PlaySFX(GetFootstepClipPrefix() + "4", _audioSource, transform);
                     ChangeAnimationState(AnimationState.Idle);
                     isJumping = false;
+                    isWallJumping = false;
 
                     float fallHeight = fallStartY - transform.position.y;
                     if (fallHeight > 5f)
@@ -642,7 +682,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall") && isOnWall)
+        if (collision.gameObject.CompareTag("Wall") && !isWallJumping)
         {
             FallOffWall();
         }

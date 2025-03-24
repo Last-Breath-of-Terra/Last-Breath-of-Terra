@@ -19,6 +19,7 @@ public class LifeInfuser : MonoBehaviour
     private Coroutine obstacleSpawnCoroutine;
     private PlayerController _playerController;
     private Material mat;
+    private int obstacleSpawnPreIndex;
 
     private void Start()
     {
@@ -84,8 +85,13 @@ public class LifeInfuser : MonoBehaviour
     private void SpawnObstacle()
     {
         if (obstacleSpawnPoints == null || obstacleSpawnPoints.Length == 0) return;
-
-        int randomIndex = UnityEngine.Random.Range(0, obstacleSpawnPoints.Length);
+        int randomIndex;
+        do
+        {
+            randomIndex = UnityEngine.Random.Range(0, obstacleSpawnPoints.Length);
+        }while (randomIndex == obstacleSpawnPreIndex) ;
+        obstacleSpawnPreIndex = randomIndex;
+        
         Transform spawnPoint = obstacleSpawnPoints[randomIndex];
 
         Obstacle obstacle = GameManager.Instance._obstacleManager.GetObstacle();

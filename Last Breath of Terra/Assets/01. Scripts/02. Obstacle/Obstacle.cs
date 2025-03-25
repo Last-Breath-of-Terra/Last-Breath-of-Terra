@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
 /// 장애물의 기능을 담당하고 있는 클래스
 /// </summary>
-
 public class Obstacle : MonoBehaviour
 {
     public ObstacleSO data;
@@ -17,6 +18,9 @@ public class Obstacle : MonoBehaviour
     public Transform targetPoint;
     public GameObject attackGroup;
     public GameObject destroyEffectPrefab;
+    public GameObject bodyAttackEffectPrefab;
+    public GameObject attackEffectPrefab;
+    public GameObject smokeEffectPrefab;
 
     protected bool isHovered = false;
     protected bool isRotating = true;
@@ -58,9 +62,10 @@ public class Obstacle : MonoBehaviour
         if (GameManager.ScenesManager.GetCurrentSceneType() == SCENE_TYPE.Tutorial)
         {
             GameManager.Instance._obstacleManager.RegisterObstacle(this);
-            AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(), transform);
+            AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(),
+                transform);
         }
-        
+
         currentHitCount = 0;
         currentSpeed = data.speed;
         clickedPoints.Clear();
@@ -90,6 +95,7 @@ public class Obstacle : MonoBehaviour
     }
 
     #region Movement Methods
+
     private void MoveTowardsTarget()
     {
         if (targetPoint == null) return;
@@ -97,9 +103,11 @@ public class Obstacle : MonoBehaviour
         Vector3 direction = (targetPoint.position - transform.position).normalized;
         transform.position += direction * currentSpeed * Time.deltaTime;
     }
+
     #endregion
 
     #region Hover and Attack Methods
+
     public void SetHovered(bool hovered)
     {
         if (isHovered == hovered) return;
@@ -120,7 +128,18 @@ public class Obstacle : MonoBehaviour
 
     protected void HandleHoverEffect()
     {
-        attackGroup.SetActive(isHovered);
+        if (isHovered)
+        {
+            attackGroup.SetActive(isHovered);
+            DOTween.To(() => 0f, x => attackGroup.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, x), 1f,
+                0.5f);
+        }
+        else
+        {
+            DOTween.To(() => 1f, x => attackGroup.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, x), 0f,
+                    0.2f)
+                .OnComplete(() => { attackGroup.SetActive(isHovered); });
+        }
     }
 
     public void RotateTimingIndicator()
@@ -164,7 +183,7 @@ public class Obstacle : MonoBehaviour
     }
 
     private IEnumerator DeactivateAllPointsTemporarily(float delay)
-    {   
+    {
         isRotating = false;
 
         SpriteRenderer indicatorRenderer = timingIndicator.GetComponent<SpriteRenderer>();
@@ -199,9 +218,11 @@ public class Obstacle : MonoBehaviour
 
         isRotating = true;
     }
+
     #endregion
 
     #region Attack Handling Methods
+
     private void HandleSuccessfulAttack()
     {
         foreach (Transform point in attackPoints)
@@ -210,6 +231,15 @@ public class Obstacle : MonoBehaviour
             {
                 string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
                 AudioManager.instance.PlaySFX(audioName, gameObject.GetComponent<AudioSource>(), transform);
+
+                transform.DOShakePosition(0.5f, 0.1f);
+                GameObject attackEffect = Instantiate(attackEffectPrefab, point.position, Quaternion.identity);
+                GameObject bodyAttackEffect =
+                    Instantiate(bodyAttackEffectPrefab, transform.position, Quaternion.identity);
+                bodyAttackEffect.GetComponent<ParticleSystem>().Play();
+                attackEffect.GetComponent<ParticleSystem>().Play();
+                Destroy(bodyAttackEffect, 2f);
+                Destroy(attackEffect, 0.5f);
 
                 Color color = point.GetComponent<SpriteRenderer>().color;
                 color.a = 100f;
@@ -223,7 +253,16 @@ public class Obstacle : MonoBehaviour
 
         if (currentHitCount >= data.clicksToDestroy)
         {
-            Invoke("DeactivateObstacle", 0.1f);
+            GameObject smokeEffect = Instantiate(smokeEffectPrefab, transform.position, Quaternion.identity);
+            smokeEffect.transform.SetParent(gameObject.transform);
+            //smokeEffect.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.Linear);
+            transform.DOScale(Vector3.zero, 1f).SetEase(Ease.Linear)
+                .OnComplete(() =>
+                {
+                    DeactivateObstacle();
+                    //Destroy(smokeEffect);
+                });
+            //Invoke("DeactivateObstacle", 0.1f);
             //DeactivateObstacle();
         }
     }
@@ -261,9 +300,11 @@ public class Obstacle : MonoBehaviour
 
         clickedPoints.Clear();
     }
+
     #endregion
 
     #region Obstacle Management Methods
+
     protected virtual void DeactivateObstacle()
     {
         GameObject effect = Instantiate(destroyEffectPrefab, transform.position, Quaternion.identity);
@@ -293,6 +334,7 @@ public class Obstacle : MonoBehaviour
     {
         currentSpeed = data.speed;
     }
+
     #endregion
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -49,6 +49,7 @@ public class LifeInfuserSO : ScriptableObject
         Debug.Log("start infusion");
         SetUIForInfuserStatus(true);
         InfuserManager.Instance.ArcEffect.gameObject.SetActive(true);
+        InfuserManager.Instance.gaugeParticle.Play();
 
         //currentTween = DOTween.To(() => 0f, x => InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = x, 1f, infusionDuration);
         AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
@@ -60,14 +61,16 @@ public class LifeInfuserSO : ScriptableObject
         InfuserManager.Instance.brightLineRenderer.positionCount = 0;
         
         currentTween = DOTween.To(() => progress, x => progress = x, 1f, infusionDuration)
+            .SetEase(Ease.Linear)
             .OnStart(() => 
             {
                 DrawArc(1f, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.backLineRenderer);
             })
             .OnUpdate(() => 
             {
-                DrawArc(progress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.brightLineRenderer, InfuserManager.Instance.gaugeParticle);
-                DrawArc(progress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.glowLineRenderer);
+                float circularProgress = (1 - Mathf.Cos(progress * Mathf.PI)) / 2; 
+                DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.brightLineRenderer, InfuserManager.Instance.gaugeParticle);
+                DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.glowLineRenderer);
             })
             .OnComplete(() =>
             {
@@ -174,14 +177,16 @@ public class LifeInfuserSO : ScriptableObject
         lineRenderer.positionCount = visibleSegments;
         lineRenderer.SetPositions(positions);
 
+        
         if (gaugeParticle != null && visibleSegments > 0)
         {
             Vector3 lastPosition = positions[visibleSegments - 1];
             gaugeParticle.transform.position = lastPosition;
+            /*
             if (gaugeParticle.GetComponent<ParticleSystem>().isPlaying)
             {
                 gaugeParticle.Play();
-            }
+            }*/
         }
     }
 

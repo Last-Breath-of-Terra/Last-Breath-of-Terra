@@ -163,6 +163,8 @@ public class TeleportManager : MonoBehaviour
         }
 
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        GameManager.Instance._stageminimapManager.OnMapEntered("MAP" + teleportSet[targetID].GetComponent<Teleport>().mapID);
+
         //yield return new WaitForSeconds(0.5f);
         
         //fadeout

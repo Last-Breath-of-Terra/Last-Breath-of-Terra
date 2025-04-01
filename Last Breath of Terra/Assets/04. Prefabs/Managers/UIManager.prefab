@@ -301,6 +301,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Magic fire
       objectReference: {fileID: 0}
+    - target: {fileID: 8580561002065202627, guid: 7dd51f291465ab04f8619bc508117bc2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

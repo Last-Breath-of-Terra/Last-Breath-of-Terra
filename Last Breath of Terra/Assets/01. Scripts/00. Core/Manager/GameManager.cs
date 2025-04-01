@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public UIManager _ui;
     public ObstacleManager _obstacleManager;
     public ShaderManager _shaderManager;
+    public StageMinimapManager _stageminimapManager;
     
     public Transform playerTr;
 

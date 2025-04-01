@@ -14,6 +14,9 @@ public class LifeInfuser : MonoBehaviour
     public float spawnInterval = 2f;
     public Transform arrivalPoint;
     //public bool[] canInfusion;
+
+    [Header("Minimap")]
+    public string mapID;
     
     private Tween startTween;
     private Coroutine obstacleSpawnCoroutine;
@@ -119,9 +122,7 @@ public class LifeInfuser : MonoBehaviour
         {
             // Infusion 완료 후 처리
             InfuserManager.Instance.canInfusion[infuserNumber] = false;
-            
-
-            
+            GameManager.Instance._stageminimapManager.RevealMapFromInfuser(mapID);
 
             if (obstacleSpawnCoroutine != null)
             {

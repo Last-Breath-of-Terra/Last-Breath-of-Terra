@@ -53,7 +53,7 @@ public class LifeInfuser : MonoBehaviour
 
         if (_playerController != null)
         {
-            AudioManager.instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(), gameObject.transform);
+            AudioManager.Instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(), gameObject.transform);
             _playerController.SetActivatingState(true);
             _playerController.SetCanMove(false);
         }

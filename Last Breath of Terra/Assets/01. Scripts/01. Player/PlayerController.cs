@@ -229,7 +229,7 @@ public class PlayerController : MonoBehaviour
         if (footstepTimer >= footstepInterval)
         {
             footstepTimer = 0f;
-            AudioManager.instance.PlayRandomPlayer(GetFootstepClipPrefix(), 0);
+            AudioManager.Instance.PlayRandomPlayer(GetFootstepClipPrefix(), 0);
         }
     }
     #endregion
@@ -455,8 +455,8 @@ public class PlayerController : MonoBehaviour
             _rb.velocity = new Vector2(0, _rb.velocity.y);
         }
 
-        AudioManager.instance.StopCancelable(gameObject.GetComponent<AudioSource>());
-        AudioManager.instance.PlaySFX(GetFootstepClipPrefix() + "4", gameObject.GetComponent<AudioSource>(), transform);
+        AudioManager.Instance.StopCancelable(gameObject.GetComponent<AudioSource>());
+        AudioManager.Instance.PlaySFX(GetFootstepClipPrefix() + "4", gameObject.GetComponent<AudioSource>(), transform);
 
         CancelInvoke("StartMoving");
     }
@@ -664,7 +664,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (contact.point.y < transform.position.y)
                 {
-                    AudioManager.instance.PlaySFX(GetFootstepClipPrefix() + "4", _audioSource, transform);
+                    AudioManager.Instance.PlaySFX(GetFootstepClipPrefix() + "4", _audioSource, transform);
                     ChangeAnimationState(AnimationState.Idle);
                     isJumping = false;
                     isWallJumping = false;

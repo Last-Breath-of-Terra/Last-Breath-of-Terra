@@ -140,7 +140,7 @@ public class LifeRestorer : MonoBehaviour
 
     public void OnLeftSelect(InputAction.CallbackContext context)
     {
-        AudioManager.instance.PlayPlayer("ui_click_fire_1", -1f);
+        AudioManager.Instance.PlayPlayer("ui_click_fire_1", -1f);
         for (int i = 1; infuserNumber - i >= 0; i++)
         {
             if (InfuserManager.Instance.activatedInfusers[infuserNumber - i])
@@ -159,7 +159,7 @@ public class LifeRestorer : MonoBehaviour
 
     public void OnRightSelect(InputAction.CallbackContext context)
     {
-        AudioManager.instance.PlayPlayer("ui_click_fire_1", 1f);
+        AudioManager.Instance.PlayPlayer("ui_click_fire_1", 1f);
         for (int i = 1; i + infuserNumber < InfuserManager.Instance.activatedInfusers.Length; i++)
         {
             if (InfuserManager.Instance.activatedInfusers[i + infuserNumber])
@@ -180,7 +180,7 @@ public class LifeRestorer : MonoBehaviour
     public void OnSelect(InputAction.CallbackContext context)
     {
         //부활사운드
-        AudioManager.instance.PlayPlayer("revival", 0f);
+        AudioManager.Instance.PlayPlayer("revival", 0f);
         //비활성화
         InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage[InfuserManager.Instance.infuser[infuserNumber].GetComponent<LifeInfuser>().infuserType];
         InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().material = lifeInfuserData.defaultMaterial;

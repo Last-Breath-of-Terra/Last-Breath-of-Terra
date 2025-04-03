@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    public static GameManager Instance { get; private set; }
 
     public UIManager _ui;
     public ObstacleManager _obstacleManager;
@@ -21,15 +20,6 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
 
         _scenesManager = new ScenesManager();
     }
@@ -37,7 +27,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
-        AudioManager.instance.PlayAmbience("map_1_stage_ambience");
+        AudioManager.Instance.PlayAmbience("map_1_stage_ambience");
 
         UpdateManagersReference();
         UpdatePlayerReference();

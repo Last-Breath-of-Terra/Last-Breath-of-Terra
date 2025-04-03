@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DataManager : MonoBehaviour
+public class DataManager : Singleton<DataManager>
 {
     // 플레이어 데이터 클래스
     [System.Serializable]
@@ -27,7 +27,6 @@ public class DataManager : MonoBehaviour
         public List<PlayerData> players; // 플레이어 목록
     }
 
-    public static DataManager Instance;
     
     public GameObject scrollView;
     public GameObject buttonPrefab;
@@ -37,18 +36,6 @@ public class DataManager : MonoBehaviour
     
     private GameData gameData;
     private string path;
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-    }
     private void Start()
     {
         // JSON 파일 경로 설정

@@ -5,10 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
 
-public class InfuserManager : MonoBehaviour
+public class InfuserManager : Singleton<InfuserManager>
 {
-    public static InfuserManager Instance;
-
     public LifeInfuserSO LifeInfuserSO;
     public CinemachineVirtualCamera virtualCamera;
     public GameObject[] infuser;
@@ -31,15 +29,6 @@ public class InfuserManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
 
         infuser = new GameObject[infusionCount];
         activatedInfusers = new bool[infusionCount];

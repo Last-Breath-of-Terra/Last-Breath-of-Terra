@@ -60,8 +60,8 @@ public class TeleportManager : MonoBehaviour
     IEnumerator Fade(int targetID, Vector3 teleportDirection)
     {
         //※※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-        AudioManager.instance.FadeOutBGM(1f);
-        AudioManager.instance.FadeOutAmbience(1f);
+        AudioManager.Instance.FadeOutBGM(1f);
+        AudioManager.Instance.FadeOutAmbience(1f);
 
         int teleportOffset = 2;
 
@@ -152,17 +152,17 @@ public class TeleportManager : MonoBehaviour
         #region audio
 
         // ※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-        AudioManager.instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        if (AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
+        AudioManager.Instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        if (AudioManager.Instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
         {
-            AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-            AudioManager.instance.FadeInAmbience(1f);
+            AudioManager.Instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+            AudioManager.Instance.FadeInAmbience(1f);
         }
         else
         {
-            AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-            AudioManager.instance.FadeInBGM(1f);
-            AudioManager.instance.FadeInAmbience(1f);
+            AudioManager.Instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+            AudioManager.Instance.FadeInBGM(1f);
+            AudioManager.Instance.FadeInAmbience(1f);
         }
 
         #endregion

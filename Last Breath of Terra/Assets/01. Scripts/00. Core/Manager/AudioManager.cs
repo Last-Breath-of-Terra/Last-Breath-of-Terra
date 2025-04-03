@@ -3,9 +3,8 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : Singleton<AudioManager>
 {
-    public static AudioManager instance;
     [HideInInspector] public Dictionary<int, string> mapAmbienceDict;
 
     private ScenesManager scenesManager;
@@ -35,16 +34,6 @@ public class AudioManager : MonoBehaviour
     
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
         AudioInit();
         scenesManager = new ScenesManager();
 

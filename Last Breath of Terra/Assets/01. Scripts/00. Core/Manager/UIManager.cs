@@ -1,3 +1,5 @@
+using System;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.InputSystem;
@@ -16,6 +18,7 @@ public class UIManager : MonoBehaviour
     public GameObject jumpLightEffect;
 
     private bool isHoldingClick;
+
 
     void Update()
     {
@@ -77,9 +80,9 @@ public class UIManager : MonoBehaviour
         }
 
         clickLight.gameObject.SetActive(true);
-
-        movingLightEffect.transform.position = new Vector3(position.x, position.y, movingLightEffect.transform.position.z);
-        movingLightEffect.SetActive(true);
+    
+        //movingLightEffect.transform.position = new Vector3(position.x, position.y, movingLightEffect.transform.position.z);
+        movingLightEffect.SetActive(true);  
 
         if (!isHoldingClick)
         {
@@ -120,6 +123,13 @@ public class UIManager : MonoBehaviour
 
     public void ReleaseClick()
     {
+        Vector3 originalScale = movingLightEffect.transform.localScale;
+        movingLightEffect.transform
+            .DOScale(Vector3.zero, 0.5f)
+            .SetEase(Ease.InOutSine)
+            .OnComplete(() => movingLightEffect.SetActive(false));
+
+        movingLightEffect.transform.localScale = originalScale;
         isHoldingClick = false;
         Color color = cursorIndicator.GetComponent<SpriteRenderer>().color;
         color.a = 100f;

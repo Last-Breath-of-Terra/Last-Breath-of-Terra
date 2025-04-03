@@ -13,9 +13,11 @@ public class GameStart : MonoBehaviour
         string playerName = gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
         DataManager.Instance.playerIndex = DataManager.Instance.FindPlayerIndexByName(playerName);
         
-        StoryManager.Instance.ActivateStoryForScene("TitleStory");
+        //StoryManager.Instance.ActivateStoryForScene("TitleStory");
 
-        SceneManager.LoadScene("StoryScene");
+        //SceneManager.LoadScene("StoryScene");
+        SceneManager.LoadScene("Stage1_gravel");
+
     }
     
 }

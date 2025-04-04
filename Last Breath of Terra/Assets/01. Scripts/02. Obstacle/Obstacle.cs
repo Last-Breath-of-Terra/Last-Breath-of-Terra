@@ -21,7 +21,7 @@ public class Obstacle : MonoBehaviour
     public GameObject bodyAttackEffectPrefab;
     public GameObject attackEffectPrefab;
     public GameObject smokeEffectPrefab;
-
+    
     protected bool isHovered = false;
     protected bool isRotating = true;
     private SpriteRenderer spriteRenderer;
@@ -113,17 +113,18 @@ public class Obstacle : MonoBehaviour
         if (isHovered == hovered) return;
 
         isHovered = hovered;
-
-        if (isHovered)
+        if (!GameManager.Instance._obstacleManager.isRestoring)
         {
-            GameManager.Instance._obstacleManager.SlowDownAllObstacles();
+            if (isHovered)
+            {
+                GameManager.Instance._obstacleManager.SlowDownAllObstacles();
+            }
+            else
+            {
+                GameManager.Instance._obstacleManager.ResetAllObstaclesSpeed();
+            }
+            HandleHoverEffect();
         }
-        else
-        {
-            GameManager.Instance._obstacleManager.ResetAllObstaclesSpeed();
-        }
-
-        HandleHoverEffect();
     }
 
     protected void HandleHoverEffect()

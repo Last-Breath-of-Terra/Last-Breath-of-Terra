@@ -62,6 +62,7 @@ public class LifeRestorer : MonoBehaviour
             else if (playerController.hp <= 0)
             {
                 playerController.SetKnockdownState(true);
+                obstacleManager.isRestoring = true;
                 //장애물 이동 멈추기
                 obstacleManager.StopAllObstacles();
                 Invoke("StartLifeRestorer", 1f);
@@ -218,6 +219,7 @@ public class LifeRestorer : MonoBehaviour
         var playerController = gameObject.GetComponent<PlayerController>();
         playerController.SetKnockdownState(false);
         playerController.SetCanMove(true);
+        obstacleManager.isRestoring = false;
         obstacleManager.ResetAllObstaclesSpeed();
     }
 

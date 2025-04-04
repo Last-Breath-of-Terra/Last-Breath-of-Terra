@@ -4,9 +4,8 @@ using UnityEngine;
 using Image = UnityEngine.UI.Image;
 using DG.Tweening;
 
-public class TeleportManager : MonoBehaviour
+public class TeleportManager : Singleton<TeleportManager>
 {
-    public static TeleportManager Instance;
     public GameObject[] teleportSet;
     public PolygonCollider2D[] camBorders;
     public CinemachineVirtualCamera virtualCamera;
@@ -20,20 +19,9 @@ public class TeleportManager : MonoBehaviour
     public GameObject parallaxBackgroundObject;
     // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
     private void Start()
     {
+        Debug.Log("teleportSet.Length : " + teleportSet.Length);
         player = GameObject.FindGameObjectWithTag("Player");
         animator = player.GetComponent<Animator>();
     }

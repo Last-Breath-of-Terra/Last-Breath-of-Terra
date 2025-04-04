@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
+    [SerializeField] private bool dontDestroyOnLoad = true;
     private static T _instance;
 
     public static T Instance
@@ -30,7 +31,8 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         if (_instance == null)
         {
             _instance = this as T;
-            DontDestroyOnLoad(gameObject);
+            if(dontDestroyOnLoad)
+                DontDestroyOnLoad(gameObject);  
         }
         else if (_instance != this)
         {

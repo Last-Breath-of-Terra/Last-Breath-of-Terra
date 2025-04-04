@@ -13,7 +13,7 @@ public class InfuserManager : Singleton<InfuserManager>
     public bool[] activatedInfusers;
     public bool[] canInfusion;
     public int infusionCount;
-    public ParticleSystem objectParticle;
+    public ParticleSystem successParticle;
     public float radius = 30f;
 
 
@@ -37,6 +37,7 @@ public class InfuserManager : Singleton<InfuserManager>
 
     private void Start()
     {
+        successParticle = Instantiate(successParticle, transform.position, Quaternion.identity);
         
         //활성화 게이지 쉐이더 초기화
         glowLineRenderer.positionCount = 0;

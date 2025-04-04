@@ -86,8 +86,8 @@ public class LifeInfuserSO : ScriptableObject
      */
     public virtual void CompleteInfusion(int infuserNumber, GameObject targetInfuser, int infuserType)
     {
-        InfuserManager.Instance.objectParticle.transform.position = targetInfuser.transform.position;
-        InfuserManager.Instance.objectParticle.Play();
+        InfuserManager.Instance.successParticle.transform.position = targetInfuser.transform.position;
+        InfuserManager.Instance.successParticle.Play();
         AudioManager.Instance.PlayPlayer("breath_action_end", 0f);
         Debug.Log("play particle");
         

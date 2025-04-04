@@ -62,7 +62,9 @@ public class LifeRestorer : MonoBehaviour
             else if (playerController.hp <= 0)
             {
                 playerController.SetKnockdownState(true);
-                Invoke("StartLifeRestorer", 3f);
+                //장애물 이동 멈추기
+                obstacleManager.StopAllObstacles();
+                Invoke("StartLifeRestorer", 1f);
             }
         }
     }
@@ -70,8 +72,7 @@ public class LifeRestorer : MonoBehaviour
     private void StartLifeRestorer()
     {
         Debug.Log("Deactivating obstacle");
-        //장애물 이동 멈추기
-        obstacleManager.StopAllObstacles();
+        
         //마우스 조작 변경
         SwitchActionMap("Select");
         //왼쪽 끝에서부터 설정

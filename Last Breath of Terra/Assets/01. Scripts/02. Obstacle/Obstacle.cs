@@ -355,13 +355,14 @@ public class Obstacle : MonoBehaviour
         {
             lifeInfuserSO.StopInfusion(collision.GetComponent<AudioSource>());
 
-            GameManager.Instance._ui.miniMapManager.ForceCloseMap();
+            GameManager.Instance._ui.StageMinimapManager.ForceCloseMap();
 
             float playerFacingDirection = GameManager.Instance.playerTr.localScale.x;
             Vector2 knockbackDirection = playerFacingDirection > 0 ? Vector2.left : Vector2.right;
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
             AudioManager.Instance.PlayRandomSFX("knockback_", collision.GetComponent<AudioSource>(), transform);
             playerRb.AddForce(knockbackDirection * 2f, ForceMode2D.Impulse);
+            collision.transform.GetComponent<PlayerController>().hp -= data.demage;
             Invoke(nameof(ReactivatePlayerMovement), 1f);
 
             DeactivateObstacle();

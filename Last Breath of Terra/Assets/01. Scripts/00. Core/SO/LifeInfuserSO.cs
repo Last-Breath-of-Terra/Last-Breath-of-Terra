@@ -42,7 +42,7 @@ public class LifeInfuserSO : ScriptableObject
     }
 
     /*
-     * 활성화 시작 시 호출\
+     * 활성화 시작 시 호출
      */
     public virtual void StartInfusion(int infuserNumber, GameObject targetInfuser)
     {

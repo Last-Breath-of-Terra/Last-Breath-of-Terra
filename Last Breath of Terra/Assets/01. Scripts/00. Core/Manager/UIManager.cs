@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 
 public class UIManager : MonoBehaviour
 {
-    public MiniMapManager miniMapManager;
+    public StageMinimapManager StageMinimapManager;
 
     public GameObject cursorIndicator;
     public Light2D clickLight;

@@ -87,12 +87,13 @@ public class TeleportManager : Singleton<TeleportManager>
                 virtualCamera.Follow = player.transform;
 
         */
+
         player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
 
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
         
         
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
 
 
 
@@ -118,6 +119,8 @@ public class TeleportManager : Singleton<TeleportManager>
             // 중간 높이 포인트 설정 (포물선의 정점)
 
             player.transform.DOJump(targetPosition, 3, 1, 1);
+         //   player.GetComponent<Rigidbody2D>().gravityScale = 3;
+
             //layer.transform.DOPath(path, 3f, PathType.CatmullRom);//.SetEase(Ease.InOutQuad);
         } /*
         else if (teleportDirection == new Vector3(0, -1, 0)) //내려옴

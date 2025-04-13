@@ -6,7 +6,6 @@ using UnityEngine.UI;
 using DG.Tweening;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
-using UnityEditor.Timeline.Actions;
 
 
 [CreateAssetMenu(fileName = "LifeInfuser", menuName = "ScriptableObject/LifeInfuser")]

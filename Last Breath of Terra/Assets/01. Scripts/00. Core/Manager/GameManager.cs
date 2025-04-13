@@ -77,4 +77,13 @@ public class GameManager : Singleton<GameManager>
             Debug.LogWarning("Player not found in the current scene.");
         }
     }
+    
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+    }
 }

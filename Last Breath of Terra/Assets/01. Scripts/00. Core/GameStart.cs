@@ -16,7 +16,7 @@ public class GameStart : MonoBehaviour
         //StoryManager.Instance.ActivateStoryForScene("TitleStory");
 
         //SceneManager.LoadScene("StoryScene");
-        SceneManager.LoadScene("Stage1_gravel");
+        SceneManager.LoadScene("00. Scenes/StageSelection");
 
     }
     

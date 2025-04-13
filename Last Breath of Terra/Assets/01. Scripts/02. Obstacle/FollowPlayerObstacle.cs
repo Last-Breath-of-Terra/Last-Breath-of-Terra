@@ -19,6 +19,7 @@ public class FollowPlayerObstacle : Obstacle
         transform.position += direction * speed * Time.deltaTime;
     }
 
+    /*
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.CompareTag("Player"))
@@ -26,5 +27,5 @@ public class FollowPlayerObstacle : Obstacle
             this.gameObject.SetActive(false);
         }
     }
-
+*/
 }

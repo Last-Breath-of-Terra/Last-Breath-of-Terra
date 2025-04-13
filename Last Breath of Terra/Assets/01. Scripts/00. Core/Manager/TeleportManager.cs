@@ -71,6 +71,7 @@ public class TeleportManager : Singleton<TeleportManager>
             //DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
         }
 
+        
         //fadein
         for (float i = 0; i < 1f; i += 0.02f)
         {
@@ -87,9 +88,9 @@ public class TeleportManager : Singleton<TeleportManager>
                 virtualCamera.Follow = player.transform;
 
         */
-
-        player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
-
+        player.transform.DOKill();
+        player.transform.position = teleportSet[targetID].transform.position + teleportOffset  * teleportDirection;
+        Debug.Log("playerPos : " + player.transform.position + "targetPos : ");
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
         
         

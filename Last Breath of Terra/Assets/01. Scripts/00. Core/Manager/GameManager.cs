@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +33,7 @@ public class GameManager : Singleton<GameManager>
         UpdateManagersReference();
         UpdatePlayerReference();
     }
+    
 
     void OnEnable()
     {
@@ -47,6 +49,20 @@ public class GameManager : Singleton<GameManager>
     {
         UpdateManagersReference();
         UpdatePlayerReference();
+        
+        switch (scene.name)
+        {
+            case "Tutorial":
+                Cursor.visible = false;
+                break;
+            case "Stage1_gravel":
+                Cursor.visible = false;
+                break;
+            default:
+                Cursor.visible = true;
+                break;
+        }
+    
     }
 
     private void UpdateManagersReference()

@@ -4,9 +4,8 @@ using UnityEngine;
 using Image = UnityEngine.UI.Image;
 using DG.Tweening;
 
-public class TeleportManager : MonoBehaviour
+public class TeleportManager : Singleton<TeleportManager>
 {
-    public static TeleportManager Instance;
     public GameObject[] teleportSet;
     public PolygonCollider2D[] camBorders;
     public CinemachineVirtualCamera virtualCamera;
@@ -20,20 +19,9 @@ public class TeleportManager : MonoBehaviour
     public GameObject parallaxBackgroundObject;
     // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
     private void Start()
     {
+        Debug.Log("teleportSet.Length : " + teleportSet.Length);
         player = GameObject.FindGameObjectWithTag("Player");
         animator = player.GetComponent<Animator>();
     }
@@ -60,8 +48,8 @@ public class TeleportManager : MonoBehaviour
     IEnumerator Fade(int targetID, Vector3 teleportDirection)
     {
         //※※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-        AudioManager.instance.FadeOutBGM(1f);
-        AudioManager.instance.FadeOutAmbience(1f);
+        AudioManager.Instance.FadeOutBGM(1f);
+        AudioManager.Instance.FadeOutAmbience(1f);
 
         int teleportOffset = 2;
 
@@ -83,6 +71,7 @@ public class TeleportManager : MonoBehaviour
             //DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
         }
 
+        
         //fadein
         for (float i = 0; i < 1f; i += 0.02f)
         {
@@ -99,12 +88,13 @@ public class TeleportManager : MonoBehaviour
                 virtualCamera.Follow = player.transform;
 
         */
-        player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
-
+        player.transform.DOKill();
+        player.transform.position = teleportSet[targetID].transform.position + teleportOffset  * teleportDirection;
+        Debug.Log("playerPos : " + player.transform.position + "targetPos : ");
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
         
         
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
 
 
 
@@ -130,6 +120,8 @@ public class TeleportManager : MonoBehaviour
             // 중간 높이 포인트 설정 (포물선의 정점)
 
             player.transform.DOJump(targetPosition, 3, 1, 1);
+         //   player.GetComponent<Rigidbody2D>().gravityScale = 3;
+
             //layer.transform.DOPath(path, 3f, PathType.CatmullRom);//.SetEase(Ease.InOutQuad);
         } /*
         else if (teleportDirection == new Vector3(0, -1, 0)) //내려옴
@@ -152,17 +144,17 @@ public class TeleportManager : MonoBehaviour
         #region audio
 
         // ※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-        AudioManager.instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        if (AudioManager.instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
+        AudioManager.Instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        if (AudioManager.Instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
         {
-            AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-            AudioManager.instance.FadeInAmbience(1f);
+            AudioManager.Instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+            AudioManager.Instance.FadeInAmbience(1f);
         }
         else
         {
-            AudioManager.instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-            AudioManager.instance.FadeInBGM(1f);
-            AudioManager.instance.FadeInAmbience(1f);
+            AudioManager.Instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+            AudioManager.Instance.FadeInBGM(1f);
+            AudioManager.Instance.FadeInAmbience(1f);
         }
 
         #endregion

@@ -14,7 +14,7 @@ public enum SCENE_TYPE
     Default
 }
 
-public class ScenesManager
+public class ScenesManager : Singleton<ScenesManager>
 {
     private SCENE_TYPE currentSceneType;
 

@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1de2538842d84eea998bf314cfb95c6, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  hp: -20
+  hp: 30
   maxSpeed: 8
-  accelerationTime: 3
+  maxFallSpeed: 10
+  fallAccelerationTime: 2
+  moveAccelerationTime: 5
   jumpForce: 17
+  walljumpForce: 8
   climbSpeed: 3
   moveDelayAfterFall: 0.5

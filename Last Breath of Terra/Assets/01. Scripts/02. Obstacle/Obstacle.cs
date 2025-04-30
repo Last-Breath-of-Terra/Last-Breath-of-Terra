@@ -21,7 +21,7 @@ public class Obstacle : MonoBehaviour
     public GameObject bodyAttackEffectPrefab;
     public GameObject attackEffectPrefab;
     public GameObject smokeEffectPrefab;
-
+    
     protected bool isHovered = false;
     protected bool isRotating = true;
     private SpriteRenderer spriteRenderer;
@@ -62,7 +62,7 @@ public class Obstacle : MonoBehaviour
         if (GameManager.ScenesManager.GetCurrentSceneType() == SCENE_TYPE.Tutorial)
         {
             GameManager.Instance._obstacleManager.RegisterObstacle(this);
-            AudioManager.instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(),
+            AudioManager.Instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(),
                 transform);
         }
 
@@ -113,17 +113,18 @@ public class Obstacle : MonoBehaviour
         if (isHovered == hovered) return;
 
         isHovered = hovered;
-
-        if (isHovered)
+        if (!GameManager.Instance._obstacleManager.isRestoring)
         {
-            GameManager.Instance._obstacleManager.SlowDownAllObstacles();
+            if (isHovered)
+            {
+                GameManager.Instance._obstacleManager.SlowDownAllObstacles();
+            }
+            else
+            {
+                GameManager.Instance._obstacleManager.ResetAllObstaclesSpeed();
+            }
+            HandleHoverEffect();
         }
-        else
-        {
-            GameManager.Instance._obstacleManager.ResetAllObstaclesSpeed();
-        }
-
-        HandleHoverEffect();
     }
 
     protected void HandleHoverEffect()
@@ -230,7 +231,7 @@ public class Obstacle : MonoBehaviour
             if (Vector3.Distance(timingIndicator.position, point.position) < 0.3f && attackPointStates[point])
             {
                 string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
-                AudioManager.instance.PlaySFX(audioName, gameObject.GetComponent<AudioSource>(), transform);
+                AudioManager.Instance.PlaySFX(audioName, gameObject.GetComponent<AudioSource>(), transform);
 
                 transform.DOShakePosition(0.5f, 0.1f);
                 GameObject attackEffect = Instantiate(attackEffectPrefab, point.position, Quaternion.identity);
@@ -355,13 +356,14 @@ public class Obstacle : MonoBehaviour
         {
             lifeInfuserSO.StopInfusion(collision.GetComponent<AudioSource>());
 
-            GameManager.Instance._ui.miniMapManager.ForceCloseMap();
+            GameManager.Instance._ui.StageMinimapManager.ForceCloseMap();
 
             float playerFacingDirection = GameManager.Instance.playerTr.localScale.x;
             Vector2 knockbackDirection = playerFacingDirection > 0 ? Vector2.left : Vector2.right;
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
-            AudioManager.instance.PlayRandomSFX("knockback_", collision.GetComponent<AudioSource>(), transform);
+            AudioManager.Instance.PlayRandomSFX("knockback_", collision.GetComponent<AudioSource>(), transform);
             playerRb.AddForce(knockbackDirection * 2f, ForceMode2D.Impulse);
+            collision.transform.GetComponent<PlayerController>().hp -= data.demage;
             Invoke(nameof(ReactivatePlayerMovement), 1f);
 
             DeactivateObstacle();

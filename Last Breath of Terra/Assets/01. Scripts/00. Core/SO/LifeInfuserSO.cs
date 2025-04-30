@@ -6,7 +6,6 @@ using UnityEngine.UI;
 using DG.Tweening;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
-using UnityEditor.Timeline.Actions;
 
 
 [CreateAssetMenu(fileName = "LifeInfuser", menuName = "ScriptableObject/LifeInfuser")]
@@ -42,7 +41,7 @@ public class LifeInfuserSO : ScriptableObject
     }
 
     /*
-     * 활성화 시작 시 호출\
+     * 활성화 시작 시 호출
      */
     public virtual void StartInfusion(int infuserNumber, GameObject targetInfuser)
     {
@@ -52,7 +51,7 @@ public class LifeInfuserSO : ScriptableObject
         InfuserManager.Instance.gaugeParticle.Play();
 
         //currentTween = DOTween.To(() => 0f, x => InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = x, 1f, infusionDuration);
-        AudioManager.instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
+        AudioManager.Instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
         //infuserActivationUI.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infuserActivationUI, infuserNumber));
 
         float progress = 0f;
@@ -86,9 +85,9 @@ public class LifeInfuserSO : ScriptableObject
      */
     public virtual void CompleteInfusion(int infuserNumber, GameObject targetInfuser, int infuserType)
     {
-        InfuserManager.Instance.objectParticle.transform.position = targetInfuser.transform.position;
-        InfuserManager.Instance.objectParticle.Play();
-        AudioManager.instance.PlayPlayer("breath_action_end", 0f);
+        InfuserManager.Instance.successParticle.transform.position = targetInfuser.transform.position;
+        InfuserManager.Instance.successParticle.Play();
+        AudioManager.Instance.PlayPlayer("breath_action_end", 0f);
         Debug.Log("play particle");
         
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage[infuserType];
@@ -116,7 +115,7 @@ public class LifeInfuserSO : ScriptableObject
         if (currentTween != null && currentTween.IsActive())
         {
             currentTween.Kill();
-            AudioManager.instance.StopCancelable(audioSource);
+            AudioManager.Instance.StopCancelable(audioSource);
             DOTween.To(() => targetLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x,
                 defaultLensSize, 0.3f);
             SetUIForInfuserStatus(false);

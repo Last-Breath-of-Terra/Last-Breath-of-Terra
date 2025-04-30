@@ -11,6 +11,7 @@ public class ObstacleManager : MonoBehaviour
 {
     public GameObject obstaclePrefab;
     public int poolSize = 10;
+    public bool isRestoring = false;
 
     private List<Obstacle> allObstacles = new List<Obstacle>();
     private Transform obstacleParent;

@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/00. Scenes/Title.unity
     guid: 480ef42b3482bf64696acc9bfae0f386
+  - enabled: 1
+    path: Assets/00. Scenes/Title 1.unity
+    guid: 35dae165891b20444a548b615bcbb107
   - enabled: 1
     path: Assets/00. Scenes/Tutorial.unity
     guid: d9b62a4d474a6db43864d1dcd541b5f7
@@ -17,7 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/00. Scenes/Stage1_gravel.unity
     guid: 9244be95b74174788a6a742cb2864bde
-  - enabled: 1
+  - enabled: 0
     path: Assets/00. Scenes/StoryScene.unity
     guid: b70cf2bb05f1d4dce883fc36cdffd425
   m_configObjects:

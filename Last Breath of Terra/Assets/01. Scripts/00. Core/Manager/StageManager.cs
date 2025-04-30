@@ -9,13 +9,10 @@ public class StageManager : MonoBehaviour
     
     public void ChangeStage(string stage)
     {
-        if(stage == "Tutorial")
-            SceneManager.LoadScene("Tutorial");
-        else
-        {
-            StoryManager.Instance.ActivateStoryForScene(stage);
-            SceneManager.LoadScene("StoryScene");
-        }
+       // if(stage == "Tutorial")
+          //  StoryManager.Instance.ActivateStoryForScene(stage);
+          SceneManager.LoadScene(stage);
+
         // SceneManager.LoadScene(stage);
     }
 }

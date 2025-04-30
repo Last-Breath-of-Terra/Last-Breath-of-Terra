@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 
 public class UIManager : MonoBehaviour
 {
-    public MiniMapManager miniMapManager;
+    public StageMinimapManager StageMinimapManager;
 
     public GameObject cursorIndicator;
     public Light2D clickLight;
@@ -86,10 +86,10 @@ public class UIManager : MonoBehaviour
 
         if (!isHoldingClick)
         {
-            AudioManager.instance.PlaySFX("light_start", gameObject.GetComponent<AudioSource>(), clickLight.transform);
+            AudioManager.Instance.PlaySFX("light_start", gameObject.GetComponent<AudioSource>(), clickLight.transform);
 
             gameObject.GetComponent<AudioSource>().loop = true;
-            AudioManager.instance.PlayCancelable("light_being", gameObject.GetComponent<AudioSource>(), clickLight.transform);
+            AudioManager.Instance.PlayCancelable("light_being", gameObject.GetComponent<AudioSource>(), clickLight.transform);
         }
 
         isHoldingClick = true;
@@ -103,7 +103,7 @@ public class UIManager : MonoBehaviour
             clickLight.gameObject.SetActive(true);
         }
 
-        AudioManager.instance.PlaySFX("spark_jump", gameObject.GetComponent<AudioSource>(), clickLight.transform);
+        AudioManager.Instance.PlaySFX("spark_jump", gameObject.GetComponent<AudioSource>(), clickLight.transform);
 
         jumpLightEffect.transform.position = position;
         jumpLightEffect.SetActive(true);

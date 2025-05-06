@@ -11,4 +11,7 @@ public class WindSO : ScriptableObject
     
     public float fastRate = 0.5f;
     public float slowRate = 0.5f;
+
+    public float liftHeight = 0.5f;
+    public float liftDuration = 0.5f;
 }

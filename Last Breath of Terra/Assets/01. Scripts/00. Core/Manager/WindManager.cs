@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class WindManager : Singleton<WindManager>
@@ -33,6 +34,10 @@ public class WindManager : Singleton<WindManager>
                 break;
             case WindType.Slow:
                 drag = windSO.slowRate;
+                break;
+            case WindType.Up:
+                Transform playerTransform = player.transform;
+                playerTransform.DOMoveY(playerTransform.position.y + windSO.liftHeight, windSO.liftDuration);
                 break;
             default:
                 drag = 1f;

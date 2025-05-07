@@ -297,7 +297,7 @@ public class PlayerController : MonoBehaviour
                 _rb.velocity = new Vector2(0f, 0f);
             }
         }
-        else if (IsAtWallTop()) // *********** 추가 **************
+        else if (IsAtWallTop())
         {
             AutoMoveAfterWallTop();
         }
@@ -396,18 +396,20 @@ public class PlayerController : MonoBehaviour
 
     private void StickToWall()
     {
+        ChangeAnimationState(AnimationState.Climbing);
+
         isOnWall = true;
         isClimbing = false;
 
-        ChangeAnimationState(AnimationState.Climbing);
         _rb.gravityScale = 0f;
+        _rb.velocity = Vector2.zero;
     }
 
     private bool IsAtWallTop()
     {
         float wallTopY = GetWallTopY();
 
-        return wallTopY == float.MaxValue || transform.position.y >= wallTopY;
+        return wallTopY == float.MaxValue && transform.position.y >= wallTopY;
     }
 
     private float GetWallTopY()
@@ -567,9 +569,6 @@ public class PlayerController : MonoBehaviour
                 _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
             }
             // ****************************************************
-
-            // _rb.velocity = new Vector2(direction * currentSpeed, _rb.velocity.y);
-
         }
         else
         {            

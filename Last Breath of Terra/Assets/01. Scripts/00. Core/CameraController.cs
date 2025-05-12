@@ -3,7 +3,7 @@ using Cinemachine;
 
 public class CameraController : MonoBehaviour
 {
-    public PlayerController playerController;
+    public PlayerMovement playerMovement;
     private CinemachineFramingTransposer framingTransposer;
 
     public bool isYlockZone;
@@ -23,15 +23,15 @@ public class CameraController : MonoBehaviour
 
     private void UpdateDeadZone()
     {
-        if (framingTransposer != null && playerController != null)
+        if (framingTransposer != null && playerMovement != null)
         {
             if (!isYlockZone)
             {
-                if (playerController.IsSignificantFall())
+                if (playerMovement.IsSignificantFall())
                 {
                     framingTransposer.m_DeadZoneHeight = 0f;
                 }
-                else if (playerController.isJumping)
+                else if (playerMovement.IsJumping())
                 {
                     framingTransposer.m_DeadZoneHeight = 0.7f;
                 }

@@ -17,12 +17,12 @@ public class WindManager : Singleton<WindManager>
 
     
     public WindSO windSO;
-    private PlayerController player;
+    private PlayerMovement player;
 
     
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
     }
 
     public void ApplyWindEffect(WindType windType)

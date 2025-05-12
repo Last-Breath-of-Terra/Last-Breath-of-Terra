@@ -15,4 +15,6 @@ MonoBehaviour:
   activationTime: 0.5
   deactivationTime: 0.5
   fastRate: 3
-  slowRate: 0.01
+  slowRate: 0.5
+  liftHeight: 0.5
+  liftDuration: 0.5

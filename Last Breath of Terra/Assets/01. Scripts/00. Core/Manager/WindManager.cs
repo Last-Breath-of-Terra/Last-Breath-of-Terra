@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WindManager : Singleton<WindManager>
@@ -47,8 +49,19 @@ public class WindManager : Singleton<WindManager>
         player.SpeedChangeRate = drag;
     }
 
-    public void RemoveWindEffect()
+    public void RemoveWindEffect(WindType windType)
     {
-        player.SpeedChangeRate = 1f;
+        switch (windType)
+        {
+            
+            case WindType.Up:
+                Transform playerTransform = player.transform;
+                playerTransform.DOMoveY(playerTransform.position.y - windSO.liftHeight, windSO.liftDuration);
+                break;
+            default:
+                player.SpeedChangeRate = 1f;
+                break;
+                
+        }
     }
 }

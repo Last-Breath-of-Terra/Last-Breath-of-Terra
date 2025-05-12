@@ -22,7 +22,7 @@ public class Wind : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Player"))
         {
-            WindManager.Instance.RemoveWindEffect();
+            WindManager.Instance.RemoveWindEffect(windType);
         }
     }
 }

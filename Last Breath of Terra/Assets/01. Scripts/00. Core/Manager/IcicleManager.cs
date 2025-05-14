@@ -11,9 +11,4 @@ public class IcicleManager : Singleton<IcicleManager>
         PoolManager.Instance.CreatePool(poolName, IciclePrefab, gameObject.transform);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

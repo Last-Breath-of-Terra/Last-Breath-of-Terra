@@ -18,7 +18,6 @@ public class PoolManager : Singleton<PoolManager>
             for (int i = 0; i < poolSize; i++)
             {
                 GameObject obj = Instantiate(prefab, spawnPoint.position, spawnPoint.rotation);
-                obj.transform.SetParent(gameObject.transform);
                 obj.SetActive(false);
                 poolDictionary[poolName].Enqueue(obj);
             }

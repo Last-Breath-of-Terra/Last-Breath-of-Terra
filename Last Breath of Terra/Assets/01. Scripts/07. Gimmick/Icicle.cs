@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class Icicle : MonoBehaviour
 {
-    public int demege;
+    public int damage;
     private float fallSpeed;
     
     [SerializeField] private float fallDuration = 1f;
@@ -38,16 +38,15 @@ public class Icicle : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            other.GetComponent<PlayerController>().hp -= demege;
+            other.GetComponent<PlayerController>().hp -= damage;
         }
-        PoolManager.Instance.ReturnObject(IcicleManager.Instance.poolName, gameObject);
-
-        /*
-        if (other.gameObject.layer == LayerMask.NameToLayer("Map"))
+        
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            
+            PoolManager.Instance.ReturnObject(IcicleManager.Instance.poolName, gameObject);
+
         }
-        */
+        
     }
     
     public void Fallicicle()

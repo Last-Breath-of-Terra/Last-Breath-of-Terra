@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     private float fallStartY;
     private bool isHoldingClick;
     private readonly float footstepInterval = 0.5f;
-
+    [SerializeField] private float speedChangeRate = 1f;
     private bool _isJumping;
     private bool _isSignificantFall;
 
@@ -103,6 +103,7 @@ public class PlayerMovement : MonoBehaviour
         }
         moveAccelerationTimer = Mathf.Clamp(moveAccelerationTimer, 0f, controller.data.moveAccelerationTime);
         currentSpeed = Mathf.Lerp(0f, controller.data.maxSpeed, moveAccelerationTimer / controller.data.moveAccelerationTime);
+        currentSpeed *= speedChangeRate;
     }
 
     private void UpdateFallingSpeed()
@@ -204,4 +205,10 @@ public class PlayerMovement : MonoBehaviour
     public bool IsJumping() => _isJumping;
     public bool IsSignificantFall() => _isSignificantFall;
     public IEnumerator HandleLandingDelayExternally() => HandleLandingDelay();
+    
+    public float SpeedChangeRate
+    {
+        get { return speedChangeRate; }
+        set { speedChangeRate = value; }
+    }
 }

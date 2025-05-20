@@ -204,6 +204,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Gimmick",
+            "id": "c354c386-c9c6-40d1-b3a2-3eeca919f11e",
+            "actions": [
+                {
+                    "name": "Icicle",
+                    "type": "Button",
+                    "id": "0db2983a-b26e-4fbe-9088-a9f4b29374e7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9958a0ad-f38c-4ad1-976d-64bbbd2ae1fd",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Icicle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

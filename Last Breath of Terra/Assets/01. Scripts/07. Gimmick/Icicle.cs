@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.InputSystem;
 
 public class Icicle : MonoBehaviour
 {
@@ -38,14 +39,14 @@ public class Icicle : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            other.GetComponent<PlayerController>().hp -= damage;
+            other.gameObject.GetComponent<PlayerIcicleResponder>().FreezePlayer();
         }
-        
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-            PoolManager.Instance.ReturnObject(IcicleManager.Instance.poolName, gameObject);
+        PoolManager.Instance.ReturnObject(IcicleManager.Instance.poolName, gameObject);
 
-        }
+        /*if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+
+        }*/
         
     }
     

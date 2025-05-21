@@ -13,10 +13,10 @@ public class GameStart : MonoBehaviour
         string playerName = gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
         DataManager.Instance.playerIndex = DataManager.Instance.FindPlayerIndexByName(playerName);
         
-        //StoryManager.Instance.ActivateStoryForScene("TitleStory");
+        StoryManager.Instance.ActivateStoryForScene("TitleStory");
 
-        //SceneManager.LoadScene("StoryScene");
-        SceneManager.LoadScene("00. Scenes/StageSelection");
+        SceneManager.LoadScene("StoryScene");
+        //SceneManager.LoadScene("00. Scenes/StageSelection");
 
     }
     

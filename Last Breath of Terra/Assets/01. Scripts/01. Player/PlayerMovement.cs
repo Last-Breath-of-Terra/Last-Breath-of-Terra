@@ -11,11 +11,13 @@ public class PlayerMovement : MonoBehaviour
     private float moveAccelerationTimer;
     private float footstepTimer;
     private float fallStartY;
-    private bool isHoldingClick;
     private readonly float footstepInterval = 0.5f;
     [SerializeField] private float speedChangeRate = 1f;
     private bool _isJumping;
     private bool _isSignificantFall;
+    private bool isSlowed;
+    private bool isHoldingClick;
+    private Coroutine speedDebuffCoroutine;
 
     void Awake()
     {
@@ -198,6 +200,27 @@ public class PlayerMovement : MonoBehaviour
     public bool IsGrounded()
     {
         return Physics2D.OverlapCircle(controller.MovementGroundCheckPoint.position, 0.1f, controller.MovementGroundLayer);
+    }
+
+    public void ApplySpeedDebuff(float multiplier, float duration)
+    {
+        if (isSlowed) return;
+
+        speedDebuffCoroutine = StartCoroutine(SpeedDebuffRoutine(multiplier, duration));
+    }
+
+    private IEnumerator SpeedDebuffRoutine(float multiplier, float duration)
+    {
+        isSlowed = true;
+
+        float originalRate = speedChangeRate;
+        speedChangeRate *= multiplier;
+
+        yield return new WaitForSeconds(duration);
+
+        speedChangeRate = originalRate;
+        isSlowed = false;
+        speedDebuffCoroutine = null;
     }
 
     public float GetCurrentSpeed() => currentSpeed;

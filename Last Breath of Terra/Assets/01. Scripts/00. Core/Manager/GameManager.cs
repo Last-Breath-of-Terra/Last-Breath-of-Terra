@@ -6,22 +6,23 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
-
     public UIManager _ui;
     public ObstacleManager _obstacleManager;
     public ShaderManager _shaderManager;
     public StageMinimapManager _stageminimapManager;
-    
+
     public Transform playerTr;
 
     private ScenesManager _scenesManager;
 
-    public static ScenesManager ScenesManager { get { return Instance._scenesManager; } }
+    public static ScenesManager ScenesManager
+    {
+        get { return Instance._scenesManager; }
+    }
 
 
     void Awake()
     {
-
         _scenesManager = new ScenesManager();
     }
 
@@ -33,7 +34,7 @@ public class GameManager : Singleton<GameManager>
         UpdateManagersReference();
         UpdatePlayerReference();
     }
-    
+
 
     void OnEnable()
     {
@@ -49,7 +50,7 @@ public class GameManager : Singleton<GameManager>
     {
         UpdateManagersReference();
         UpdatePlayerReference();
-        
+
         switch (scene.name)
         {
             case "Tutorial":
@@ -62,7 +63,6 @@ public class GameManager : Singleton<GameManager>
                 Cursor.visible = true;
                 break;
         }
-    
     }
 
     private void UpdateManagersReference()
@@ -71,10 +71,12 @@ public class GameManager : Singleton<GameManager>
         {
             _ui = GameObject.FindObjectOfType<UIManager>();
         }
+
         if (_obstacleManager == null)
         {
             _obstacleManager = GameObject.FindObjectOfType<ObstacleManager>();
         }
+
         if (_shaderManager == null)
         {
             _shaderManager = GameObject.FindObjectOfType<ShaderManager>();
@@ -93,7 +95,7 @@ public class GameManager : Singleton<GameManager>
             Debug.LogWarning("Player not found in the current scene.");
         }
     }
-    
+
     public void QuitGame()
     {
 #if UNITY_EDITOR

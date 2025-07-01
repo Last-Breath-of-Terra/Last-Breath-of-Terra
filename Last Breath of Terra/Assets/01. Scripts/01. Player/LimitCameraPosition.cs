@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class LimitCameraPosition : MonoBehaviour
 {
-    public float lensSize;
+    public float changelensRatio;
     private CinemachineVirtualCamera virtualCamera;
     private CinemachineFramingTransposer framingTransposer;
     private CameraController cameraController;
@@ -39,7 +39,7 @@ public class LimitCameraPosition : MonoBehaviour
             }
             else if (gameObject.CompareTag("ChangeLensSize"))
             {
-                ChangeCameraLensSize(lensSize);
+                ChangeCameraLensSize(changelensRatio);
             }
         }
     }
@@ -58,7 +58,7 @@ public class LimitCameraPosition : MonoBehaviour
             }
             else if (gameObject.CompareTag("ChangeLensSize"))
             {
-                ChangeCameraLensSize(8);
+                ChangeCameraLensSize(1f / changelensRatio);
             }
         }
     }
@@ -84,9 +84,10 @@ public class LimitCameraPosition : MonoBehaviour
         Debug.Log("Unlocking camera Y position");
         framingTransposer.m_DeadZoneHeight = 0;
     }
-    private void ChangeCameraLensSize(float targetLensSize)
+    private void ChangeCameraLensSize(float targetLensRatio)
     {
         float defaultLensSize = virtualCamera.m_Lens.OrthographicSize;
+        float targetLensSize = defaultLensSize * targetLensRatio;
         DOTween.To(() => defaultLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, targetLensSize, 1.5f);
     }
 }

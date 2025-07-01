@@ -8,6 +8,12 @@ using UnityEngine;
 
 public class WindManager : Singleton<WindManager>
 {
+    
+    public enum WindDirection
+    {
+        Left = -1,
+        Right = 1
+    }
     public enum WindType
     {
         Fast,

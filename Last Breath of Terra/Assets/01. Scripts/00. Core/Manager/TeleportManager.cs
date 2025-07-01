@@ -173,8 +173,9 @@ public class TeleportManager : Singleton<TeleportManager>
             animator.SetBool("MoveToPortal", false);
         }
 
-        GameManager.Instance._stageminimapManager.OnMapEntered("MAP" + teleportSet[targetID].GetComponent<Teleport>()
-            .mapID);
+        /* 테스트용으로 주석 처리
+        GameManager.Instance._stageminimapManager.OnMapEntered("MAP" + teleportSet[targetID].GetComponent<Teleport>().mapID);
+        */
 
         //yield return new WaitForSeconds(0.5f);
 

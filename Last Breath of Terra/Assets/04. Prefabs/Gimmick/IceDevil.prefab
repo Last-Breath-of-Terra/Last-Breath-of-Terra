@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2496137814493505241}
   - component: {fileID: 703956962117903374}
+  - component: {fileID: 8884309683691852694}
   - component: {fileID: 1915626253401144968}
   m_Layer: 0
   m_Name: IceDevil
@@ -85,6 +86,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &8884309683691852694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4321679519197034208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf0035c4396944199bbd768447a67ceb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knockbackForce: 10
+  knockbackDuration: 0.5
+  moveDisableDuration: 1
+  damage: 1
 --- !u!50 &1915626253401144968
 Rigidbody2D:
   serializedVersion: 4

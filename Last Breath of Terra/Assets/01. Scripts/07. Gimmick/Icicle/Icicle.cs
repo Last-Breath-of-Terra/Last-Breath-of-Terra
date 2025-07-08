@@ -32,7 +32,7 @@ public class Icicle : MonoBehaviour
 
     private void Update()
     {
-        gameObject.transform.position += fallSpeed * Time.deltaTime * Vector3.down ;
+      //  gameObject.transform.position += fallSpeed * Time.deltaTime * Vector3.down ;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -40,8 +40,14 @@ public class Icicle : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             other.gameObject.GetComponent<PlayerIcicleResponder>().FreezePlayer();
+            
         }
-        PoolManager.Instance.ReturnObject(IcicleManager.Instance.poolName, gameObject);
+
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            Debug.Log("충돌 : " + other.gameObject.name);
+            PoolManager.Instance.ReturnObject(IcicleManager.Instance.poolName, gameObject);
+        }
 
         /*if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {

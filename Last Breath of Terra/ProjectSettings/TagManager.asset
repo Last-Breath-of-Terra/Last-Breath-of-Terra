@@ -12,6 +12,7 @@ TagManager:
   - LockYPositon
   - ChangeLensSize
   - InfuserObject
+  - IcicleSpawner
   layers:
   - Default
   - TransparentFX

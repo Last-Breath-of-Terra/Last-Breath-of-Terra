@@ -10,6 +10,8 @@ public class PlayerIcicleResponder : MonoBehaviour
     public int unfreezeActionCount;
     public int unfreezeThreshold;
     public float freezeDuration = 5f;
+    public Sprite freezedSprite;
+    public ParticleSystem freezedParticles;
     private PlayerInput playerInput;
     private Coroutine freezeCoroutine;
 
@@ -21,6 +23,8 @@ public class PlayerIcicleResponder : MonoBehaviour
     private void Start()
     {
         unfreezeActionCount = 0;
+        freezedParticles.Stop();
+        freezedParticles.transform.position = gameObject.transform.position;
     }
 
     private void OnEnable()
@@ -42,6 +46,7 @@ public class PlayerIcicleResponder : MonoBehaviour
     public void FreezePlayer()
     {
         Debug.Log("Freezing player");
+        gameObject.GetComponent<Animator>().SetBool("IcicleHit", true);
         Cursor.visible = true;
         PlayerInput playerInput = GetComponent<PlayerInput>();
         playerInput.SwitchCurrentActionMap("Gimmick");
@@ -58,11 +63,13 @@ public class PlayerIcicleResponder : MonoBehaviour
     {
         yield return new WaitForSeconds(freezeDuration);
         playerInput.SwitchCurrentActionMap("Player");
+        gameObject.GetComponent<Animator>().SetBool("IcicleHit", false);
         Cursor.visible = false;
     }
 
     public void OnClickPlayer(InputAction.CallbackContext context)
     {
+        freezedParticles.Play();
         Vector2 mousePos = Mouse.current.position.ReadValue();
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
 
@@ -78,6 +85,8 @@ public class PlayerIcicleResponder : MonoBehaviour
                 {
                     playerInput.SwitchCurrentActionMap("Player");
                     Cursor.visible = false;
+                    gameObject.GetComponent<Animator>().SetBool("IcicleHit", false);
+
                     StopCoroutine(freezeCoroutine);
                 }
             }

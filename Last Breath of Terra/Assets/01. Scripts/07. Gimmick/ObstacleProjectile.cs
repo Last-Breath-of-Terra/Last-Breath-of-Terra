@@ -55,7 +55,6 @@ public class ObstacleProjectile : MonoBehaviour
             }
         }
     }
-    
 
     private void OnClicked()
     {

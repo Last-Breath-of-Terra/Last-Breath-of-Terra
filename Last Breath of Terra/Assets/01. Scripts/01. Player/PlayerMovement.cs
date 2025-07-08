@@ -11,15 +11,25 @@ public class PlayerMovement : MonoBehaviour
     private float moveAccelerationTimer;
     private float footstepTimer;
     private float fallStartY;
-    private bool isHoldingClick;
     private readonly float footstepInterval = 0.5f;
     [SerializeField] private float speedChangeRate = 1f;
+    [SerializeField] private float slideTurningFactor = 0.3f;
+    [SerializeField] private float slideDeceleration = 0.97f;
+    [SerializeField] private PhysicsMaterial2D slipperyMaterial;
+    private PhysicsMaterial2D originalMaterial;
+    private float originalDrag;
+    private bool isSliding = false;
     private bool _isJumping;
     private bool _isSignificantFall;
+    private bool isSlowed;
+    private bool isHoldingClick;
+    private Coroutine speedDebuffCoroutine;
 
     void Awake()
     {
         controller = GetComponent<PlayerController>();
+        originalMaterial = controller.Rb.sharedMaterial;
+        originalDrag = controller.Rb.drag;
     }
 
     public void HandleUpdate()
@@ -80,12 +90,29 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateTargetPosition()
     {
         Vector2 mousePos = Mouse.current.position.ReadValue();
-        targetPosition = Camera.main.ScreenToWorldPoint(mousePos);
+        Vector2 rawTarget = Camera.main.ScreenToWorldPoint(mousePos);
+
+        if (isSliding)
+        {
+            // 방향 전환 둔화
+            targetPosition = Vector2.Lerp(targetPosition, rawTarget, slideTurningFactor);
+        }
+        else
+        {
+            targetPosition = rawTarget;
+        }
 
         if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
         {
             GameManager.Instance._ui.HandleClickLight(targetPosition);
         }
+        // Vector2 mousePos = Mouse.current.position.ReadValue();
+        // targetPosition = Camera.main.ScreenToWorldPoint(mousePos);
+
+        // if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
+        // {
+        //     GameManager.Instance._ui.HandleClickLight(targetPosition);
+        // }
     }
 
     private void UpdateAcceleration()
@@ -127,10 +154,30 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if (currentSpeed > 0.2f)
-                currentSpeed *= 0.8f;
+            if (isSliding)
+            {
+                float preservedDir = Mathf.Sign(controller.Rb.velocity.x);
+
+                // 속도 낮아지면 멈춤 처리
+                if (Mathf.Abs(controller.Rb.velocity.x) < 0.2f)
+                {
+                    controller.Rb.velocity = new Vector2(0f, controller.Rb.velocity.y);
+                    return;
+                }
+
+                // 감속 적용
+                controller.Rb.velocity = new Vector2(
+                    preservedDir * controller.Rb.velocity.magnitude * slideDeceleration,
+                    controller.Rb.velocity.y
+                );
+            }
             else
-                controller.Rb.velocity = new Vector2(0, controller.Rb.velocity.y);
+            {
+                if (currentSpeed > 0.2f)
+                    currentSpeed *= 0.8f;
+                else
+                    controller.Rb.velocity = new Vector2(0, controller.Rb.velocity.y);
+            }
         }
     }
 
@@ -149,6 +196,12 @@ public class PlayerMovement : MonoBehaviour
     public void StopMoving()
     {
         isHoldingClick = false;
+        if (isSliding)
+        {
+            // 슬라이딩 중이면 멈추지 않고 관성 유지
+            return;
+        }
+
         controller.Rb.velocity = new Vector2(0, controller.Rb.velocity.y);
     }
 
@@ -198,6 +251,51 @@ public class PlayerMovement : MonoBehaviour
     public bool IsGrounded()
     {
         return Physics2D.OverlapCircle(controller.MovementGroundCheckPoint.position, 0.1f, controller.MovementGroundLayer);
+    }
+
+    public void ApplySpeedDebuff(float multiplier, float duration)
+    {
+        if (isSlowed) return;
+
+        speedDebuffCoroutine = StartCoroutine(SpeedDebuffRoutine(multiplier, duration));
+    }
+
+    private IEnumerator SpeedDebuffRoutine(float multiplier, float duration)
+    {
+        isSlowed = true;
+
+        float originalRate = speedChangeRate;
+        speedChangeRate *= multiplier;
+
+        yield return new WaitForSeconds(duration);
+
+        speedChangeRate = originalRate;
+        isSlowed = false;
+        speedDebuffCoroutine = null;
+    }
+
+    public void EnterSliding()
+    {
+        isSliding = true;
+
+        float dir = Mathf.Sign(controller.Rb.velocity.x);
+        if (Mathf.Abs(dir) < 0.01f) dir = 1f;
+
+        targetPosition = (Vector2)transform.position + new Vector2(dir * 3f, 0);
+
+        float slideForce = controller.data.maxSpeed * 2f;
+        controller.Rb.velocity = new Vector2(dir * slideForce, controller.Rb.velocity.y);
+
+        // 마찰 제거
+        controller.Rb.sharedMaterial = slipperyMaterial;
+        controller.Rb.drag = 0f;
+    }
+
+    public void ExitSliding()
+    {
+        isSliding = false;
+        controller.Rb.sharedMaterial = originalMaterial;
+        controller.Rb.drag = originalDrag;
     }
 
     public float GetCurrentSpeed() => currentSpeed;

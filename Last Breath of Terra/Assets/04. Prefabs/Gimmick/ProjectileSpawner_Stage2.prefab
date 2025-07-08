@@ -73,12 +73,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d545e82bd46bf2b41a02a08580622b46, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6915843996eaa9b4788a1ef2ad5393b8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.82, y: 2.7}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -112,8 +112,8 @@ Transform:
   m_GameObject: {fileID: 3387627714226409327}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.2399998, y: 3.125099, z: 0}
-  m_LocalScale: {x: 1.0826561, y: 5.906366, z: 1}
+  m_LocalPosition: {x: 2.2399998, y: 2.01, z: 0}
+  m_LocalScale: {x: 0.53946686, y: 2.9430294, z: 0.49828085}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2003119086182492532}
@@ -189,9 +189,9 @@ MonoBehaviour:
   obstacleVisual: {fileID: 376269006100356461}
   spriteRenderer: {fileID: 7347893951789284857}
   stageSprites:
-  - {fileID: 21300000, guid: d545e82bd46bf2b41a02a08580622b46, type: 3}
-  - {fileID: 21300000, guid: 556354873e969d344a11cbf3100b562a, type: 3}
-  - {fileID: 21300000, guid: a1a52ce602341a24da319503c1094ede, type: 3}
+  - {fileID: 21300000, guid: 6915843996eaa9b4788a1ef2ad5393b8, type: 3}
+  - {fileID: 21300000, guid: b9585b4e18c272348bbccd59f174c788, type: 3}
+  - {fileID: 21300000, guid: 24c2de507373ade479a630b244ae295d, type: 3}
 --- !u!61 &7242885109223468944
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -224,7 +224,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.029922128, y: -0.16180164}
+  m_Offset: {x: 0.10036826, y: -0.19193304}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -235,7 +235,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 4.1118917, y: 0.7422143}
+  m_Size: {x: 7.2585807, y: 1.3190134}
   m_EdgeRadius: 0
 --- !u!1 &5587823489424636963
 GameObject:
@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 7416036059734374747}
   - component: {fileID: 228530668189701574}
   m_Layer: 0
-  m_Name: ProjectileSpawner
+  m_Name: ProjectileSpawner_Stage2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -303,7 +303,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 1.8648796, y: 8.434433}
+  m_Offset: {x: 1.8277373, y: 8.434433}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -314,7 +314,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 15.726263, y: 17.86887}
+  m_Size: {x: 16.691956, y: 17.86887}
   m_EdgeRadius: 0
 --- !u!114 &228530668189701574
 MonoBehaviour:

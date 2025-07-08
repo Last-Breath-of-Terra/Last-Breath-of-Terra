@@ -106,20 +106,12 @@ public class PlayerMovement : MonoBehaviour
         {
             GameManager.Instance._ui.HandleClickLight(targetPosition);
         }
-        // Vector2 mousePos = Mouse.current.position.ReadValue();
-        // targetPosition = Camera.main.ScreenToWorldPoint(mousePos);
-
-        // if (Vector2.Distance(targetPosition, transform.position) > 0.1f)
-        // {
-        //     GameManager.Instance._ui.HandleClickLight(targetPosition);
-        // }
     }
 
     private void UpdateAcceleration()
     {
         if (!isHoldingClick) { moveAccelerationTimer = 0; currentSpeed = 0; return; }
 
-        //float direction = Mathf.Sign(targetPosition.x - transform.position.x);
         if (Vector2.Distance(targetPosition, transform.position) < 0.1f)
         {
             moveAccelerationTimer -= Time.deltaTime * 5f;
@@ -162,6 +154,7 @@ public class PlayerMovement : MonoBehaviour
                 if (Mathf.Abs(controller.Rb.velocity.x) < 0.2f)
                 {
                     controller.Rb.velocity = new Vector2(0f, controller.Rb.velocity.y);
+                    ExitSliding();
                     return;
                 }
 
@@ -198,7 +191,6 @@ public class PlayerMovement : MonoBehaviour
         isHoldingClick = false;
         if (isSliding)
         {
-            // 슬라이딩 중이면 멈추지 않고 관성 유지
             return;
         }
 
@@ -276,15 +268,22 @@ public class PlayerMovement : MonoBehaviour
 
     public void EnterSliding()
     {
+        if (isSliding) return;
+
         isSliding = true;
 
         float dir = Mathf.Sign(controller.Rb.velocity.x);
         if (Mathf.Abs(dir) < 0.01f) dir = 1f;
 
-        targetPosition = (Vector2)transform.position + new Vector2(dir * 3f, 0);
-
-        float slideForce = controller.data.maxSpeed * 2f;
-        controller.Rb.velocity = new Vector2(dir * slideForce, controller.Rb.velocity.y);
+        if (Mathf.Abs(controller.Rb.velocity.x) < 0.5f)
+        {
+            controller.Rb.velocity = new Vector2(dir * controller.data.maxSpeed * 0.3f, controller.Rb.velocity.y);
+        }
+        else
+        {
+            float slideForce = controller.data.maxSpeed * 2f;
+            controller.Rb.velocity = new Vector2(dir * slideForce, controller.Rb.velocity.y);
+        }
 
         // 마찰 제거
         controller.Rb.sharedMaterial = slipperyMaterial;

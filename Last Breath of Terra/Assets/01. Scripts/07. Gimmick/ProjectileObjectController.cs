@@ -7,11 +7,17 @@ public class ProjectileObstacleController : MonoBehaviour
 {
     public int requiredDestroyedCount = 3;
     public float respawnTime = 5f;
+    [SerializeField] private float destroyDelay = 0.5f;
+
     private int currentDestroyedCount = 0;
     private bool isDestroyed = false;
 
     public GameObject obstacleVisual;
     private Collider2D obstacleCollider;
+
+    [Header("Visual")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Sprite[] stageSprites;
 
     private void Awake()
     {
@@ -23,16 +29,26 @@ public class ProjectileObstacleController : MonoBehaviour
         if (isDestroyed) return;
 
         currentDestroyedCount++;
+
+        // 스프라이트 교체
+        if (spriteRenderer != null && currentDestroyedCount <= stageSprites.Length)
+        {
+            spriteRenderer.sprite = stageSprites[Mathf.Min(currentDestroyedCount, stageSprites.Length - 1)];
+        }
+
         if (currentDestroyedCount >= requiredDestroyedCount)
         {
-            DestroyObstacle();
+            StartCoroutine(DestroyObstacleWithDelay());
         }
     }
 
-    private void DestroyObstacle()
+    private IEnumerator DestroyObstacleWithDelay()
     {
         isDestroyed = true;
 
+        yield return new WaitForSeconds(destroyDelay);
+
+        // 오브젝트 모습 비활성화
         if (obstacleVisual != null)
             obstacleVisual.SetActive(false);
 
@@ -46,6 +62,7 @@ public class ProjectileObstacleController : MonoBehaviour
             playerInput.actions.FindActionMap("Player").Enable();
         }
 
+        // 재생성 루틴
         StartCoroutine(RespawnObstacleAfterDelay());
     }
 
@@ -61,6 +78,10 @@ public class ProjectileObstacleController : MonoBehaviour
 
         if (obstacleCollider != null)
             obstacleCollider.enabled = true;
+        
+        // 스프라이트 초기화
+        if (spriteRenderer != null && stageSprites.Length > 0)
+            spriteRenderer.sprite = stageSprites[0];
 
         var spawner = GetComponentInParent<ProjectileSpawner>();
         spawner.TryResumeSpawn();

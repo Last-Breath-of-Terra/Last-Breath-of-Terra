@@ -56,7 +56,6 @@ public class ProjectileSpawner : MonoBehaviour
     {
         while (true)
         {
-            // 장애물이 파괴되면 멈춘다
             if (obstacle.IsDestroyed())
             {
                 spawnCoroutine = null;

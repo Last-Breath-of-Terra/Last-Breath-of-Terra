@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GimmickShooterController : MonoBehaviour
+public class GimmickShooterManager : Singleton<GimmickShooterManager>
 {
     
     public GameObject obstaclePrefab;
@@ -16,16 +16,12 @@ public class GimmickShooterController : MonoBehaviour
     {
         PoolManager.Instance.CreatePool(poolName, obstaclePrefab, gameObject.transform);
         currentGroup = gimmickGroups[0];
-
-        foreach (var gimmickGroup in gimmickGroups)
-        {
-            gimmickGroup.Initialize(this);
-        }
         currentGroup.StartShooter();
 
     }
     public void ChangeGimmickGroup(int mapID)
     {
+        PoolManager.Instance.ReturnAll(GimmickShooterManager.Instance.poolName);
         currentGroup.StopShooter();
         currentGroup = gimmickGroups[mapID];
         currentGroup.StartShooter();

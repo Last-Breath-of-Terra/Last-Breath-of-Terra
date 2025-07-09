@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PoolManager : Singleton<PoolManager>
 {
     public int poolSize;
     public Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
+    private Dictionary<string, List<GameObject>> activeObjects = new Dictionary<string, List<GameObject>>();
 
 
     public void CreatePool(string poolName, GameObject prefab, Transform spawnPoint)
@@ -32,6 +34,11 @@ public class PoolManager : Singleton<PoolManager>
             {
                 GameObject obj = poolDictionary[poolName].Dequeue();
                 obj.SetActive(true);
+                
+                if (!activeObjects.ContainsKey(poolName))
+                    activeObjects[poolName] = new List<GameObject>();
+                activeObjects[poolName].Add(obj);
+
                 return obj;
             }
             else
@@ -49,9 +56,22 @@ public class PoolManager : Singleton<PoolManager>
         if (poolDictionary.ContainsKey(poolName) != null)
         {
             Debug.Log("return obj");
+            if (activeObjects.ContainsKey(poolName))
+                activeObjects[poolName].Remove(obj);
             poolDictionary[poolName].Enqueue(obj);
         }
     }
+    public void ReturnAll(string poolName)
+    {
+        if (poolDictionary.ContainsKey(poolName) != null)
+        {
+            foreach (var obj in activeObjects[poolName].ToList())
+            {
+                ReturnObject(poolName, obj);
+            }
+        }
+    }
+
 
     public void DestroyPool(string poolName)
     {

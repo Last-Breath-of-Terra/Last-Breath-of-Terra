@@ -8,7 +8,6 @@ using Random = UnityEngine.Random;
 public class GimmickShooter : MonoBehaviour
 {
     public float shootForce = 0f;
-    private GimmickShooterController gimmickShooterController;
     private GameObject obstacle;
     private Coroutine coroutine;
     private float respawnCooldown;
@@ -16,18 +15,13 @@ public class GimmickShooter : MonoBehaviour
     private void Start()
     {
         if (shootForce == 0f)
-            shootForce = gimmickShooterController.shootForce;
-    }
-
-    public void Initialize(GimmickShooterController controller)
-    {
-        gimmickShooterController = controller;
+            shootForce = GimmickShooterManager.Instance.shootForce;
     }
 
     public void StartShooter()
     {
-        respawnCooldown = Random.Range(gimmickShooterController.respawnTimeRange.x,
-            gimmickShooterController.respawnTimeRange.y);
+        respawnCooldown = Random.Range(GimmickShooterManager.Instance.respawnTimeRange.x,
+            GimmickShooterManager.Instance.respawnTimeRange.y);
         Debug.Log("respawnCooldown : " + respawnCooldown);
         coroutine = StartCoroutine(MoveShooter());
     }
@@ -41,7 +35,7 @@ public class GimmickShooter : MonoBehaviour
     {
         while (true)
         {
-            obstacle = PoolManager.Instance.GetObject(gimmickShooterController.poolName);
+            obstacle = PoolManager.Instance.GetObject(GimmickShooterManager.Instance.poolName);
             if (obstacle != null)
             {
                 obstacle.transform.position = gameObject.transform.position;
@@ -58,7 +52,7 @@ public class GimmickShooter : MonoBehaviour
                 }
 
                 Rigidbody2D rb = obstacle.GetComponent<Rigidbody2D>();
-                rb.AddForce(gameObject.transform.right.normalized * gimmickShooterController.shootForce,
+                rb.AddForce(gameObject.transform.right.normalized * GimmickShooterManager.Instance.shootForce,
                     ForceMode2D.Impulse);
                 /*
             obstacle.transform.DOMoveX(obstacle.transform.position.x - 10f / respawnCooldown, respawnCooldown)
@@ -71,7 +65,7 @@ public class GimmickShooter : MonoBehaviour
             }
 
             yield return new WaitForSeconds(respawnCooldown);
-            PoolManager.Instance.ReturnObject(gimmickShooterController.poolName, obstacle);
+            PoolManager.Instance.ReturnObject(GimmickShooterManager.Instance.poolName, obstacle);
         }
     }
 }

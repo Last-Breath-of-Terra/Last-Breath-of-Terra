@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -483.5, y: -138.72, z: -0.08738306}
-  m_LocalScale: {x: 0.23104, y: 0.23104, z: 0.23104}
+  m_LocalScale: {x: 1.08, y: 0.49999997, z: 0.49999997}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
-  fallDuration: 1
+  fallDuration: 12.19
   maxFallSpeed: 20
 --- !u!60 &3355779949741688912
 PolygonCollider2D:

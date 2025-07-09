@@ -141,11 +141,8 @@ public class AudioManager : Singleton<AudioManager>
             case SCENE_TYPE.Gravel:
                 bgmName = "Stage1_Gravel_BGM";
                 break;
-            case SCENE_TYPE.Sand:
-                bgmName = "BGM_Sand";
-                break;
-            case SCENE_TYPE.Wood:
-                bgmName = "BGM_Wood";
+            case SCENE_TYPE.Stage2:
+                bgmName = "BGM_Stage2_Map";
                 break;
             default:
                 bgmName = "BGM_Default";
@@ -177,10 +174,7 @@ public class AudioManager : Singleton<AudioManager>
                     ambienceName = "ambi_livingroom";
                 }
                 break;
-            case SCENE_TYPE.Sand:
-                ambienceName = "AM";
-                break;
-            case SCENE_TYPE.Wood:
+            case SCENE_TYPE.Stage2:
                 ambienceName = "AM";
                 break;
             default:

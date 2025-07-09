@@ -12,7 +12,6 @@ public class TeleportManager : Singleton<TeleportManager>
     public Image fadeImage;
     public float fadeDuration = 1f;
 
-    [SerializeField] GimmickShooterController gimmickShooterController;
     private GameObject player;
     private Animator animator;
 
@@ -95,7 +94,7 @@ public class TeleportManager : Singleton<TeleportManager>
         player.transform.position = teleportSet[targetID].transform.position + teleportOffset  * teleportDirection;
         Debug.Log("playerPos : " + player.transform.position + "targetPos : ");
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        gimmickShooterController.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
         
         yield return new WaitForSeconds(0.2f);
 

@@ -18,7 +18,7 @@ public class IceDevilController : MonoBehaviour
         if (player == null) return;
 
         player.hp -= damage;
-
+        Debug.Log("hp : " + player.hp);
         Vector2 knockbackDir = (player.transform.position - transform.position).normalized;
 
         Rigidbody2D rb = player.Rb;
@@ -33,5 +33,7 @@ public class IceDevilController : MonoBehaviour
     {
         yield return new WaitForSeconds(moveDisableDuration);
         player.SetCanMove(true);
+        PoolManager.Instance.ReturnObject("GimmickShooter", gameObject);
+
     }
 }

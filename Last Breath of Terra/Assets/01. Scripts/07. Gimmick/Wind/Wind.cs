@@ -11,13 +11,11 @@ public class Wind : MonoBehaviour
     private WindManager.WindType windType;
 
     public float moveAmount = 0.01f;
-    public float duration = 0.1f;
 
     private Coroutine coroutine;
     private bool isToRightOfWind;
     private WindManager.WindDirection playerDirection;
-
-
+    
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -40,6 +38,7 @@ public class Wind : MonoBehaviour
             }
 
             rb.AddForce(moveAmount * (int)windDirection * Vector2.right);
+
         }
     }
 

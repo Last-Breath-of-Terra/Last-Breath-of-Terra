@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9d81bab95642934e99281670cef0bb5, type: 3}
   m_Name: Stage1WindData
   m_EditorClassIdentifier: 
-  activationTime: 0.5
-  deactivationTime: 0.5
   fastRate: 3
   slowRate: 0.5
-  liftHeight: 0.5
-  liftDuration: 0.5
+  liftHeight: 1.72
+  activationTime: 1.55
+  deactivationTime: 0.64

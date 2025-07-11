@@ -40,6 +40,8 @@ public class TeleportManager : Singleton<TeleportManager>
         virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = camBorders[mapID];
     }
 
+    
+
     public void CoFade(int targetID, Vector3 teleportDirection)
     {
         StartCoroutine(Fade(targetID, teleportDirection));
@@ -92,7 +94,7 @@ public class TeleportManager : Singleton<TeleportManager>
         player.transform.position = teleportSet[targetID].transform.position + teleportOffset  * teleportDirection;
         Debug.Log("playerPos : " + player.transform.position + "targetPos : ");
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        
+        GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
         
         yield return new WaitForSeconds(0.2f);
 

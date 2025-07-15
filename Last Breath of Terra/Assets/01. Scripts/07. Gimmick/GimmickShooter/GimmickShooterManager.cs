@@ -21,10 +21,12 @@ public class GimmickShooterManager : Singleton<GimmickShooterManager>
     }
     public void ChangeGimmickGroup(int mapID)
     {
-        PoolManager.Instance.ReturnAll(GimmickShooterManager.Instance.poolName);
-        currentGroup.StopShooter();
-        currentGroup = gimmickGroups[mapID];
-        currentGroup.StartShooter();
-        
+        if (gimmickGroups[mapID] != null)
+        {
+            PoolManager.Instance.ReturnAll(GimmickShooterManager.Instance.poolName);
+            currentGroup.StopShooter();
+            currentGroup = gimmickGroups[mapID];
+            currentGroup.StartShooter();
+        }
     }
 }

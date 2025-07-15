@@ -11,7 +11,7 @@ public class GameStart : MonoBehaviour
     public void OnButtonClick()
     {
         string playerName = gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
-        DataManager.Instance.playerIndex = DataManager.Instance.FindPlayerIndexByName(playerName);
+        // DataManager.Instance.playerIndex = DataManager.Instance.FindPlayerIndexByName(playerName);
         
         StoryManager.Instance.ActivateStoryForScene("TitleStory");
 

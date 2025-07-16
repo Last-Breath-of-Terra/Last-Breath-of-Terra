@@ -9,6 +9,7 @@ public class InfuserManager : Singleton<InfuserManager>
 {
     public LifeInfuserSO LifeInfuserSO;
     public CinemachineVirtualCamera virtualCamera;
+    public GameObject escapeObject;
     public GameObject[] infuser;
     public bool[] activatedInfusers;
     public bool[] canInfusion;

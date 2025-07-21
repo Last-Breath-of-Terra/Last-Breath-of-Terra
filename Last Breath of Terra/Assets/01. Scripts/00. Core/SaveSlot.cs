@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 public class SaveSlot : MonoBehaviour
 {
     public Button[] slotButtons;
+    public RectTransform selectArrow;
     public TitleSceneManager titleManager;
 
     private int currentIndex = 0;
@@ -22,7 +24,8 @@ public class SaveSlot : MonoBehaviour
             if (btn != null)
             {
                 btn.Setup(i);
-                btn.SetFlameVisible(hasSave);
+                //btn.SetFlameVisible(hasSave);
+                slotButtons[i].interactable = false; // 마우스 클릭 X
             }
         }
     }
@@ -51,7 +54,7 @@ public class SaveSlot : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
-            slotButtons[currentIndex].onClick.Invoke();
+            slotButtons[currentIndex].GetComponent<SaveSlotButton>().OnClick();
         }
     }
 
@@ -59,8 +62,20 @@ public class SaveSlot : MonoBehaviour
     {
         for (int i = 0; i < slotButtons.Length; i++)
         {
-            var txt = slotButtons[i].GetComponentInChildren<TextMeshProUGUI>();
-            txt.color = (i == currentIndex) ? Color.yellow : Color.white;
+            var rect = slotButtons[i].GetComponent<RectTransform>();
+            rect.DOComplete(); // 애니메이션 중복 방지
+            rect.DOScale(i == currentIndex ? 8f : 6f, 0.2f).SetEase(Ease.OutQuad);
+        }
+
+        if (selectArrow != null)
+        {
+            RectTransform slotRect = slotButtons[currentIndex].GetComponent<RectTransform>();
+
+            float targetX = slotRect.anchoredPosition.x;
+            float fixedY = selectArrow.anchoredPosition.y; // 현재 y값 그대로 유지
+
+            selectArrow.DOComplete();
+            selectArrow.DOAnchorPos(new Vector2(targetX, fixedY), 0.2f).SetEase(Ease.OutQuad);
         }
     }
 }

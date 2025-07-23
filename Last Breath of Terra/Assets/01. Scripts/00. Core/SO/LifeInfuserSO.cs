@@ -123,6 +123,21 @@ public class LifeInfuserSO : ScriptableObject
             Debug.Log("infusion stopped");
         }
     }
+    /*
+     * 활성화 완료 여부 체크
+     */
+    public bool CheckActiveInfusionCount()
+    {
+        foreach (var activatedInfuser in InfuserManager.Instance.activatedInfusers)
+        {
+            if (activatedInfuser == false)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /*
      * 자식 오브젝트 투명도 설정

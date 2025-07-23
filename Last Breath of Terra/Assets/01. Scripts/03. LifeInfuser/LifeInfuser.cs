@@ -15,9 +15,8 @@ public class LifeInfuser : MonoBehaviour
     public Transform arrivalPoint;
     //public bool[] canInfusion;
 
-    [Header("Minimap")]
-    public string mapID;
-    
+    [Header("Minimap")] public string mapID;
+
     private Tween startTween;
     private Coroutine obstacleSpawnCoroutine;
     private PlayerController _playerController;
@@ -34,42 +33,44 @@ public class LifeInfuser : MonoBehaviour
         InfuserManager.Instance.canInfusion[infuserNumber] = true;
         InfuserManager.Instance.infuser[infuserNumber] = gameObject;
     }
-    
-    private void OnTriggerEnter2D(Collider2D collision) {
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
         if (collision.transform.CompareTag("Player") && InfuserManager.Instance.canInfusion[infuserNumber])
         {
             _playerController = collision.GetComponent<PlayerController>();
-            startTween = DOVirtual.DelayedCall(lifeInfuserData.infusionWaitTime, () =>
-            {
-                PrepareInfusion();
-            });
+            startTween = DOVirtual.DelayedCall(lifeInfuserData.infusionWaitTime, () => { PrepareInfusion(); });
 
             GameManager.Instance._shaderManager.TurnOnOutline(mat, 3f, 0.5f);
         }
     }
+
     private void PrepareInfusion()
     {
         Debug.Log("Prepare Infusion");
 
         if (_playerController != null)
         {
-            AudioManager.Instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(), gameObject.transform);
+            AudioManager.Instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(),
+                gameObject.transform);
             _playerController.SetActivatingState(true);
             _playerController.SetCanMove(false);
         }
-        DOTween.To(() => lifeInfuserData.defaultLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 1f);
+
+        DOTween.To(() => lifeInfuserData.defaultLensSize,
+            x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 1f);
         lifeInfuserData.StartInfusion(infuserNumber, gameObject);
-        
+
         if (obstacleSpawnCoroutine == null)
         {
-            if(GameManager.ScenesManager.GetCurrentSceneType().ToString() != "Tutorial")
+            if (GameManager.ScenesManager.GetCurrentSceneType().ToString() != "Tutorial")
                 obstacleSpawnCoroutine = StartCoroutine(SpawnObstaclesPeriodically());
         }
-        
+
         GameManager.Instance._shaderManager.PlayInfusionSequence(
-            mat, 
-            Camera.main.GetComponent<Volume>(), 
-            lifeInfuserData.infusionDuration, 
+            mat,
+            Camera.main.GetComponent<Volume>(),
+            lifeInfuserData.infusionDuration,
             CompleteInfusion
         );
     }
@@ -92,9 +93,10 @@ public class LifeInfuser : MonoBehaviour
         do
         {
             randomIndex = UnityEngine.Random.Range(0, obstacleSpawnPoints.Length);
-        }while (randomIndex == obstacleSpawnPreIndex) ;
+        } while (randomIndex == obstacleSpawnPreIndex);
+
         obstacleSpawnPreIndex = randomIndex;
-        
+
         Transform spawnPoint = obstacleSpawnPoints[randomIndex];
 
         Obstacle obstacle = GameManager.Instance._obstacleManager.GetObstacle();
@@ -114,22 +116,26 @@ public class LifeInfuser : MonoBehaviour
             _playerController.SetActivatingState(false);
             _playerController.SetCanMove(true);
         }
-        
-        GameManager.Instance._shaderManager.CompleteInfusionEffect(
-        mat,
-        Camera.main.GetComponent<Volume>(),
-        () =>
-        {
-            // Infusion 완료 후 처리
-            InfuserManager.Instance.canInfusion[infuserNumber] = false;
-            GameManager.Instance._stageminimapManager.RevealMapFromInfuser(mapID);
 
-            if (obstacleSpawnCoroutine != null)
+        GameManager.Instance._shaderManager.CompleteInfusionEffect(
+            mat,
+            Camera.main.GetComponent<Volume>(),
+            () =>
             {
-                StopCoroutine(obstacleSpawnCoroutine);
-                obstacleSpawnCoroutine = null;
-            }
-        });
+                // Infusion 완료 후 처리
+                InfuserManager.Instance.canInfusion[infuserNumber] = false;
+                GameManager.Instance._stageminimapManager.RevealMapFromInfuser(mapID);
+
+                if (obstacleSpawnCoroutine != null)
+                {
+                    StopCoroutine(obstacleSpawnCoroutine);
+                    obstacleSpawnCoroutine = null;
+                }
+            });
+        if (lifeInfuserData.CheckActiveInfusionCount())
+        {
+            InfuserManager.Instance.escapeObject.SetActive(true);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -138,6 +144,7 @@ public class LifeInfuser : MonoBehaviour
         {
             startTween.Kill();
         }
+
         lifeInfuserData.StopInfusion(gameObject.GetComponent<AudioSource>());
         if (_playerController != null)
         {

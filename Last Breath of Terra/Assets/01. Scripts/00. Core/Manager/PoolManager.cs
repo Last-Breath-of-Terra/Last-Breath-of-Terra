@@ -63,7 +63,7 @@ public class PoolManager : Singleton<PoolManager>
     }
     public void ReturnAll(string poolName)
     {
-        if (poolDictionary.ContainsKey(poolName) != null)
+        if (activeObjects.TryGetValue(poolName, out var list) && list != null)
         {
             foreach (var obj in activeObjects[poolName].ToList())
             {

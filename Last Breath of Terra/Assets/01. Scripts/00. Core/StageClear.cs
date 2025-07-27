@@ -17,6 +17,8 @@ using Image = UnityEngine.UI.Image;
 public class StageClear : MonoBehaviour
 {
     public Image fadeImage;
+    public Sprite[] changeObjectImage;
+    public GameObject iceWall;
     public DataManager dataManager;
     public CinemachineVirtualCamera StageClearCamera;
     public float targetYOffset = 5f;
@@ -44,7 +46,7 @@ public class StageClear : MonoBehaviour
 
         fadeImage.color = new Color(0f, 0f, 0f, 0f);
     }
-    IEnumerator FadeAndThenMoveCamera()
+    IEnumerator MoveCamera()
     {
         // 페이드 먼저 실행
         yield return StartCoroutine(Fade(true)); // 코루틴 끝날 때까지 기다림
@@ -68,9 +70,29 @@ public class StageClear : MonoBehaviour
         StartCoroutine(Fade(false));
     }
 
+    IEnumerator BreakIceWall()
+    {
+        yield return StartCoroutine(Fade(true)); // 코루틴 끝날 때까지 기다림
+        iceWall.GetComponent<SpriteRenderer>().sprite = changeObjectImage[0];
+        yield return new WaitForSeconds(2f);
+        iceWall.GetComponent<SpriteRenderer>().sprite = changeObjectImage[1];
+        yield return new WaitForSeconds(2f);
+        
+        iceWall.GetComponent<BoxCollider2D>().enabled = false;
+        StartCoroutine(Fade(false));
+
+    }
+
     public void OnStageClear()
     {
-        StartCoroutine(FadeAndThenMoveCamera());
+        if (changeObjectImage != null)
+        {
+            StartCoroutine(BreakIceWall());
+        }
+        else
+        {
+            StartCoroutine(MoveCamera());
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -16,7 +16,6 @@ public class StoryController : MonoBehaviour
 {
     public Image fadeImage;
     public Image background;
-    public TMP_Text text;
 
     [System.Serializable]
     public struct BackgroundTextPair
@@ -32,6 +31,8 @@ public class StoryController : MonoBehaviour
     public float moveDuration = 15f;
 
     [Header("Text Setting")] 
+    public Transform textParent;
+    public GameObject textLinePrefab;
     public float textDisplayDuration = 2f;
     public float waitBetweenText = 1f;
 
@@ -128,39 +129,49 @@ public class StoryController : MonoBehaviour
             yield break;
         }
 
-        RectTransform rt = text.GetComponent<RectTransform>();
+        // 정렬/위치 설정을 위한 기준값
+        TextAlignmentOptions alignment = TextAlignmentOptions.Left;
+        Vector2 anchoredPos = new Vector2(-350f, 0f);
+        TextAnchor layoutGroupAlign = TextAnchor.UpperLeft;
 
-        if (backgroundType == BackgroundType.A || backgroundType == BackgroundType.C)
+        if (backgroundType == BackgroundType.B || backgroundType == BackgroundType.D)
         {
-            rt.anchoredPosition = new Vector2(-600f, rt.anchoredPosition.y);
-            text.alignment = TextAlignmentOptions.Left;
-        }
-        else
-        {
-            rt.anchoredPosition = new Vector2(-10f, rt.anchoredPosition.y);
-            text.alignment = TextAlignmentOptions.Right;
+            alignment = TextAlignmentOptions.Right;
+            anchoredPos = new Vector2(-10f, 0f);
+            layoutGroupAlign = TextAnchor.UpperRight;
         }
 
-        string m_show = "";
+        var layoutGroup = textParent.GetComponent<VerticalLayoutGroup>();
+        layoutGroup.childAlignment = layoutGroupAlign;
+
         foreach (string line in sentences)
         {
-            float m_alphaFloat = 0.1f;
+            // 텍스트 오브젝트 생성
+            GameObject lineObj = Instantiate(textLinePrefab, textParent);
+            Transform wrapperTr = lineObj.transform.Find("TextWrapper");
+            TextMeshProUGUI tmp = wrapperTr.GetComponent<TextMeshProUGUI>();
+            RectTransform wrapperRT = wrapperTr.GetComponent<RectTransform>();
 
-            while (m_alphaFloat < 1.0f)
+            // 정렬 설정
+            tmp.alignment = alignment;
+            wrapperRT.anchoredPosition = anchoredPos;
+
+            // 알파 점진적으로 증가
+            float alpha = 0f;
+            while (alpha < 1f)
             {
-                m_alphaFloat += Time.deltaTime / textDisplayDuration;
-                m_alphaFloat = Mathf.Clamp01(m_alphaFloat);
+                alpha += Time.deltaTime / textDisplayDuration;
+                alpha = Mathf.Clamp01(alpha);
 
-                Color textColor = Color.white;
-                textColor.a = m_alphaFloat;
+                Color c = tmp.color;
+                c.a = alpha;
+                tmp.color = c;
 
-                text.text = m_show + $"<color=#{ColorUtility.ToHtmlStringRGBA(textColor)}>{line}</color>";
-
+                tmp.text = line;
                 yield return null;
             }
 
-            m_show += line + "\n";
-
+            tmp.text = line;
             yield return new WaitForSeconds(waitBetweenText);
         }
     }
@@ -168,18 +179,21 @@ public class StoryController : MonoBehaviour
     private void SetBackgroundInfo(BackgroundTextPair pair)
     {
         background.sprite = pair.backgroundImage;
-        text.text = "";
+        foreach (Transform child in textParent)
+        {
+            Destroy(child.gameObject);
+        }
         RectTransform rt = background.GetComponent<RectTransform>();
         
         switch (pair.backgroundType)
         {
             case BackgroundType.A:
-                rt.sizeDelta = new Vector2(2880, 1080);
+                rt.sizeDelta = new Vector2(2880, 1180);
                 moveDirection = new Vector2(-950, 0);
                 rt.anchoredPosition = new Vector2(-480, 0);
                 break;
             case BackgroundType.B:
-                rt.sizeDelta = new Vector2(2880, 1080);
+                rt.sizeDelta = new Vector2(2880, 1180);
                 GameObject.Find("Canvas").transform.Find("BackImage").transform.rotation = Quaternion.Euler(0, 0, 180);
                 moveDirection = new Vector2(940, 0);
                 rt.anchoredPosition = new Vector2(-1430, 0);

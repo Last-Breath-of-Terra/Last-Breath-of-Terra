@@ -106,6 +106,7 @@ public class TitleSceneManager : MonoBehaviour
         {
             isHoldingSpace = false;
             holdTime = 0f;
+            UpdateFlameGauge(0f);
         }
 
         // A 키를 누르면 뒤로 감

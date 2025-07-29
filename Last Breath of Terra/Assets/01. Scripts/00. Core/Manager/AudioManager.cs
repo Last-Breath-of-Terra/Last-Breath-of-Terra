@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class AudioManager : Singleton<AudioManager>
 {
-    [HideInInspector] public Dictionary<int, string> mapAmbienceDict;
+    //[HideInInspector] public Dictionary<int, string> mapAmbienceDict;
 
     private ScenesManager scenesManager;
 
@@ -31,7 +31,7 @@ public class AudioManager : Singleton<AudioManager>
     private float ObstacleVolume = 1.0f;
 
     private Tween currentTween;
-    
+
     private void Awake()
     {
         AudioInit();
@@ -43,7 +43,7 @@ public class AudioManager : Singleton<AudioManager>
     private void Start()
     {
         PlayBGMForCurrentScene();
-        PlayAmbience("ambi_livingroom");
+        //PlayAmbience("ambi_livingroom");
     }
 
     private void AudioInit()
@@ -81,15 +81,6 @@ public class AudioManager : Singleton<AudioManager>
         ambienceSource.volume = ambienceVolume;
         ambienceSource.loop = true;
         ambienceSource.playOnAwake = false;
-        mapAmbienceDict = new Dictionary<int, string>()
-        {
-            { 2, "stage_01_map_02" },
-            { 4, "stage_01_map_04_06" },
-            { 6, "stage_01_map_04_06"},
-            { 7, "stage_01_map_07_10"},
-            { 9, "stage_01_map_09"},
-            { 10, "stage_01_map_07_10"},
-        };
 
         #endregion
 
@@ -122,6 +113,7 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
+    //씬 전환 시 BGM 변경
     public void PlayBGMForCurrentScene()
     {
         SCENE_TYPE currentScene = scenesManager.GetCurrentSceneType();
@@ -133,16 +125,16 @@ public class AudioManager : Singleton<AudioManager>
         switch (currentScene)
         {
             case SCENE_TYPE.Title:
-                bgmName = "Title_BGM";
+                bgmName = "BGM_Title";
                 break;
             case SCENE_TYPE.Tutorial:
-                bgmName = "Tutorial_BGM";
+                bgmName = "BGM_Tutorial";
                 break;
-            case SCENE_TYPE.Gravel:
-                bgmName = "Stage1_Gravel_BGM";
+            case SCENE_TYPE.Stage1:
+                bgmName = "BGM_Stage1_Map0";
                 break;
             case SCENE_TYPE.Stage2:
-                bgmName = "BGM_Stage2_Map";
+                bgmName = "BGM_Stage2_Map0";
                 break;
             default:
                 bgmName = "BGM_Default";
@@ -152,37 +144,51 @@ public class AudioManager : Singleton<AudioManager>
         PlayBGM(bgmName);
     }
 
-    public void PlayAmbienceForSceneAndMap(int mapID)
+    public void SwitchAmbienceAndBGM(int mapID)
     {
         SCENE_TYPE currentScene = scenesManager.GetCurrentSceneType();
-        
-        string ambienceName = "";
+
+        string ambienceName = "Amb_Default";
+        string bgmName = "BGM_Default";
 
         switch (currentScene)
         {
-            case SCENE_TYPE.Tutorial:
-                ambienceName = "ambi_livingroom";
-                break;
-            case SCENE_TYPE.Gravel:
-                if (mapAmbienceDict.ContainsKey(mapID))
-                {
-                    ambienceName = mapAmbienceDict[mapID];
-                    bgmSource.volume = 0;
-                }
-                else
-                {
-                    ambienceName = "ambi_livingroom";
-                }
+            case SCENE_TYPE.Stage1:
+                ambienceName = "Amb_Stage1_Map" + mapID;
                 break;
             case SCENE_TYPE.Stage2:
-                ambienceName = "AM";
-                break;
-            default:
-                ambienceName = "ambi_livingroom";
+                ambienceName = "Amb_Stage2_Map" + mapID;
+                bgmName = "BGM_Stage2_Map" + mapID;
                 break;
         }
+        
+        if (currentScene == SCENE_TYPE.Stage1)
+        {
+            if (ambienceAudioClips.ContainsKey(ambienceName))
+            {
+                FadeInAmbience(1f);
+                PlayAmbience(ambienceName);
+            }
+            else
+            {
+                FadeInBGM(1f);
+                PlayBGM("BGM_Stage1_Map0");
+            }
+        }
+        else
+        {
+            if (ambienceAudioClips.ContainsKey(ambienceName))
+            {
+                PlayAmbience(ambienceName);
+                FadeInAmbience(1f);
+            }
 
-        PlayAmbience(ambienceName);
+            if (BGMAudioClips.ContainsKey(bgmName))
+            {
+                PlayBGM(bgmName);
+                FadeInBGM(1f);
+            }
+        }
     }
 
     public void PlayAmbience(string ambienceName)
@@ -219,7 +225,8 @@ public class AudioManager : Singleton<AudioManager>
     {
         if (SFXAudioClips.ContainsKey(sfxName))
         {
-            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f, -1.0f, 1.0f);
+            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f,
+                -1.0f, 1.0f);
             audioSource.panStereo = panValue;
             audioSource.volume = sfxVolume;
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
@@ -232,7 +239,8 @@ public class AudioManager : Singleton<AudioManager>
         sfxName += randomIndex;
         if (SFXAudioClips.ContainsKey(sfxName))
         {
-            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f, -1.0f, 1.0f);
+            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f,
+                -1.0f, 1.0f);
             audioSource.panStereo = panValue;
             audioSource.volume = sfxVolume;
             audioSource.PlayOneShot(SFXAudioClips[sfxName]);
@@ -256,7 +264,7 @@ public class AudioManager : Singleton<AudioManager>
      * 씬 & 맵에 따라 플레이어 오디오 세팅
      */
     public void UpdatePlayerAuidoSettingsByMap(int mapID)
-    {
+    {/*
         if (mapAmbienceDict.ContainsKey(mapID))
         {
             GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = true;
@@ -269,20 +277,21 @@ public class AudioManager : Singleton<AudioManager>
             GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 10f;
             GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 15f;
         }
+        */
     }
 
     public void UpdatePlayerAuidoSettingsByScene()
     {
         SCENE_TYPE currentScene = scenesManager.GetCurrentSceneType();
 
-        switch(currentScene)
+        switch (currentScene)
         {
             case SCENE_TYPE.Tutorial:
                 GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = true;
                 GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 40f;
                 GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 60f;
                 break;
-            case SCENE_TYPE.Gravel:
+            case SCENE_TYPE.Stage1:
                 GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = false;
                 GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 10f;
                 GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 15f;
@@ -303,6 +312,7 @@ public class AudioManager : Singleton<AudioManager>
         audioSource.panStereo = panValue;
         audioSource.PlayOneShot(SFXAudioClips[audioName]);
     }
+
     public void PlayRandomPlayer(string audioName, float panValue)
     {
         int randomIndex = UnityEngine.Random.Range(1, 3);
@@ -314,13 +324,15 @@ public class AudioManager : Singleton<AudioManager>
         Debug.Log(audioName);
         audioSource.PlayOneShot(SFXAudioClips[audioName]);
     }
+
     public void PlayCancelable(string audioName, AudioSource audioSource, Transform soundTransform)
     {
         Debug.Log("playing cancelable");
         if (SFXAudioClips.ContainsKey(audioName))
         {
             audioSource.clip = SFXAudioClips[audioName];
-            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f, -1.0f, 1.0f);
+            float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f,
+                -1.0f, 1.0f);
             audioSource.panStereo = panValue;
             audioSource.Play();
         }

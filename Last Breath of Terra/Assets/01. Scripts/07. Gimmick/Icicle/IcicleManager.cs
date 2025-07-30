@@ -5,7 +5,6 @@ using UnityEngine;
 public class IcicleManager : Singleton<IcicleManager>
 {
     public GameObject IciclePrefab;
-    public float delayTimer;
     public string poolName;
 
     void Start()

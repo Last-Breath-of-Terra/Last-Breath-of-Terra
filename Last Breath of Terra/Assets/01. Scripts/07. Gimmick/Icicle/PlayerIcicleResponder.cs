@@ -14,6 +14,8 @@ public class PlayerIcicleResponder : MonoBehaviour
     public ParticleSystem freezedParticles;
     private PlayerInput playerInput;
     private Coroutine freezeCoroutine;
+    private ParticleSystem particleSystem;
+
 
     private void Awake()
     {
@@ -23,8 +25,9 @@ public class PlayerIcicleResponder : MonoBehaviour
     private void Start()
     {
         unfreezeActionCount = 0;
-        freezedParticles.Stop();
-        freezedParticles.transform.position = gameObject.transform.position;
+        particleSystem = new ParticleSystem();
+        particleSystem = freezedParticles;
+        particleSystem.Stop();
     }
 
     private void OnEnable()
@@ -56,6 +59,7 @@ public class PlayerIcicleResponder : MonoBehaviour
         {
             StopCoroutine(freezeCoroutine);
         }
+
         freezeCoroutine = StartCoroutine(UnfreezePlayer());
     }
 
@@ -69,12 +73,13 @@ public class PlayerIcicleResponder : MonoBehaviour
 
     public void OnClickPlayer(InputAction.CallbackContext context)
     {
-        freezedParticles.Play();
+        //particleSystem.transform.position = transform.position;
+        //particleSystem.Play();
         Vector2 mousePos = Mouse.current.position.ReadValue();
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
 
         LayerMask mask = LayerMask.GetMask("Player");
-        RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero,0f , mask);
+        RaycastHit2D hit = Physics2D.Raycast(worldPos, Vector2.zero, 0f, mask);
         if (hit.collider != null)
         {
             var player = hit.collider.GetComponent<PlayerController>();

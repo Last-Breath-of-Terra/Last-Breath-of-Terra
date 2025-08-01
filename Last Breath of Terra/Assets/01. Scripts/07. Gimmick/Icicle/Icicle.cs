@@ -7,7 +7,6 @@ using UnityEngine.InputSystem;
 
 public class Icicle : MonoBehaviour
 {
-    public int damage;
     private float fallSpeed;
     
     [SerializeField] private float fallDuration = 1f;

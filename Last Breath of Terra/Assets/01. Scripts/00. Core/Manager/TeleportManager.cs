@@ -146,18 +146,8 @@ public class TeleportManager : Singleton<TeleportManager>
         #region audio
 
         // ※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-        AudioManager.Instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        if (AudioManager.Instance.mapAmbienceDict.ContainsKey(teleportSet[targetID].GetComponent<Teleport>().mapID))
-        {
-            AudioManager.Instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-            AudioManager.Instance.FadeInAmbience(1f);
-        }
-        else
-        {
-            AudioManager.Instance.PlayAmbienceForSceneAndMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
-            AudioManager.Instance.FadeInBGM(1f);
-            AudioManager.Instance.FadeInAmbience(1f);
-        }
+        //AudioManager.Instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        AudioManager.Instance.SwitchAmbienceAndBGM(teleportSet[targetID].GetComponent<Teleport>().mapID);
 
         #endregion
 

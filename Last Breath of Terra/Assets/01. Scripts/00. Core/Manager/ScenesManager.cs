@@ -8,7 +8,7 @@ public enum SCENE_TYPE
 {
     Title,
     Tutorial,
-    Gravel,
+    Stage1,
     Stage2,
     Default
 }
@@ -36,7 +36,7 @@ public class ScenesManager : Singleton<ScenesManager>
         }
         else if (sceneName.Contains("gravel"))
         {
-            currentSceneType = SCENE_TYPE.Gravel;
+            currentSceneType = SCENE_TYPE.Stage1;
         }
         else if (sceneName.Contains("Stage2"))
         {

@@ -6,9 +6,10 @@ public class IcicleManager : Singleton<IcicleManager>
 {
     public GameObject IciclePrefab;
     public string poolName;
-    public float delayTimer;
+
     void Start()
     {
+        poolName = IciclePrefab.name;
         PoolManager.Instance.CreatePool(poolName, IciclePrefab, gameObject.transform);
     }
 

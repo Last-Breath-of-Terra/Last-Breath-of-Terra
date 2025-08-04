@@ -17,9 +17,10 @@ public class DataManager : Singleton<DataManager>
     [System.Serializable]
     public class PlayerData
     {
-        public string name;             // 플레이어 이름
         public List<StageData> stages;  // 스테이지 데이터
     }
+
+    public int playerIndex { get; set; }
 
     [System.Serializable]
     public class GameData
@@ -27,15 +28,9 @@ public class DataManager : Singleton<DataManager>
         public List<PlayerData> players; // 플레이어 목록
     }
 
-    
-    public GameObject scrollView;
-    public GameObject buttonPrefab;
-    public TMP_InputField inputField;  
-    public int playerIndex;
-
-    
     private GameData gameData;
     private string path;
+
     private void Start()
     {
         // JSON 파일 경로 설정
@@ -44,11 +39,16 @@ public class DataManager : Singleton<DataManager>
         if (File.Exists(path))
         {
             LoadPlayerData(path);
-            foreach (var player in gameData.players)
-            {
-                GameObject newBtn = Instantiate(buttonPrefab, scrollView.transform);
-                newBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = player.name;
-            }
+        }
+        else
+        {
+            gameData = new GameData { players = new List<PlayerData>() };
+            SavePlayerData();
+        }
+
+        while (gameData.players.Count < 3)
+        {
+            gameData.players.Add(null);
         }
     }
 
@@ -62,7 +62,6 @@ public class DataManager : Singleton<DataManager>
             {
                 new PlayerData
                 {
-                    name = playerName,
                     stages = new List<StageData>
                     {
                         new StageData { stageId = 1, isCleared = false },
@@ -86,6 +85,7 @@ public class DataManager : Singleton<DataManager>
         string jsonData = File.ReadAllText(path); // JSON 파일 읽기
         gameData = JsonUtility.FromJson<GameData>(jsonData); // 역직렬화
         Debug.Log("플레이어 데이터 로드 완료");
+        Debug.Log("저장 경로: " + Application.persistentDataPath);
     }
 
     // 플레이어 데이터 저장
@@ -98,49 +98,36 @@ public class DataManager : Singleton<DataManager>
         File.WriteAllText(path, jsonData);
         Debug.Log("수정된 플레이어 데이터 저장 완료");
     }
-    
+
     // 플레이어 추가
-    public void AddPlayer()
+    public void AddPlayerAtIndex(int index)
     {
-        List<StageData> stages = new List<StageData>();
-        string playerName = inputField.text;
-        GameObject newBtn = Instantiate(buttonPrefab, scrollView.transform);
-        // 파일이 존재하지 않으면 기본 데이터로 파일을 생성
-        if (!File.Exists(path))
-        {
-            CreateGameDataJsonFile(path, playerName);
-        }
-        else
-        {
-            // 파일이 존재하면 데이터 로드
-            LoadPlayerData(path);
-            if (gameData != null)
-            {
-                PlayerData newPlayer = new PlayerData
-                {
-                    name = playerName,
-                    stages = new List<StageData>
-                    {
-                        new StageData { stageId = 1, isCleared = false },
-                        new StageData { stageId = 2, isCleared = false }
-                    }
-                };
+        if (index < 0 || index >= 3) return;
 
-                // 플레이어 목록에 추가
-                gameData.players.Add(newPlayer);
-
-                // 추가된 데이터 저장
-                SavePlayerData();
-                Debug.Log($"{playerName} 캐릭터가 추가되었습니다.");
-            }
-            else
+        PlayerData newPlayer = new PlayerData
+        {
+            stages = new List<StageData>
             {
-                Debug.Log(path);
-                Debug.LogError("게임 데이터가 로드되지 않았습니다.");
+                new StageData { stageId = 1, isCleared = false },
+                new StageData { stageId = 2, isCleared = false }
             }
-        }
-        newBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = playerName;
+        };
+
+        gameData.players[index] = newPlayer;
+        SavePlayerData();
     }
+
+    public bool HasSave(int index)
+    {
+        return GetPlayerData(index) != null;
+    }
+
+    public PlayerData GetPlayerData(int index)
+    {
+        if (index < 0 || index >= gameData.players.Count) return null;
+        return gameData.players[index];
+    }
+
     // 플레이어 데이터 수정 (스테이지 클리어 상태 수정)
     public void ModifyPlayerData(int playerIndex, int stageIndex, bool isCleared)
     {
@@ -158,17 +145,20 @@ public class DataManager : Singleton<DataManager>
         }
     }
 
-    public int FindPlayerIndexByName(string targetName)
+    // 저장 판별용
+    public bool HasAnyStageCleared(int index)
     {
-        for (int i = 0; i < gameData.players.Count; i++)
+        var player = GetPlayerData(index);
+        if (player == null)
+            return false;
+
+        foreach (var stage in player.stages)
         {
-            if (gameData.players[i].name == targetName)
-            {
-                return i;  // 이름이 일치하면 해당 인덱스를 반환
-            }
+            if (stage.isCleared)
+                return true;
         }
-        return -1;  // 플레이어가 없으면 -1 반환
+
+        return false;
     }
-    
 }
 

@@ -97,7 +97,7 @@ public class TitleSceneManager : MonoBehaviour
             if (holdTime >= holdThreshold)
             {
                 isHoldingSpace = false;
-                StartCoroutine(LoadStoryScene()); // 게임 시작
+                StartCoroutine(LoadGame()); // 게임 시작
             }
         }
 
@@ -123,10 +123,10 @@ public class TitleSceneManager : MonoBehaviour
         if (flameGaugeParticle == null) return;
 
         var main = flameGaugeParticle.main;
-        main.startSize = Mathf.Lerp(0.5f, 1.5f, t);
+        main.startSize = Mathf.Lerp(0.5f, 1f, t);
     }
 
-    private IEnumerator LoadStoryScene()
+    private IEnumerator LoadGame()
     {
         fadePanel.gameObject.SetActive(true);
 
@@ -134,11 +134,19 @@ public class TitleSceneManager : MonoBehaviour
         yield return fadePanel.DOFade(1f, 1f).SetEase(Ease.OutQuad).WaitForCompletion();
         yield return fadePanel.DOColor(Color.black, 1f).SetEase(Ease.InQuad).WaitForCompletion();
 
-        // 선택된 슬롯에 대해 TitleStory 스토리 활성화
-        StoryManager.Instance.ActivateStoryForScene("TitleStory");
+        int index = DataManager.Instance.playerIndex;
 
-        // 실제 게임 스토리 씬으로 전환
-        SceneManager.LoadScene("StoryScene");
+        bool hasProgress = DataManager.Instance.HasAnyStageCleared(index);
+
+        if (hasProgress)
+        {
+            SceneManager.LoadScene("StageSelection");
+        }
+        else
+        {
+            StoryManager.Instance.ActivateStoryForScene("TitleStory");
+            SceneManager.LoadScene("StoryScene");
+        }
     }
 
     public void BackToIntroFromSave()

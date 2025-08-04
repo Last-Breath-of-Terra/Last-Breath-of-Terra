@@ -24,7 +24,6 @@ public class SaveSlot : MonoBehaviour
             if (btn != null)
             {
                 btn.Setup(i);
-                //btn.SetFlameVisible(hasSave);
                 slotButtons[i].interactable = false; // 마우스 클릭 X
             }
         }

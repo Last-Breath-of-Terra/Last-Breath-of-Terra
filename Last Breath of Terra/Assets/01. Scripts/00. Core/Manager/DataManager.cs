@@ -19,7 +19,7 @@ public class DataManager : Singleton<DataManager>
     {
         public List<StageData> stages;  // 스테이지 데이터
     }
-    
+
     public int playerIndex { get; set; }
 
     [System.Serializable]
@@ -27,7 +27,7 @@ public class DataManager : Singleton<DataManager>
     {
         public List<PlayerData> players; // 플레이어 목록
     }
-    
+
     private GameData gameData;
     private string path;
 
@@ -45,7 +45,7 @@ public class DataManager : Singleton<DataManager>
             gameData = new GameData { players = new List<PlayerData>() };
             SavePlayerData();
         }
-        
+
         while (gameData.players.Count < 3)
         {
             gameData.players.Add(null);
@@ -85,6 +85,7 @@ public class DataManager : Singleton<DataManager>
         string jsonData = File.ReadAllText(path); // JSON 파일 읽기
         gameData = JsonUtility.FromJson<GameData>(jsonData); // 역직렬화
         Debug.Log("플레이어 데이터 로드 완료");
+        Debug.Log("저장 경로: " + Application.persistentDataPath);
     }
 
     // 플레이어 데이터 저장
@@ -97,7 +98,7 @@ public class DataManager : Singleton<DataManager>
         File.WriteAllText(path, jsonData);
         Debug.Log("수정된 플레이어 데이터 저장 완료");
     }
-    
+
     // 플레이어 추가
     public void AddPlayerAtIndex(int index)
     {
@@ -142,6 +143,22 @@ public class DataManager : Singleton<DataManager>
         {
             Debug.LogError("Invalid player or stage index.");
         }
+    }
+
+    // 저장 판별용
+    public bool HasAnyStageCleared(int index)
+    {
+        var player = GetPlayerData(index);
+        if (player == null)
+            return false;
+
+        foreach (var stage in player.stages)
+        {
+            if (stage.isCleared)
+                return true;
+        }
+
+        return false;
     }
 }
 

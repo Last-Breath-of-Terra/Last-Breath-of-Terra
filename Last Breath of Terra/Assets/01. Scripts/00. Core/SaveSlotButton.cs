@@ -1,18 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
+using UnityEngine.UI;
 
 public class SaveSlotButton : MonoBehaviour
 {
     public TitleSceneManager titleManager;
-    public GameObject flameEffect;
+    public Sprite savedSlotSprite;
+    public Sprite emptySlotSprite;
 
+    private Image slotImage;
     private int slotIndex;
+
+    void Awake()
+    {
+        slotImage = GetComponent<Image>();
+    }
 
     public void Setup(int index)
     {
         slotIndex = index;
+
+        bool hasSave = DataManager.Instance.HasSave(index);
+        if (slotImage != null)
+        {
+            slotImage.sprite = hasSave ? savedSlotSprite : emptySlotSprite;
+        }
     }
 
     public void OnClick()
@@ -21,25 +34,5 @@ public class SaveSlotButton : MonoBehaviour
         DataManager.Instance.playerIndex = slotIndex;
         titleManager.OnSaveSlotSelected();
     }
-
-    void SetFlameScale(float scale)
-    {
-        var ps = flameEffect.GetComponentInChildren<ParticleSystem>();
-        if (ps != null)
-        {
-            var main = ps.main;
-            main.startSize = scale;
-        }
-    }
-
-    // public void SetFlameVisible(bool visible)
-    // {
-    //     if (flameEffect == null) return;
-
-    //     flameEffect.SetActive(true); // 일단 켜기
-
-    //     StopAllCoroutines();
-    //     StartCoroutine(ScaleFlame(flameEffect.transform, visible ? Vector3.zero : Vector3.one, visible ? Vector3.one : Vector3.zero, 0.5f));
-    // }
 
 }

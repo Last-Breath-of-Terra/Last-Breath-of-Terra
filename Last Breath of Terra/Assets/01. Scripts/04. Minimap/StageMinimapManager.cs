@@ -14,12 +14,13 @@ public class MiniMapRegion
     public string mapID;
     public Image mapImage;
     public bool hasInfuser = false;
+    public bool alwaysVisible = false;
     [HideInInspector] public bool isRevealed = false;
 }
 
 public class StageMinimapManager : MonoBehaviour
 {
-    public GameObject fullMapUI;
+    public MiniMapUIController fadeController;
 
     private InputAction minimapAction;
     private bool isFullMapActive = false;
@@ -34,7 +35,7 @@ public class StageMinimapManager : MonoBehaviour
     [SerializeField] private GameObject minimapIconPrefab;
 
     [SerializeField] private List<MiniMapRegion> mapRegions;
-
+    
     private Dictionary<string, MiniMapRegion> regionDict = new Dictionary<string, MiniMapRegion>();
     //private List<Image> minimapIcons = new List<Image>();
 
@@ -50,7 +51,16 @@ public class StageMinimapManager : MonoBehaviour
     {
         foreach (var region in mapRegions)
         {
-            region.mapImage.enabled = false;
+            if (region.alwaysVisible)
+            {
+                region.mapImage.enabled = true;
+                region.isRevealed = true;
+            }
+            else
+            {
+                region.mapImage.enabled = false;
+            }
+
             regionDict[region.mapID] = region;
         }
     }
@@ -101,7 +111,17 @@ public class StageMinimapManager : MonoBehaviour
     private void SetMapActive(bool active)
     {
         isFullMapActive = active;
-        fullMapUI.SetActive(isFullMapActive);
+
+        if (isFullMapActive)
+        {
+            // 미니맵 켜짐 애니메이션 실행
+            fadeController.ShowMinimap();
+        }
+        else
+        {
+            // 꺼질 땐 그냥 바로 UI 비활성화
+            fadeController.ResetFadePanels();
+        }
 
         GameManager.Instance.playerTr.GetComponent<PlayerController>().SetCanMove(!isFullMapActive);
     }

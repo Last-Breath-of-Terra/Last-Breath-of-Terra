@@ -34,7 +34,7 @@ public class ScenesManager : Singleton<ScenesManager>
         {
             currentSceneType = SCENE_TYPE.Tutorial;
         }
-        else if (sceneName.Contains("gravel"))
+        else if (sceneName.Contains("Stage1"))
         {
             currentSceneType = SCENE_TYPE.Stage1;
         }

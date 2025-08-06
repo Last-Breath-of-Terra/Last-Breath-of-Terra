@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/00. Scenes/StageSelection.unity
     guid: 3de54f6318371e94dab11e9cb0c0aee2
   - enabled: 1
-    path: Assets/00. Scenes/Stage1_gravel.unity
+    path: Assets/00. Scenes/Stage1.unity
     guid: 9244be95b74174788a6a742cb2864bde
   - enabled: 1
     path: Assets/00. Scenes/StoryScene.unity

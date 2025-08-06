@@ -29,6 +29,8 @@ public class Teleport : MonoBehaviour
     public int targetID;
     public bool isRight;
 
+    [Header("Minimap")] public string targetMapID;
+
     private GameObject player;
 
     private void Start()
@@ -41,6 +43,7 @@ public class Teleport : MonoBehaviour
         if (collision.transform.CompareTag("Player"))
         {
             TeleportManager.Instance.MoveToPortal();
+            GameManager.Instance._stageminimapManager.OnMapEntered(targetMapID);
             TeleportManager.Instance.CoFade(targetID, directionOffsets[portalDirection]);
             //※※※※※※※※※※※※※※※임시 코드※※※※※※※※※※※※※※※※※※※※※※※※※
             //StartCoroutine(ResetTeleportingFlag());

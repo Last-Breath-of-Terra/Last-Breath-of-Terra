@@ -510,7 +510,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &863158793
 Transform:
   m_ObjectHideFlags: 0
@@ -547,7 +547,7 @@ MonoBehaviour:
       \uB290\uAEF4\uC9C0\uC9C0 \uC54A\uB294 \uD669\uB7C9\uD55C \uC12C\uC774\uC5C8\uB2E4."
     - "\uC5D0\uD14C\uB9AC\uC2A4\uB294 \uCC98\uC74C\uC73C\uB85C, \uC228\uC744 \uC26C\uACE0
       \uACE0\uD1B5\uC744 \uB290\uB07C\uB294 \uC721\uCCB4\uB97C \uAC00\uC84C\uB2E4."
-    backgroundType: 0
+    backgroundType: 1
   - backgroundImage: {fileID: 21300000, guid: 7ef9716a7ffb54f2ea0a3d42a0be1c2a, type: 3}
     sentences:
     - "\uC12C \uD55C\uAC00\uC6B4\uB370\uC5D4 \uC8FD\uC5B4\uAC00\uB294 \uC0DD\uBA85\uC758
@@ -555,7 +555,7 @@ MonoBehaviour:
     - "\uD55C\uB54C \uC774 \uC9C0\uC5ED\uC758 \uC0DD\uBA85\uC744 \uD488\uB358 \uC874\uC7AC\uB294,
       \uC774\uC81C \uAC80\uC740 \uC5B4\uB460 \uC18D\uC5D0\uC11C \uCC9C\uCC9C\uD788
       \uAEBC\uC9C0\uACE0 \uC788\uC5C8\uB2E4."
-    backgroundType: 1
+    backgroundType: 3
   - backgroundImage: {fileID: 21300000, guid: 12050a2181c3849a2a72ba8e97f10774, type: 3}
     sentences:
     - "\uC5D0\uD14C\uB9AC\uC2A4\uB294 \uC790\uC2E0\uC758 \uC0DD\uBA85\uB825\uC744
@@ -578,7 +578,7 @@ MonoBehaviour:
     - "\uC5D0\uD14C\uB9AC\uC2A4\uB294 \uC774\uC81C \uB354 \uBA40\uACE0 \uAE4A\uC740
       \uC0DD\uBA85\uC758 \uADFC\uC6D0\uC73C\uB85C \uD5A5\uD558\uB824 \uD55C\uB2E4."
     backgroundType: 0
-  moveDuration: 15
+  moveDuration: 10
   textParent: {fileID: 650053321}
   textLinePrefab: {fileID: 1531817748922207602, guid: 4a4ef7773731345e0985a2c31c05af29, type: 3}
   textDisplayDuration: 2
@@ -957,7 +957,7 @@ MonoBehaviour:
     - "\uC601\uD63C\uC740 \uC8FD\uC73C\uBA74 \uC800\uC2B9\uC73C\uB85C, \uB2E4\uC2DC
       \uC0C8\uB85C\uC6B4 \uC0DD\uBA85\uC73C\uB85C \uD658\uC0DD\uD558\uBA70 \uB05D\uC5C6\uB294
       \uD750\uB984\uC744 \uC774\uB8E8\uC5C8\uB2E4."
-    backgroundType: 0
+    backgroundType: 1
   - backgroundImage: {fileID: 21300000, guid: 7153ead89b60d4a199a8846d8593ac51, type: 3}
     sentences:
     - "\uC5B4\uB290 \uB0A0, \uADF8 \uD750\uB984\uC774 \uB04A\uAE30\uAE30 \uC2DC\uC791\uD588\uB2E4."
@@ -965,7 +965,7 @@ MonoBehaviour:
       \uB118\uCCD0\uB0AC\uC9C0\uB9CC,"
     - "\uC138\uC0C1\uC740 \uB354 \uC774\uC0C1 \uC0C8\uB85C\uC6B4 \uC0DD\uBA85\uC744
       \uD488\uC5B4\uB0B4\uC9C0 \uBABB\uD588\uB2E4."
-    backgroundType: 1
+    backgroundType: 0
   - backgroundImage: {fileID: 21300000, guid: 6122c1e3cc8084869b840088272abbad, type: 3}
     sentences:
     - "\uC774\uC2B9\uACFC \uC800\uC2B9\uC758 \uACBD\uACC4\uC5D0\uB294 \uC21C\uD658\uC744
@@ -973,7 +973,7 @@ MonoBehaviour:
     - "\uADF8 \uC874\uC7AC\uB294 \uC5D0\uD14C\uB9AC\uC2A4 \u3161"
     - "\uD0DC\uCD08\uBD80\uD130 \uC0DD\uBA85\uACFC \uC8FD\uC74C\uC744 \uC9C0\uCF1C\uC628
       \uBBF8\uC9C0\uC758 \uC874\uC7AC\uC774\uB2E4."
-    backgroundType: 2
+    backgroundType: 3
   - backgroundImage: {fileID: 21300000, guid: 1d8830d1fd212452bb748c3817ca97ad, type: 3}
     sentences:
     - "\uC5D0\uD14C\uB9AC\uC2A4\uB294 \uAE68\uB2EC\uC558\uB2E4."
@@ -983,7 +983,7 @@ MonoBehaviour:
       \uC313\uC5EC\uAC00\uACE0,"
     - "\uADF8\uAC83\uC774 \uBAA8\uC5EC \u2018\uC21C\uC218 \uC545\u2019\uC774 \uB418\uC5B4
       \uC138\uACC4\uB97C \uC7A0\uC2DD\uD558\uACE0 \uC788\uC5C8\uB2E4."
-    backgroundType: 3
+    backgroundType: 2
   - backgroundImage: {fileID: 21300000, guid: 9a9863577297344d0a2ce5c724a20f98, type: 3}
     sentences:
     - "\u201C\uC21C\uC218 \uC545\uC740 \uAC10\uC815\uC758 \uADF8\uB9BC\uC790\uC77C
@@ -991,14 +991,14 @@ MonoBehaviour:
     - "\uADF8\uB807\uAC8C \uC5D0\uD14C\uB9AC\uC2A4\uB294 \uD750\uB984\uC744 \uBC97\uC5B4\uB098,
       \uCC98\uC74C\uC73C\uB85C \uC0DD\uBA85\uC774 \uB418\uAE30 \uC704\uD55C \uAE38\uC744
       \uAC78\uC5B4 \uB098\uAC14\uB2E4."
-    backgroundType: 3
-  moveDuration: 13
+    backgroundType: 0
+  moveDuration: 10
   textParent: {fileID: 650053321}
   textLinePrefab: {fileID: 1531817748922207602, guid: 4a4ef7773731345e0985a2c31c05af29, type: 3}
   textDisplayDuration: 1
   waitBetweenText: 1
   fadeDuration: 1
-  sceneWaitTime: 2
+  sceneWaitTime: 0
   nextSceneName: Tutorial
 --- !u!1 &1826615316
 GameObject:

@@ -7,7 +7,6 @@ using DG.Tweening;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 
-
 [CreateAssetMenu(fileName = "LifeInfuser", menuName = "ScriptableObject/LifeInfuser")]
 public class LifeInfuserSO : ScriptableObject
 {
@@ -17,22 +16,22 @@ public class LifeInfuserSO : ScriptableObject
     public float targetLensSize;
 
     public Sprite[] InfuserActiveImage;
-
     public Sprite[] InfuserInactiveImage;
 
-    //public CinemachineVirtualCamera virtualCamera;
-    //public Canvas infuserActivationCanvas;
-    //public GameObject InfuserStatusUI;
-    //public Image infuserActivationUI;
     public Sprite activeIcon;
     public Sprite inactiveIcon;
     public Material defaultMaterial;
     public Material sacrificeMaterial;
 
     public int lineRendererSegments = 100;
-
     public int infusedLifeCount;
+
     private Tween currentTween;
+
+    // UI tween control
+    private bool isUIExpanded = false;
+    private bool isStartInfusion = false;
+    private float uiTweenDuration = 0.5f;
 
 
     void Awake()
@@ -45,29 +44,26 @@ public class LifeInfuserSO : ScriptableObject
      */
     public virtual void StartInfusion(int infuserNumber, GameObject targetInfuser)
     {
-        Debug.Log("start infusion");
+        isStartInfusion = true;
+        UnityEngine.Debug.Log("start infusion");
         SetUIForInfuserStatus(true);
         InfuserManager.Instance.ArcEffect.gameObject.SetActive(true);
         InfuserManager.Instance.gaugeParticle.Play();
 
-        //currentTween = DOTween.To(() => 0f, x => InfuserManager.Instance.infuserActivation.GetComponent<Image>().fillAmount = x, 1f, infusionDuration);
         AudioManager.Instance.PanSoundLeftToRight("breath_action_being", infusionDuration);
-        //infuserActivationUI.DOValue(1, infusionDuration).OnComplete(() => CompleteInfusion(infuserActivationUI, infuserNumber));
-
         float progress = 0f;
-        
         InfuserManager.Instance.glowLineRenderer.positionCount = 0;
         InfuserManager.Instance.brightLineRenderer.positionCount = 0;
-        
+
         currentTween = DOTween.To(() => progress, x => progress = x, 1f, infusionDuration)
             .SetEase(Ease.Linear)
-            .OnStart(() => 
+            .OnStart(() =>
             {
                 DrawArc(1f, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.backLineRenderer);
             })
-            .OnUpdate(() => 
+            .OnUpdate(() =>
             {
-                float circularProgress = (1 - Mathf.Cos(progress * Mathf.PI)) / 2; 
+                float circularProgress = (1 - Mathf.Cos(progress * Mathf.PI)) / 2;
                 DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.brightLineRenderer, InfuserManager.Instance.gaugeParticle);
                 DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.glowLineRenderer);
             })
@@ -75,7 +71,7 @@ public class LifeInfuserSO : ScriptableObject
             {
                 if (InfuserManager.Instance.gaugeParticle != null)
                 {
-                    InfuserManager.Instance.gaugeParticle.Stop(); // 완료 후 파티클 정지 가능
+                    InfuserManager.Instance.gaugeParticle.Stop();
                 }
             });
     }
@@ -88,16 +84,15 @@ public class LifeInfuserSO : ScriptableObject
         InfuserManager.Instance.successParticle.transform.position = targetInfuser.transform.position;
         InfuserManager.Instance.successParticle.Play();
         AudioManager.Instance.PlayPlayer("breath_action_end", 0f);
-        Debug.Log("play particle");
-        
+        UnityEngine.Debug.Log("play particle");
+
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage[infuserType];
         targetInfuser.GetComponent<SpriteRenderer>().material = sacrificeMaterial;
-        InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color =
-            new Color(1, 1, 1, 0.8f);
+        InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1, 0.8f);
 
-        Debug.Log("infusion completed");
+        UnityEngine.Debug.Log("infusion completed");
+        isStartInfusion = false;
         CinemachineVirtualCamera virtualCamera = InfuserManager.Instance.virtualCamera;
-        //state 복귀
         DOTween.To(() => targetLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
         infusedLifeCount++;
         InfuserManager.Instance.ArcEffect.gameObject.SetActive(false);
@@ -105,7 +100,6 @@ public class LifeInfuserSO : ScriptableObject
 
         SetUIForInfuserStatus(false);
     }
-
 
     /*
      * 활성화 중지 시 호출
@@ -116,13 +110,14 @@ public class LifeInfuserSO : ScriptableObject
         {
             currentTween.Kill();
             AudioManager.Instance.StopCancelable(audioSource);
-            DOTween.To(() => targetLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x,
-                defaultLensSize, 0.3f);
+            DOTween.To(() => targetLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
             SetUIForInfuserStatus(false);
 
-            Debug.Log("infusion stopped");
+            UnityEngine.Debug.Log("infusion stopped");
+            isStartInfusion = false;
         }
     }
+
     /*
      * 활성화 완료 여부 체크
      */
@@ -131,35 +126,31 @@ public class LifeInfuserSO : ScriptableObject
         foreach (var activatedInfuser in InfuserManager.Instance.activatedInfusers)
         {
             if (activatedInfuser == false)
-            {
                 return false;
-            }
         }
-
         return true;
     }
 
     /*
-     * 자식 오브젝트 투명도 설정
+     * 자식 오브젝트 투명도 설정 및 스케일 처리
      */
     public void SetUIForInfuserStatus(bool isStart)
     {
-        Debug.Log("setting UI for Infuser");
-        float transparency;
-        Vector3 canvasScale = InfuserManager.Instance.infuserStatus.transform.lossyScale;
-        if (isStart)
-        {
-            transparency = 0.3f;
-            canvasScale = new Vector3(1f, 1f, 1f);
-        }
-        else
-        {
-            transparency = -0.3f;
-            canvasScale = new Vector3(0.5f, 0.5f, 0.5f);
-        }
+        UnityEngine.Debug.Log("setting UI for Infuser");
+        isUIExpanded = isStart;
 
-        DOTween.To(() => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale,
-            x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x, canvasScale, 0.1f);
+        float transparency = isStart ? 0.3f : -0.3f;
+        Vector3 canvasScale = isUIExpanded ? new Vector3(1f, 1f, 1f) : new Vector3(0.5f, 0.5f, 0.5f);
+
+        if (!isUIExpanded && isStartInfusion) return;
+
+        DOTween.To(
+            () => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale,
+            x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x,
+            canvasScale,
+            uiTweenDuration
+        ).SetEase(Ease.InOutCubic);
+
         SetUITransparency(transparency);
     }
 
@@ -167,13 +158,11 @@ public class LifeInfuserSO : ScriptableObject
     {
         foreach (Transform child in InfuserManager.Instance.infuserStatusChild)
         {
-            Image image = child.GetComponent<Image>();
-            if (image != null) // && !image.gameObject.CompareTag("Cursor"))
+            var image = child.GetComponent<UnityEngine.UI.Image>();
+            if (image != null)
             {
-                child.gameObject.GetComponent<Image>().color += new Color(1f, 1f, 1f, transparency);
+                image.color += new Color(1f, 1f, 1f, transparency);
             }
-            // 자식의 자식들까지 재귀적으로 탐색
-            //SetUITransparency(child, transparency);
         }
     }
 
@@ -184,24 +173,17 @@ public class LifeInfuserSO : ScriptableObject
 
         for (int i = 0; i < visibleSegments; i++)
         {
-            float angle = Mathf.Lerp(Mathf.PI, 0, i / (float)(lineRendererSegments - 1)); // 🔄 왼쪽 → 오른쪽 방향
-            positions[i] = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius - 6.5f, 0) + targetPosition; // 위치 이동
+            float angle = Mathf.Lerp(Mathf.PI, 0, i / (float)(lineRendererSegments - 1));
+            positions[i] = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius - 6.5f, 0) + targetPosition;
         }
 
         lineRenderer.positionCount = visibleSegments;
         lineRenderer.SetPositions(positions);
 
-        
         if (gaugeParticle != null && visibleSegments > 0)
         {
             Vector3 lastPosition = positions[visibleSegments - 1];
             gaugeParticle.transform.position = lastPosition;
-            /*
-            if (gaugeParticle.GetComponent<ParticleSystem>().isPlaying)
-            {
-                gaugeParticle.Play();
-            }*/
         }
     }
-
 }

@@ -50,7 +50,7 @@ public class PlayerMovement : MonoBehaviour
         UpdateFallingState();
         UpdateFallingSpeed();
 
-        if (isHoldingClick && !controller.WallClimb.IsClimbing() && !controller.WallClimb.IsFallingDelay())
+        if (isHoldingClick && !controller.WallClimb.IsClimbing() && !controller.WallClimb.IsFallingDelay() && !controller.WallClimb.IsOnWall())
         {
             Move();
             UpdateFootstepSound();
@@ -70,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
                 fallStartY = transform.position.y;
 
             float fallHeight = fallStartY - transform.position.y;
-            _isSignificantFall = fallHeight > 2f;
+            _isSignificantFall = fallHeight > controller.data.fallThreshold;
         }
 
         if (IsGrounded())
@@ -110,16 +110,21 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAcceleration()
     {
+        if (controller.WallClimb.IsOnWall() || controller.WallClimb.IsClimbing() || controller.WallClimb.IsFallingDelay())
+        {
+            moveAccelerationTimer = 0f;
+            currentSpeed = 0f;
+            return;
+        }
+
         if (!isHoldingClick) { moveAccelerationTimer = 0; currentSpeed = 0; return; }
 
-        if (Vector2.Distance(targetPosition, transform.position) < 0.1f)
-        {
+        float distanceX = Mathf.Abs(targetPosition.x - transform.position.x);
+        if (distanceX < 0.1f)
             moveAccelerationTimer -= Time.deltaTime * 5f;
-        }
         else
-        {
             moveAccelerationTimer += Time.deltaTime;
-        }
+
         moveAccelerationTimer = Mathf.Clamp(moveAccelerationTimer, 0f, controller.data.moveAccelerationTime);
         currentSpeed = Mathf.Lerp(0f, controller.data.maxSpeed, moveAccelerationTimer / controller.data.moveAccelerationTime);
         currentSpeed *= speedChangeRate;
@@ -230,14 +235,28 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator HandleLandingDelay()
     {
+        ResetState();
+
         controller.SetCanMove(false);
         controller.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Landing);
 
         yield return new WaitForSeconds(controller.data.moveDelayAfterFall);
 
+        ResetState();
+
         controller.SetCanMove(true);
         controller.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
-        controller.Rb.velocity = new Vector2(0, controller.Rb.velocity.y);
+    }
+
+    public void ResetState()
+    {
+        moveAccelerationTimer = 0f;
+        currentSpeed = 0f;
+
+        // 슬라이딩 중이면 종료(마찰/드래그 원복)
+        if (isSliding) ExitSliding();
+
+        controller.Rb.velocity = new Vector2(0f, controller.Rb.velocity.y);
     }
 
     public bool IsGrounded()
@@ -298,6 +317,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public float GetCurrentSpeed() => currentSpeed;
+    public bool IsHoldingClick => isHoldingClick;
     public void StartMoving() => isHoldingClick = true;
     public bool IsJumping() => _isJumping;
     public bool IsSignificantFall() => _isSignificantFall;

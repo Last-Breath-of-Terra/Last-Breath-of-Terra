@@ -19,6 +19,10 @@ public class UIManager : MonoBehaviour
 
     private bool isHoldingClick;
 
+    void Start()
+    {
+        Cursor.visible = false;   
+    }
 
     void Update()
     {

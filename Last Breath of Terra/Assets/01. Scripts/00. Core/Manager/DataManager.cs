@@ -99,6 +99,19 @@ public class DataManager : Singleton<DataManager>
         Debug.Log("수정된 플레이어 데이터 저장 완료");
     }
 
+    // 플레이어 데이터 삭제
+    public void RemovePlayerAtIndex(int index)
+    {
+        if (gameData == null) return;
+        if (index < 0 || index >= 3) return;
+
+        while (gameData.players.Count < 3)
+            gameData.players.Add(null);
+
+        gameData.players[index] = null;
+        SavePlayerData();
+    }
+
     // 플레이어 추가
     public void AddPlayerAtIndex(int index)
     {
@@ -119,7 +132,8 @@ public class DataManager : Singleton<DataManager>
 
     public bool HasSave(int index)
     {
-        return GetPlayerData(index) != null;
+        var p = GetPlayerData(index);
+        return p != null && p.stages != null && p.stages.Count > 0;
     }
 
     public PlayerData GetPlayerData(int index)

@@ -6,47 +6,74 @@ using System.Collections;
 public class MiniMapUIController : MonoBehaviour
 {
     public Image fadePanelA;
-    public RectTransform fadePanelB;
     public RectTransform minimapUI;
 
-    private float screenWidth;
+    [Header("Fade Settings")]
+    [Range(0f, 1f)] public float dimAlpha = 0.7f;   // 어둡게 되는 정도
+    public float fadeDuration = 0.4f;               // 어둡게/밝게 페이드 시간
+    public float minimapFadeDuration = 0.3f;        // 미니맵 등장/퇴장 페이드 시간
+
+    private CanvasGroup minimapGroup;
+    private Sequence currentSeq;
 
     private void Awake()
     {
-        screenWidth = Screen.width;
+        minimapGroup = minimapUI.GetComponent<CanvasGroup>();
+        if (minimapGroup == null) minimapGroup = minimapUI.gameObject.AddComponent<CanvasGroup>();
+
+        // 초기 상태 정리
+        ResetFadePanels();
     }
 
     public void ShowMinimap()
     {
-        StartCoroutine(PlayOpenAnimation());
+        if (currentSeq != null && currentSeq.IsActive()) currentSeq.Kill();
+
+        // 초기값 세팅
+        fadePanelA.gameObject.SetActive(true);
+        fadePanelA.color = new Color(0f, 0f, 0f, 0f);
+
+        minimapUI.gameObject.SetActive(true);
+        minimapGroup.alpha = 0f; // 투명한 상태에서 시작
+
+        // 시퀀스: 화면 어둡게 → 미니맵 페이드인
+        currentSeq = DOTween.Sequence()
+            .Append(fadePanelA.DOFade(dimAlpha, fadeDuration))
+            .Append(minimapGroup.DOFade(1f, minimapFadeDuration))
+            .SetUpdate(true);
+    }
+
+    public void HideMinimap()
+    {
+        if (currentSeq != null && currentSeq.IsActive()) currentSeq.Kill();
+
+        // 시퀀스: 미니맵 페이드아웃 → 화면 밝게
+        currentSeq = DOTween.Sequence()
+            .Append(minimapGroup.DOFade(0f, minimapFadeDuration))
+            .Append(fadePanelA.DOFade(0f, fadeDuration))
+            .OnComplete(() =>
+            {
+                minimapUI.gameObject.SetActive(false);
+                fadePanelA.gameObject.SetActive(false);
+            })
+            .SetUpdate(true);
     }
 
     public void ResetFadePanels()
     {
-        fadePanelA.color = new Color(0f, 0f, 0f, 0f);
-
-        fadePanelB.anchoredPosition = new Vector2(0f, 0f);
-        fadePanelB.gameObject.SetActive(false);
-        minimapUI.gameObject.SetActive(false);
-    }
-
-    private IEnumerator PlayOpenAnimation()
-    {
-        Sequence seq = DOTween.Sequence();
-
-        seq.Append(fadePanelA.DOFade(0.7f, 0.5f));
-        seq.AppendCallback(() =>
+        // 완전 초기 상태
+        if (fadePanelA != null)
         {
-            fadePanelB.gameObject.SetActive(true);
-            minimapUI.gameObject.SetActive(true);
-        });
-        seq.Append(fadePanelB.DOAnchorPos(new Vector2(screenWidth+500, 0f), 0.7f).SetEase(Ease.OutSine));
+            fadePanelA.gameObject.SetActive(false);
+            fadePanelA.color = new Color(0f, 0f, 0f, 0f);
+        }
 
-        seq.OnComplete(() =>
+        if (minimapUI != null)
         {
-            fadePanelB.gameObject.SetActive(false);
-        });
-
-        yield return seq.WaitForCompletion();
+            minimapUI.gameObject.SetActive(false);
+            if (minimapGroup == null) minimapGroup = minimapUI.GetComponent<CanvasGroup>();
+            if (minimapGroup == null) minimapGroup = minimapUI.gameObject.AddComponent<CanvasGroup>();
+            minimapGroup.alpha = 0f;
+        }
     }
 }

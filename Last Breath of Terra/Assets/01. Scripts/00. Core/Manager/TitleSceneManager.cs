@@ -3,28 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using DG.Tweening;
 
 public class TitleSceneManager : MonoBehaviour
 {
+    [Header("UI Container")]
     public GameObject introUI; // 타이틀 + Press Any Key
     public GameObject saveSelectUI; // 저장 슬롯 UI
     public GameObject newGameUI;
-    public Image fadePanel;
 
+    [Header("UI Elements")]
+    public GameObject newGameUI_New;
+    public GameObject newGameUI_Remove;
+    public Image fadePanel;
+    public RectTransform confirmPanel;
     public TextMeshProUGUI pressAnyKeyText;
     public RectTransform titleTextRect;
+    public ParticleSystem flameGaugeParticle_New;
+    public ParticleSystem flameGaugeParticle_Remove;
+
+    [Header("Animation")]
     public Animator titleAnim;
     public Animator backgroundAnim;
-    public ParticleSystem flameGaugeParticle;
 
     private enum TitleState { Intro, SaveSelect, ConfirmNewGame }
-    private TitleState currentState = TitleState.Intro;
+    private enum ConfirmIntent { Start, Delete }
 
+    private TitleState currentState = TitleState.Intro;
+    private ConfirmIntent currentIntent;
+
+    private Tween panelTween;
+    private Ease openEase = Ease.OutCubic;
     private float holdTime = 0f;
     private const float holdThreshold = 2f;
+    private const float holdThresholdSpace = 0.5f;
+    private bool isHoldingMouse = false;
     private bool isHoldingSpace = false;
+    private int selectedSlotIndex = -1;
 
     private void Start()
     {
@@ -43,6 +60,10 @@ public class TitleSceneManager : MonoBehaviour
                 {
                     StartCoroutine(TransitionToSaveSelect());
                 }
+                break;
+
+            case TitleState.SaveSelect:
+                HandleSaveSelectInput();
                 break;
 
             case TitleState.ConfirmNewGame:
@@ -71,59 +92,180 @@ public class TitleSceneManager : MonoBehaviour
         saveSelectUI.SetActive(true);
     }
 
-    public void OnSaveSlotSelected()
+    public void SelectSlot(int index)
+    {
+        selectedSlotIndex = index;
+        DataManager.Instance.playerIndex = index;
+    }
+
+    public void HandleSaveSelectInput()
+    {   
+        // selectedSlotIndex가 아직 -1이면, EventSystem의 현재 선택에서 찾아서 즉시 셋업
+        if (selectedSlotIndex < 0)
+        {
+            var cur = EventSystem.current?.currentSelectedGameObject;
+            if (cur != null)
+            {
+                var btn = cur.GetComponent<SaveSlotButton>();
+                if (btn != null) SelectSlot(btn.SlotIndex());
+            }
+        }
+
+        // Space 누르기 시작
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            isHoldingSpace = true;
+            holdTime = 0f;
+            UpdateFlameGauge(0f, flameGaugeParticle_Remove);
+        }
+
+        // Space 유지 중
+        if (isHoldingSpace && Input.GetKey(KeyCode.Space))
+        {
+            holdTime += Time.deltaTime;
+            float t = Mathf.Clamp01(holdTime / holdThresholdSpace);
+            UpdateFlameGauge(t, flameGaugeParticle_Remove);
+        }
+
+        // Space 뗐을 때 분기 -> Confirm 진입
+        if (isHoldingSpace && Input.GetKeyUp(KeyCode.Space))
+        {
+            isHoldingSpace = false;
+            UpdateFlameGauge(0f, flameGaugeParticle_Remove);
+
+            var intent = (holdTime >= holdThresholdSpace)
+                ? ConfirmIntent.Delete
+                : ConfirmIntent.Start;
+
+            StartCoroutine(EnterConfirmNewGame(intent));
+        }
+    }
+
+    private IEnumerator EnterConfirmNewGame(ConfirmIntent intent)
     {
         currentState = TitleState.ConfirmNewGame;
+
         saveSelectUI.SetActive(false);
         newGameUI.SetActive(true);
+
+        confirmPanel.localScale = new Vector3(20f, 0f, 1f);
+
+        yield return null; // 대기
+
+        panelTween?.Kill();
+        panelTween = confirmPanel
+            .DOScaleY(7.5f, 0.5f)
+            .SetEase(openEase);
+        yield return panelTween.WaitForCompletion();
+
+        currentIntent = intent;
+        if (currentIntent == ConfirmIntent.Start)
+            newGameUI_New.SetActive(true);
+        else
+            newGameUI_Remove.SetActive(true);
+
+        isHoldingMouse = false;
+        holdTime = 0f;
+        UpdateFlameGauge(0f, flameGaugeParticle_New);
+        UpdateFlameGauge(0f, flameGaugeParticle_Remove);
+    }
+
+    private IEnumerator ExitConfirmToSaveSelect()
+    {
+        panelTween?.Kill();
+        yield return confirmPanel
+            .DOScaleY(0f, 0.35f)
+            .SetEase(Ease.InCubic)
+            .WaitForCompletion();
+
+        newGameUI_New.SetActive(false);
+        newGameUI_Remove.SetActive(false);
+        newGameUI.SetActive(false);
+        saveSelectUI.SetActive(true);
+
+        currentState = TitleState.SaveSelect;
     }
 
     private void HandleNewGameInput()
     {
-        // 오른쪽 클릭 누르기 시작
+        // 어떤 파티클을 쓸지 의도에 따라 선택
+        ParticleSystem gauge = (currentIntent == ConfirmIntent.Start)
+            ? flameGaugeParticle_New
+            : flameGaugeParticle_Remove;
+
+        // 오른쪽 클릭 시작
         if (Input.GetMouseButtonDown(1))
         {
-            isHoldingSpace = true;
+            isHoldingMouse = true;
             holdTime = 0f;
+            UpdateFlameGauge(0f, gauge);
         }
 
-        // 오른쪽 클릭 유지 중
-        if (isHoldingSpace && Input.GetMouseButton(1))
+        // 오른쪽 클릭 유지
+        if (isHoldingMouse && Input.GetMouseButton(1))
         {
             holdTime += Time.deltaTime;
-            float t = Mathf.Clamp01(holdTime / holdThreshold);
-            UpdateFlameGauge(t);
+            float t = Mathf.Clamp01(holdTime / holdThreshold); // 2초 기준
+            UpdateFlameGauge(t, gauge);
 
             if (holdTime >= holdThreshold)
             {
-                isHoldingSpace = false;
-                StartCoroutine(LoadGame()); // 게임 시작
+                isHoldingMouse = false;
+                UpdateFlameGauge(0f, gauge);
+
+                if (currentIntent == ConfirmIntent.Start)
+                {
+                    StartCoroutine(LoadGame());                // ★ 새게임 실행
+                }
+                else
+                {
+                    StartCoroutine(DeleteAndReturnToSave());   // ★ 삭제 실행 후 복귀
+                }
             }
         }
 
-        // 클릭 해제 시 아무 일도 하지 않음
+        // 오른쪽 클릭 해제(취소)
         if (Input.GetMouseButtonUp(1))
         {
-            isHoldingSpace = false;
+            isHoldingMouse = false;
             holdTime = 0f;
-            UpdateFlameGauge(0f);
+            UpdateFlameGauge(0f, gauge);
         }
 
-        // A 키를 누르면 뒤로 감
+        // 뒤로가기
         if (Input.GetKeyDown(KeyCode.A))
         {
-            newGameUI.SetActive(false);
-            saveSelectUI.SetActive(true);
-            currentState = TitleState.SaveSelect;
+            isHoldingMouse = false;
+            holdTime = 0f;
+            UpdateFlameGauge(0f, flameGaugeParticle_New);
+            UpdateFlameGauge(0f, flameGaugeParticle_Remove);
+            StartCoroutine(ExitConfirmToSaveSelect());
         }
     }
 
-    private void UpdateFlameGauge(float t)
+    private void UpdateFlameGauge(float t, ParticleSystem particle)
     {
-        if (flameGaugeParticle == null) return;
+        if (particle == null) return;
 
-        var main = flameGaugeParticle.main;
+        var main = particle.main;
         main.startSize = Mathf.Lerp(0.5f, 1f, t);
+    }
+
+    private IEnumerator DeleteAndReturnToSave()
+    {
+        if (selectedSlotIndex >= 0)
+            DataManager.Instance.RemovePlayerAtIndex(selectedSlotIndex);
+
+        yield return StartCoroutine(ExitConfirmToSaveSelect());
+
+        RefreshSaveSlotsUI();
+    }
+
+    private void RefreshSaveSlotsUI()
+    {
+        var buttons = saveSelectUI.GetComponentsInChildren<SaveSlotButton>(true);
+        foreach (var b in buttons)
+            b.Refresh();
     }
 
     private IEnumerator LoadGame()

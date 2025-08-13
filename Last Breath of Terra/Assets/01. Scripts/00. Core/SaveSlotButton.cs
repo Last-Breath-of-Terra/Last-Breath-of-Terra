@@ -31,8 +31,13 @@ public class SaveSlotButton : MonoBehaviour
     public void OnClick()
     {
         Debug.Log($"슬롯 선택됨");
-        DataManager.Instance.playerIndex = slotIndex;
-        titleManager.OnSaveSlotSelected();
+        titleManager.SelectSlot(slotIndex);
     }
 
+    public void Refresh()
+    {
+        Setup(slotIndex);
+    }
+
+    public int SlotIndex() => slotIndex;
 }

@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 public class GimmickShooter : MonoBehaviour
 {
     public float shootForce = 0f;
+    public bool isStage1 = true;
     private GameObject obstacle;
     private Coroutine coroutine;
     private float respawnCooldown;
@@ -52,8 +53,11 @@ public class GimmickShooter : MonoBehaviour
                 }
 
                 Rigidbody2D rb = obstacle.GetComponent<Rigidbody2D>();
-                rb.AddForce(gameObject.transform.right.normalized * GimmickShooterManager.Instance.shootForce,
-                    ForceMode2D.Impulse);
+                
+                if(isStage1)
+                    rb.AddForce(gameObject.transform.up.normalized * GimmickShooterManager.Instance.shootForce, ForceMode2D.Impulse);
+                else
+                    rb.AddForce(gameObject.transform.right.normalized * GimmickShooterManager.Instance.shootForce, ForceMode2D.Impulse);
                 /*
             obstacle.transform.DOMoveX(obstacle.transform.position.x - 10f / respawnCooldown, respawnCooldown)
                 .SetEase(Ease.Linear)

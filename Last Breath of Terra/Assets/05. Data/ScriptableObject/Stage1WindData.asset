@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fastRate: 3
   slowRate: 0.5
-  liftHeight: 1.72
-  activationTime: 1.55
+  liftHeight: 20
+  activationTime: 1.31
   deactivationTime: 0.64

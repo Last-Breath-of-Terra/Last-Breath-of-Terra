@@ -446,7 +446,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edfc5572bf2184928aac91b0ad472723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 4796913661422379055, guid: eec91443fbe9e4d6eac72aadc5cccd51, type: 3}
+  projectilePrefab: {fileID: 2380780527199600930, guid: c72f72f51c8774fbdb45cd500a4dc942, type: 3}
   player: {fileID: 0}
   obstacle: {fileID: 4565461633299232687}
   projectileCount: 3

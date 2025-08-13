@@ -97,6 +97,7 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Wall") && !WallClimb.IsOnWall())
         {
+            Movement.ResetState();
             WallClimb.StickToWall();
         }
     }

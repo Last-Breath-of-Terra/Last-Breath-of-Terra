@@ -21,6 +21,16 @@ public class PlayerWallClimb : MonoBehaviour
     {
         if (!isOnWall || !controller.canMove) return;
 
+        if (!controller.Movement.IsHoldingClick)
+        {
+            if (!isFallingDelay && !isWallJumping)
+            {
+                FallOffWall();
+            }
+
+            return;
+        }
+
         Vector2 mouseWorldPos = GameManager.Instance._ui.GetMouseWorldPosition();
 
         if (mouseWorldPos.y > transform.position.y + 0.5f && Mathf.Abs(mouseWorldPos.x - transform.position.x) < 1f)
@@ -146,6 +156,9 @@ public class PlayerWallClimb : MonoBehaviour
     {
         controller.Rb.gravityScale = 3f;
         controller.Rb.velocity = Vector2.zero;
+        isOnWall = false;
+        isClimbing = false;
+        isWallJumping = false;
         controller.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
     }
 

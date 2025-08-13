@@ -10,6 +10,7 @@ public class PlayerSO : ScriptableObject
     public float maxFallSpeed = 10f;
     public float fallAccelerationTime = 2f;
     public float moveAccelerationTime = 5f;
+    public float fallThreshold = 4f;
     public float jumpForce = 5f;
     public float walljumpForce = 8f;
     public float climbSpeed = 3f;

@@ -70,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
                 fallStartY = transform.position.y;
 
             float fallHeight = fallStartY - transform.position.y;
-            _isSignificantFall = fallHeight > 2f;
+            _isSignificantFall = fallHeight > controller.data.fallThreshold;
         }
 
         if (IsGrounded())

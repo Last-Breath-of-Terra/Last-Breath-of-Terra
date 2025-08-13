@@ -88,9 +88,12 @@ public class PlayerController : MonoBehaviour
                     {
                         StartCoroutine(Movement.HandleLandingDelayExternally());
                     }
+                    else
+                    {
+                        AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
+                    }
 
                     AudioHandler.PlayLandingSound();
-                    AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
                 }
             }
         }

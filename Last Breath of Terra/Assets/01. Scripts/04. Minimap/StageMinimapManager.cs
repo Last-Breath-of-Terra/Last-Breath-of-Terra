@@ -120,7 +120,7 @@ public class StageMinimapManager : MonoBehaviour
         else
         {
             // 꺼질 땐 그냥 바로 UI 비활성화
-            fadeController.ResetFadePanels();
+            fadeController.HideMinimap();
         }
 
         GameManager.Instance.playerTr.GetComponent<PlayerController>().SetCanMove(!isFullMapActive);

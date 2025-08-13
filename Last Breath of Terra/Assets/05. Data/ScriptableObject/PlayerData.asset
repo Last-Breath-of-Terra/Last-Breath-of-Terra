@@ -17,6 +17,7 @@ MonoBehaviour:
   maxFallSpeed: 10
   fallAccelerationTime: 2
   moveAccelerationTime: 5
+  fallThreshold: 5
   jumpForce: 17
   walljumpForce: 8
   climbSpeed: 3

@@ -17,13 +17,14 @@ public class WindUI : MonoBehaviour
     [Header("UI 표시 방향")]
     public Direction uiDirection;
 
-    // Particles/Standard Unlit 셰이더의 Albedo 컬러 속성명
     private static readonly int AlbedoColor = Shader.PropertyToID("_Color");
+
+    private Coroutine fadeCoroutine;
 
     void Start()
     {
-        SetAlpha(RightUIRenderer, 0f);
-        SetAlpha(LeftUIRenderer, 0f);
+        SetAlphaImmediate(RightUIRenderer, 0f);
+        SetAlphaImmediate(LeftUIRenderer, 0f);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -32,11 +33,11 @@ public class WindUI : MonoBehaviour
         {
             if (uiDirection == Direction.Right && RightUIRenderer != null)
             {
-                SetAlpha(RightUIRenderer, 1f);
+                StartFade(RightUIRenderer, 1f, 0.5f);
             }
             else if (uiDirection == Direction.Left && LeftUIRenderer != null)
             {
-                SetAlpha(LeftUIRenderer, 1f);
+                StartFade(LeftUIRenderer, 1f, 0.5f);
             }
         }
     }
@@ -45,12 +46,13 @@ public class WindUI : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SetAlpha(RightUIRenderer, 0f);
-            SetAlpha(LeftUIRenderer, 0f);
+            if (RightUIRenderer != null) StartFade(RightUIRenderer, 0f, 0.5f);
+            if (LeftUIRenderer != null) StartFade(LeftUIRenderer, 0f, 0.5f);
         }
     }
 
-    private void SetAlpha(Renderer targetRenderer, float alphaValue)
+    // 즉시 알파 설정
+    private void SetAlphaImmediate(Renderer targetRenderer, float alphaValue)
     {
         if (targetRenderer != null && targetRenderer.material.HasProperty(AlbedoColor))
         {
@@ -58,5 +60,34 @@ public class WindUI : MonoBehaviour
             color.a = alphaValue;
             targetRenderer.material.SetColor(AlbedoColor, color);
         }
+    }
+
+    // 서서히 알파 변화 시작
+    private void StartFade(Renderer targetRenderer, float targetAlpha, float duration)
+    {
+        if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
+        fadeCoroutine = StartCoroutine(FadeAlpha(targetRenderer, targetAlpha, duration));
+    }
+
+    // Lerp로 부드럽게 변화
+    private IEnumerator FadeAlpha(Renderer targetRenderer, float targetAlpha, float duration)
+    {
+        if (targetRenderer == null || !targetRenderer.material.HasProperty(AlbedoColor)) yield break;
+
+        Color startColor = targetRenderer.material.GetColor(AlbedoColor);
+        float startAlpha = startColor.a;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = Mathf.Clamp01(time / duration);
+            startColor.a = Mathf.Lerp(startAlpha, targetAlpha, t);
+            targetRenderer.material.SetColor(AlbedoColor, startColor);
+            yield return null;
+        }
+
+        startColor.a = targetAlpha;
+        targetRenderer.material.SetColor(AlbedoColor, startColor);
     }
 }

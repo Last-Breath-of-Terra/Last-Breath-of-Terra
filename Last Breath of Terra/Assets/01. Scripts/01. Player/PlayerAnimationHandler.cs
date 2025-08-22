@@ -13,6 +13,7 @@ public class PlayerAnimationHandler : MonoBehaviour
         Landing,
         Climbing,
         Knockdown,
+        Knockback,
         Activating,
         MoveToPortal
     }
@@ -53,6 +54,9 @@ public class PlayerAnimationHandler : MonoBehaviour
             case AnimationState.Knockdown:
                 animator.SetBool("isKnockdown", true);
                 break;
+            case AnimationState.Knockback:
+                animator.SetBool("isKnockback", true);
+                break;
             case AnimationState.Activating:
                 animator.SetBool("isActivating", true);
                 break;
@@ -69,6 +73,7 @@ public class PlayerAnimationHandler : MonoBehaviour
         animator.SetBool("isFalling", false);
         animator.SetBool("isClimbing", false);
         animator.SetBool("isKnockdown", false);
+        animator.SetBool("isKnockback", false);
         animator.SetBool("isActivating", false);
         animator.SetBool("MoveToPortal", false);
     }

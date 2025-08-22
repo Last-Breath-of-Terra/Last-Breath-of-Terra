@@ -33,6 +33,8 @@ public class SaveSlot : MonoBehaviour
     {
         if (!gameObject.activeInHierarchy) return;
 
+        if (titleManager != null && !titleManager.IsInSaveSelectState()) return;
+
         if (Input.GetKeyDown(KeyCode.D))
         {
             currentIndex = Mathf.Min(currentIndex + 1, slotButtons.Length - 1);

@@ -99,7 +99,7 @@ public class TitleSceneManager : MonoBehaviour
     }
 
     public void HandleSaveSelectInput()
-    {   
+    {
         // selectedSlotIndex가 아직 -1이면, EventSystem의 현재 선택에서 찾아서 즉시 셋업
         if (selectedSlotIndex < 0)
         {
@@ -137,6 +137,10 @@ public class TitleSceneManager : MonoBehaviour
                 ? ConfirmIntent.Delete
                 : ConfirmIntent.Start;
 
+            bool hasSave = DataManager.Instance.HasSave(selectedSlotIndex);
+
+            if (intent == ConfirmIntent.Delete && !hasSave) return;
+
             StartCoroutine(EnterConfirmNewGame(intent));
         }
     }
@@ -145,7 +149,6 @@ public class TitleSceneManager : MonoBehaviour
     {
         currentState = TitleState.ConfirmNewGame;
 
-        saveSelectUI.SetActive(false);
         newGameUI.SetActive(true);
 
         confirmPanel.localScale = new Vector3(20f, 0f, 1f);
@@ -181,7 +184,6 @@ public class TitleSceneManager : MonoBehaviour
         newGameUI_New.SetActive(false);
         newGameUI_Remove.SetActive(false);
         newGameUI.SetActive(false);
-        saveSelectUI.SetActive(true);
 
         currentState = TitleState.SaveSelect;
     }
@@ -215,11 +217,11 @@ public class TitleSceneManager : MonoBehaviour
 
                 if (currentIntent == ConfirmIntent.Start)
                 {
-                    StartCoroutine(LoadGame());                // ★ 새게임 실행
+                    StartCoroutine(LoadGame());
                 }
                 else
                 {
-                    StartCoroutine(DeleteAndReturnToSave());   // ★ 삭제 실행 후 복귀
+                    StartCoroutine(DeleteAndReturnToSave());
                 }
             }
         }
@@ -300,4 +302,6 @@ public class TitleSceneManager : MonoBehaviour
         introUI.SetActive(true);
         currentState = TitleState.Intro;
     }
+    
+    public bool IsInSaveSelectState() => currentState == TitleState.SaveSelect;
 }

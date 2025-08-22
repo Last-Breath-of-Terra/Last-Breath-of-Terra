@@ -361,11 +361,13 @@ public class Obstacle : MonoBehaviour
             float playerFacingDirection = GameManager.Instance.playerTr.localScale.x;
             Vector2 knockbackDirection = playerFacingDirection > 0 ? Vector2.left : Vector2.right;
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
+            PlayerController controller = collision.GetComponent<PlayerController>();
+            controller.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Knockback);
             AudioManager.Instance.PlayRandomSFX("knockback_", collision.GetComponent<AudioSource>(), transform);
-            playerRb.AddForce(knockbackDirection * 2f, ForceMode2D.Impulse);
-            collision.transform.GetComponent<PlayerController>().hp -= data.demage;
-            Invoke(nameof(ReactivatePlayerMovement), 1f);
+            playerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
 
+            collision.transform.GetComponent<PlayerController>().hp -= data.demage;
+            Invoke(nameof(ReactivatePlayerMovement), 0.5f);
             DeactivateObstacle();
         }
     }
@@ -382,6 +384,9 @@ public class Obstacle : MonoBehaviour
 
     private void ReactivatePlayerMovement()
     {
-        GameManager.Instance.playerTr.GetComponent<PlayerController>().SetCanMove(true);
+        PlayerController playerController = GameManager.Instance.playerTr.GetComponent<PlayerController>();
+
+        playerController.SetCanMove(true);
+        playerController.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
     }
 }

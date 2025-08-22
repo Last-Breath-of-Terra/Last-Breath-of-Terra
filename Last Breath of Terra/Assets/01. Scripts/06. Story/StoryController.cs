@@ -206,12 +206,12 @@ public class StoryController : MonoBehaviour
         switch (pair.backgroundType)
         {
             case BackgroundType.A:
-                rt.sizeDelta = new Vector2(2880, 1180);
+                rt.sizeDelta = new Vector2(2880, 1080);
                 moveDirection = new Vector2(-950, 0);
                 rt.anchoredPosition = new Vector2(-480, 0);
                 break;
             case BackgroundType.B:
-                rt.sizeDelta = new Vector2(2880, 1180);
+                rt.sizeDelta = new Vector2(2880, 1080);
                 GameObject.Find("Canvas").transform.Find("BackImage").transform.rotation = Quaternion.Euler(0, 0, 180);
                 moveDirection = new Vector2(940, 0);
                 rt.anchoredPosition = new Vector2(-1430, 0);

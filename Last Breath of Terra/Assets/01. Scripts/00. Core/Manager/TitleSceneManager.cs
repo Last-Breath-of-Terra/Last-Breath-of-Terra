@@ -19,7 +19,7 @@ public class TitleSceneManager : MonoBehaviour
     public GameObject newGameUI_Remove;
     public Image fadePanel;
     public RectTransform confirmPanel;
-    public TextMeshProUGUI pressAnyKeyText;
+    public Image pressAnyKeyImage;
     public RectTransform titleTextRect;
     public ParticleSystem flameGaugeParticle_New;
     public ParticleSystem flameGaugeParticle_Remove;
@@ -74,10 +74,12 @@ public class TitleSceneManager : MonoBehaviour
 
     private void BlinkPressAnyKey()
     {
-        if (pressAnyKeyText != null)
+        if (pressAnyKeyImage != null)
         {
             float alpha = Mathf.PingPong(Time.time * 1.5f, 1f);
-            pressAnyKeyText.color = new Color(1, 1, 1, alpha);
+            Color imageColor = pressAnyKeyImage.color;
+            imageColor.a = alpha;
+            pressAnyKeyImage.color = imageColor;
         }
     }
 

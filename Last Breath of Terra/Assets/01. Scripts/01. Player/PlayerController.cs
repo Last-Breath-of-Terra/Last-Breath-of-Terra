@@ -107,8 +107,9 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall") && !WallClimb.IsWallJumping())
+        if (collision.gameObject.CompareTag("Wall") && WallClimb.IsOnWall() && !WallClimb.IsWallJumping() && !WallClimb.IsClimbingOverWall())
         {
+            Debug.Log("떨어짐");
             WallClimb.FallOffWall();
         }
     }

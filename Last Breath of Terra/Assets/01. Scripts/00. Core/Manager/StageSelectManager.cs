@@ -7,6 +7,8 @@ using DG.Tweening;
 
 public class StageSelectManager : MonoBehaviour
 {
+    public Animator etherisAnim;
+
     [Header("UI Elements")]
     public Image backgroundImage;
     public Image etherisImage;
@@ -69,8 +71,7 @@ public class StageSelectManager : MonoBehaviour
             float t = Mathf.Clamp01(holdTime / holdThreshold);
             UpdateFlameGauge(t);
 
-            // 선택 확정 애니메이션 실행 예정
-            // playerAnimator.SetTrigger("SelectStage");
+            etherisAnim.SetTrigger("Jump");
 
             if (holdTime >= holdThreshold)
             {

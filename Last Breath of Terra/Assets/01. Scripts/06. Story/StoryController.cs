@@ -65,21 +65,6 @@ public class StoryController : MonoBehaviour
         }
 
         SceneManager.LoadScene(nextSceneName);
-
-        //이전
-        // foreach (var pair in backgroundTextPairs)
-        // {
-        //     SetBackgroundInfo(pair);
-        //     yield return StartCoroutine(FadeIn());
-
-        //     // 이 부분이 문제: 페이드인이 끝나야 배경 움직임이 시작됨
-        //     yield return StartCoroutine(PlayBackgroundAndText(pair.sentences, pair.backgroundType));
-
-        //     yield return new WaitForSeconds(sceneWaitTime);
-        //     yield return StartCoroutine(FadeOut());
-        // }
-
-        // SceneManager.LoadScene(nextSceneName);
     }
 
     private IEnumerator FadeIn()

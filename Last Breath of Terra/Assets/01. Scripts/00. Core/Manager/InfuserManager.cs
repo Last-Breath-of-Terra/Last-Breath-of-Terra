@@ -18,8 +18,11 @@ public class InfuserManager : Singleton<InfuserManager>
     public float radius = 30f;
 
 
-    [Header("UI")] public GameObject infuserStatus; //활성화 여부 확인 상단 UI
+    [Header("UI")] 
+    public GameObject infuserStatus; //활성화 여부 확인 상단 UI
     public Transform[] infuserStatusChild;
+    public ParticleSystem activeParticle;
+    public ParticleSystem[] infuserStatusParticle;
     
     [Header("Arc")]
     public GameObject ArcEffect;
@@ -48,9 +51,13 @@ public class InfuserManager : Singleton<InfuserManager>
         {
             GetComponent<ParticleSystem>().Stop();
         }
-        
+
+        int i = 0;
         foreach (Transform child in infuserStatusChild)
         {
+            infuserStatusParticle[i] = Instantiate(activeParticle, child.position, Quaternion.identity, child);
+            infuserStatusParticle[i].Stop();
+            i++;
             Image image = child.GetComponent<Image>();
             if (image != null)
             {

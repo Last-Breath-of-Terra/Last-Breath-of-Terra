@@ -31,7 +31,7 @@ public class LifeInfuserSO : ScriptableObject
     // UI tween control
     private bool isUIExpanded = false;
     private bool isStartInfusion = false;
-    private float uiTweenDuration = 0.5f;
+    public float uiTweenDuration = 0.5f;
 
 
     void Awake()

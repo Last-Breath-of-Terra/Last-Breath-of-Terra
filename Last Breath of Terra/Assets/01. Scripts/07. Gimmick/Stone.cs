@@ -37,6 +37,8 @@ public class Stone : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
+            GimmickManager.Instance.ChangeLifeInfuserUISize();
+
             PlayerController player = other.GetComponent<PlayerController>();
             PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
             if (player == null || playerMovement == null) return;
@@ -48,6 +50,7 @@ public class Stone : MonoBehaviour
                 player.SetCanMove(true);
                 playerMovement.SpeedChangeRate = 1f;
             }
+
             player.SetCanMove(false);
             Vector2 knockbackDir = (player.transform.position - transform.position).normalized;
             Rigidbody2D rb = player.Rb;

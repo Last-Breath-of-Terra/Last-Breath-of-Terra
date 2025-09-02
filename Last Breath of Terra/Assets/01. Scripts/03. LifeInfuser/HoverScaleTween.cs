@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 
 public class HoverScaleTween : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public float exitDelay = 0.5f;
     public LifeInfuserSO lifeInfuserSO;
 
     private bool isHovered = false;
@@ -33,7 +32,7 @@ public class HoverScaleTween : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     private IEnumerator HideAfterDelay()
     {
-        yield return new WaitForSeconds(exitDelay);
+        yield return new WaitForSeconds(UIManager.Instance.hideDelay);
         if (!isHovered && lifeInfuserSO != null && isScaledUp)
         {
             lifeInfuserSO.SetUIForInfuserStatus(false);

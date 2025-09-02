@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 /// UI 관련 요소와 효과(광원, 커서, 미니맵 등)를 관리하는 클래스.
 /// </summary>
 
-public class UIManager : MonoBehaviour
+public class UIManager : Singleton<UIManager>
 {
     public StageMinimapManager StageMinimapManager;
 
@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     public Light2D clickLight;
     public GameObject movingLightEffect;
     public GameObject jumpLightEffect;
+    public float hideDelay = 0.5f;
 
     private bool isHoldingClick;
 
@@ -142,4 +143,5 @@ public class UIManager : MonoBehaviour
         gameObject.GetComponent<AudioSource>().loop = false;
         gameObject.GetComponent<AudioSource>().Stop();
     }
+    
 }

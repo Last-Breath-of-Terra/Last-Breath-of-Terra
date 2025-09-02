@@ -366,7 +366,7 @@ public class Obstacle : MonoBehaviour
             AudioManager.Instance.PlayRandomSFX("knockback_", collision.GetComponent<AudioSource>(), transform);
             playerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
 
-            collision.transform.GetComponent<PlayerController>().hp -= data.demage;
+            collision.transform.GetComponent<PlayerController>().HP -= data.demage;
             Invoke(nameof(ReactivatePlayerMovement), 0.5f);
             DeactivateObstacle();
         }

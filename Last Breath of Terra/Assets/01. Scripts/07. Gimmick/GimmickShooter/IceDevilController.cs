@@ -17,8 +17,9 @@ public class IceDevilController : MonoBehaviour
         PlayerController player = other.GetComponent<PlayerController>();
         if (player == null) return;
 
-        player.hp -= damage;
-        Debug.Log("hp : " + player.hp);
+        player.HP -= damage;
+        GimmickManager.Instance.ChangeLifeInfuserUISize();
+
         Vector2 knockbackDir = (player.transform.position - transform.position).normalized;
 
         Rigidbody2D rb = player.Rb;

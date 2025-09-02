@@ -136,8 +136,7 @@ public class LifeInfuserSO : ScriptableObject
      */
     public void SetUIForInfuserStatus(bool isStart)
     {
-        UnityEngine.Debug.Log("setting UI for Infuser");
-        isUIExpanded = isStart;
+         isUIExpanded = isStart;
 
         float transparency = isStart ? 0.3f : -0.3f;
         Vector3 canvasScale = isUIExpanded ? new Vector3(1f, 1f, 1f) : new Vector3(0.5f, 0.5f, 0.5f);

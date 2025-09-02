@@ -3,6 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 /// <summary>
 /// UI 관련 요소와 효과(광원, 커서, 미니맵 등)를 관리하는 클래스.
@@ -11,7 +12,8 @@ using UnityEngine.InputSystem;
 public class UIManager : Singleton<UIManager>
 {
     public StageMinimapManager StageMinimapManager;
-
+    public Image playerHP;
+    
     public GameObject cursorIndicator;
     public Light2D clickLight;
     public GameObject movingLightEffect;
@@ -143,5 +145,10 @@ public class UIManager : Singleton<UIManager>
         gameObject.GetComponent<AudioSource>().loop = false;
         gameObject.GetComponent<AudioSource>().Stop();
     }
-    
+
+    public void UpdatePlayerHPUI(float playerHPAmount)
+    {
+        Debug.Log("qkrnlsrj?");
+        playerHP.fillAmount = playerHPAmount * 0.01f;
+    }
 }

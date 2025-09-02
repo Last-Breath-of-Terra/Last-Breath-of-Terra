@@ -17,14 +17,18 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public Rigidbody2D Rb;
     [HideInInspector] public Vector3 OriginalScale;
     [HideInInspector] public bool canMove = true;
-    [HideInInspector] public float hp;
+    private float hp;
 
+    
     public PlayerInputHandler InputHandler { get; private set; }
     public PlayerMovement Movement { get; private set; }
     public PlayerWallClimb WallClimb { get; private set; }
     public PlayerAnimationHandler AnimHandler { get; private set; }
     public PlayerAudioHandler AudioHandler { get; private set; }
-
+    public float HP {
+        get => hp;
+        set { if (value == hp) return; hp=value; UIManager.Instance.UpdatePlayerHPUI(hp); }
+    }
     void Awake()
     {
         Rb = GetComponent<Rigidbody2D>();
@@ -50,7 +54,8 @@ public class PlayerController : MonoBehaviour
         Movement.HandleFixedUpdate();
         WallClimb.HandleFixedUpdate();
     }
-
+    
+    
     public void SetCanMove(bool value)
     {
         if (!value)

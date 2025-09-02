@@ -37,8 +37,6 @@ public class Stone : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            GimmickManager.Instance.ChangeLifeInfuserUISize();
-
             PlayerController player = other.GetComponent<PlayerController>();
             PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
             if (player == null || playerMovement == null) return;

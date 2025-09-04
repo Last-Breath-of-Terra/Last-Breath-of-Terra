@@ -15,7 +15,7 @@ public class InfuserManager : Singleton<InfuserManager>
     public bool[] canInfusion;
     public int infusionCount;
     public ParticleSystem successParticle;
-    public float radius = 30f;
+    public float radius = 13f;
 
 
     [Header("UI")] 
@@ -55,8 +55,8 @@ public class InfuserManager : Singleton<InfuserManager>
         int i = 0;
         foreach (Transform child in infuserStatusChild)
         {
-            infuserStatusParticle[i] = Instantiate(activeParticle, child.position, Quaternion.identity, child);
-            infuserStatusParticle[i].Stop();
+          //  infuserStatusParticle[i] = Instantiate(activeParticle, child.position, Quaternion.identity, child);
+          //  infuserStatusParticle[i].Stop();
             i++;
             Image image = child.GetComponent<Image>();
             if (image != null)

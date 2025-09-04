@@ -16,6 +16,7 @@ MonoBehaviour:
   infusionWaitTime: 2
   defaultLensSize: 8
   targetLensSize: 10
+  arcHeight: 6.5
   InfuserActiveImage:
   - {fileID: 21300000, guid: fdb8ecf44b96c714694acf68a49e252d, type: 3}
   - {fileID: 21300000, guid: 09e5efa0b12810a40bfdc3f91801f23c, type: 3}
@@ -32,3 +33,4 @@ MonoBehaviour:
   sacrificeMaterial: {fileID: 2100000, guid: ee4caaf5cd06a41f28be458446ab4421, type: 2}
   lineRendererSegments: 500
   infusedLifeCount: 61
+  uiTweenDuration: 0.5

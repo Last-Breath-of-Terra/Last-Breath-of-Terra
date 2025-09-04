@@ -48,6 +48,7 @@ public class Stone : MonoBehaviour
                 player.SetCanMove(true);
                 playerMovement.SpeedChangeRate = 1f;
             }
+
             player.SetCanMove(false);
             Vector2 knockbackDir = (player.transform.position - transform.position).normalized;
             Rigidbody2D rb = player.Rb;

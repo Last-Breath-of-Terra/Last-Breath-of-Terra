@@ -53,7 +53,7 @@ public class LifeRestorer : MonoBehaviour
             {
                 SceneManager.LoadScene("StageSelection");
             }
-            else if (playerController.hp <= 0)
+            else if (playerController.HP <= 0)
             {
                 playerController.SetKnockdownState(true);
                 obstacleManager.isRestoring = true;

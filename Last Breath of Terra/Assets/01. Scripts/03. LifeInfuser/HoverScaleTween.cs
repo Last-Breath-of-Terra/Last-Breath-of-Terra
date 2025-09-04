@@ -1,79 +1,47 @@
-using DG.Tweening;
-using System.Collections.Generic;
-//using System.Diagnostics;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-[RequireComponent(typeof(RectTransform))]
-public class HoverScaleTween : MonoBehaviour
+public class HoverScaleTween : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [Header("Scale Settings")]
-    public RectTransform targetRect;
-    public Vector3 hoverScale = Vector3.one;
-    public Vector3 normalScale = new Vector3(0.5f, 0.5f, 0.5f);
-    public float tweenDuration = 2f;
-    public float exitDelay = 5f;
-
-    [Header("참조할 ScriptableObject")]
-    [Tooltip("인스펙터에서 할당할 LifeInfuserSO 에셋")]
     public LifeInfuserSO lifeInfuserSO;
 
-    private Tween exitTween;
     private bool isHovered = false;
+    private bool isScaledUp = false;
+    private Coroutine _coroutine;
 
-    private GraphicRaycaster _raycaster;
-    private EventSystem _eventSystem;
-
-    void Awake()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        if (targetRect == null)
-            targetRect = GetComponent<RectTransform>();
+        isHovered = true;
+        if (_coroutine != null) { StopCoroutine(_coroutine); _coroutine = null; }
 
-        targetRect.localScale = normalScale;
-        _raycaster = GetComponentInParent<Canvas>()?.GetComponent<GraphicRaycaster>();
-        _eventSystem = EventSystem.current;
+        if (lifeInfuserSO != null && !isScaledUp)
+        {
+            lifeInfuserSO.SetUIForInfuserStatus(true);
+            isScaledUp = true;
+        }
     }
 
-    void Update()
+    public void OnPointerExit(PointerEventData eventData)
     {
-        if (_raycaster == null || _eventSystem == null) return;
+        isHovered = false;
+        if (_coroutine != null) StopCoroutine(_coroutine);
+        _coroutine = StartCoroutine(HideAfterDelay());
+    }
 
-        // 1) 마우스 위치로 Raycast
-        var pointerData = new PointerEventData(_eventSystem)
+    private IEnumerator HideAfterDelay()
+    {
+        yield return new WaitForSeconds(UIManager.Instance.hideDelay);
+        if (!isHovered && lifeInfuserSO != null && isScaledUp)
         {
-            position = Input.mousePosition
-        };
-        var results = new List<RaycastResult>();
-        _raycaster.Raycast(pointerData, results);
-
-        // 2) 자신의 오브젝트가 hit 됐는지 검사
-        bool nowOver = false;
-        foreach (var res in results)
-        {
-            if (res.gameObject == gameObject)
-            {
-                nowOver = true;
-                break;
-            }
+            lifeInfuserSO.SetUIForInfuserStatus(false);
+            isScaledUp = false;
         }
+        _coroutine = null;
+    }
 
-        // 3) 상태 변경 시 로직 분기
-        if (nowOver != isHovered)
-        {
-            isHovered = nowOver;
-            Debug.Log($"[HoverScaleTween] Hover 상태: {isHovered}");
-
-            if (isHovered)
-            {
-                if (lifeInfuserSO != null)
-                    lifeInfuserSO.SetUIForInfuserStatus(true);
-            }
-            else
-            {
-                if (lifeInfuserSO != null)
-                    lifeInfuserSO.SetUIForInfuserStatus(false);
-            }
-        }
+    private void OnDisable()
+    {
+        if (_coroutine != null) { StopCoroutine(_coroutine); _coroutine = null; }
     }
 }

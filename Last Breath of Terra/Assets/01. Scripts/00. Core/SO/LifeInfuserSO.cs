@@ -22,7 +22,7 @@ public class LifeInfuserSO : ScriptableObject
     public Sprite inactiveIcon;
     public Material defaultMaterial;
     public Material sacrificeMaterial;
-
+    
     public int lineRendererSegments = 100;
     public int infusedLifeCount;
 
@@ -31,7 +31,7 @@ public class LifeInfuserSO : ScriptableObject
     // UI tween control
     private bool isUIExpanded = false;
     private bool isStartInfusion = false;
-    private float uiTweenDuration = 0.5f;
+    public float uiTweenDuration = 0.5f;
 
 
     void Awake()
@@ -55,20 +55,32 @@ public class LifeInfuserSO : ScriptableObject
         InfuserManager.Instance.glowLineRenderer.positionCount = 0;
         InfuserManager.Instance.brightLineRenderer.positionCount = 0;
 
+        ParticleSystem.MainModule main;
+       
         currentTween = DOTween.To(() => progress, x => progress = x, 1f, infusionDuration)
             .SetEase(Ease.Linear)
             .OnStart(() =>
             {
+                main = InfuserManager.Instance.infuserStatusParticle[infuserNumber].main;
+                InfuserManager.Instance.infuserStatusParticle[infuserNumber].Play();
+                
                 DrawArc(1f, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.backLineRenderer);
             })
             .OnUpdate(() =>
             {
+                Color color = main.startColor.color;
+                color.r = progress / 2;
+                main.startColor = color;
+                
                 float circularProgress = (1 - Mathf.Cos(progress * Mathf.PI)) / 2;
                 DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.brightLineRenderer, InfuserManager.Instance.gaugeParticle);
                 DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.glowLineRenderer);
             })
             .OnComplete(() =>
             {
+                Color color = main.startColor.color;
+                color.r = 1;
+                main.startColor = color;
                 if (InfuserManager.Instance.gaugeParticle != null)
                 {
                     InfuserManager.Instance.gaugeParticle.Stop();
@@ -136,8 +148,7 @@ public class LifeInfuserSO : ScriptableObject
      */
     public void SetUIForInfuserStatus(bool isStart)
     {
-        UnityEngine.Debug.Log("setting UI for Infuser");
-        isUIExpanded = isStart;
+         isUIExpanded = isStart;
 
         float transparency = isStart ? 0.3f : -0.3f;
         Vector3 canvasScale = isUIExpanded ? new Vector3(1f, 1f, 1f) : new Vector3(0.5f, 0.5f, 0.5f);

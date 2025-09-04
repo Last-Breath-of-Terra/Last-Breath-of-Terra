@@ -11,9 +11,9 @@ public class SpikeTrap : MonoBehaviour
     {
         if (other.transform.CompareTag("Player"))
         {
-            other.GetComponent<PlayerController>().hp -= damage;
-            Debug.Log("hp : " + other.GetComponent<PlayerController>().hp);
-
+            Debug.Log("Spike");
+            other.GetComponent<PlayerController>().HP -= damage;
+            GimmickManager.Instance.ChangeLifeInfuserUISize();
         }
     }
 }

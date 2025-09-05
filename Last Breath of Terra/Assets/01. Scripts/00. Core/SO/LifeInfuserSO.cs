@@ -14,6 +14,7 @@ public class LifeInfuserSO : ScriptableObject
     public float infusionWaitTime;
     public float defaultLensSize;
     public float targetLensSize;
+    public float arcHeight;
 
     public Sprite[] InfuserActiveImage;
     public Sprite[] InfuserInactiveImage;
@@ -55,32 +56,25 @@ public class LifeInfuserSO : ScriptableObject
         InfuserManager.Instance.glowLineRenderer.positionCount = 0;
         InfuserManager.Instance.brightLineRenderer.positionCount = 0;
 
-        ParticleSystem.MainModule main;
+       // ParticleSystem.MainModule main;
        
         currentTween = DOTween.To(() => progress, x => progress = x, 1f, infusionDuration)
             .SetEase(Ease.Linear)
             .OnStart(() =>
             {
-                main = InfuserManager.Instance.infuserStatusParticle[infuserNumber].main;
-                InfuserManager.Instance.infuserStatusParticle[infuserNumber].Play();
+              //  main = InfuserManager.Instance.infuserStatusParticle[infuserNumber].main;
+              //  InfuserManager.Instance.infuserStatusParticle[infuserNumber].Play();
                 
                 DrawArc(1f, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.backLineRenderer);
             })
             .OnUpdate(() =>
             {
-                Color color = main.startColor.color;
-                color.r = progress / 2;
-                main.startColor = color;
-                
                 float circularProgress = (1 - Mathf.Cos(progress * Mathf.PI)) / 2;
                 DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.brightLineRenderer, InfuserManager.Instance.gaugeParticle);
                 DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.glowLineRenderer);
             })
             .OnComplete(() =>
             {
-                Color color = main.startColor.color;
-                color.r = 1;
-                main.startColor = color;
                 if (InfuserManager.Instance.gaugeParticle != null)
                 {
                     InfuserManager.Instance.gaugeParticle.Stop();
@@ -185,7 +179,7 @@ public class LifeInfuserSO : ScriptableObject
         for (int i = 0; i < visibleSegments; i++)
         {
             float angle = Mathf.Lerp(Mathf.PI, 0, i / (float)(lineRendererSegments - 1));
-            positions[i] = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius - 6.5f, 0) + targetPosition;
+            positions[i] = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius - arcHeight, 0) + targetPosition;
         }
 
         lineRenderer.positionCount = visibleSegments;

@@ -21,6 +21,7 @@ public class GimmickShooter : MonoBehaviour
 
     public void StartShooter()
     {
+        GimmickManager.Instance.PlayGimmickSFX("Sfx_IceFlowerWarning01");
         respawnCooldown = Random.Range(GimmickShooterManager.Instance.respawnTimeRange.x,
             GimmickShooterManager.Instance.respawnTimeRange.y);
         Debug.Log("respawnCooldown : " + respawnCooldown);
@@ -39,6 +40,7 @@ public class GimmickShooter : MonoBehaviour
             obstacle = PoolManager.Instance.GetObject(GimmickShooterManager.Instance.poolName);
             if (obstacle != null)
             {
+                GimmickManager.Instance.PlayGimmickSFX();
                 obstacle.transform.position = gameObject.transform.position;
 
                 float zRotation = gameObject.transform.eulerAngles.z;

@@ -67,7 +67,7 @@ public class GimmickManager : Singleton<GimmickManager>
     {
         AudioSource _audioSource = gameObject.GetComponent<AudioSource>();
 
-        int randomIndex = UnityEngine.Random.Range(1, 2);
+        int randomIndex = UnityEngine.Random.Range(1, 3);
         sfxName += "_0" + randomIndex;
         AudioClip _audioClip = gimmickSFXAudioClips[sfxName];
         if (_audioClip != null)

@@ -8,7 +8,6 @@ public class GimmickManager : Singleton<GimmickManager>
     public LifeInfuserSO lifeInfuserSO;
     public float gimmicVolume = 1.0f;
     private Coroutine _coroutine;
-    private AudioSource _audioSource;
 
     [Header("SFX")] private AudioClip[] gimmickSFXInitClips;
     private Dictionary<string, AudioClip> gimmickSFXAudioClips;
@@ -17,7 +16,7 @@ public class GimmickManager : Singleton<GimmickManager>
 
     protected override void Awake()
     {
-        gimmickSFXInitClips = Resources.LoadAll<AudioClip>("Audio/SFX");
+        gimmickSFXInitClips = Resources.LoadAll<AudioClip>("Audio/Gimmick");
         gimmickSFXAudioClips = new Dictionary<string, AudioClip>();
         foreach (var clip in gimmickSFXInitClips)
         {
@@ -26,10 +25,6 @@ public class GimmickManager : Singleton<GimmickManager>
     }
 
 
-    private void Start()
-    {
-        _audioSource = GetComponent<AudioSource>();
-    }
     /*
     private void Start()
     {
@@ -68,16 +63,25 @@ public class GimmickManager : Singleton<GimmickManager>
     }
 
 
-    public void PlayGimmickSFX(string sfxName)
+    public float PlayGimmickSFX(string sfxName, GameObject gameObject)
     {
-        if (gimmickSFXAudioClips.ContainsKey(sfxName))
+        AudioSource _audioSource = gameObject.GetComponent<AudioSource>();
+
+        int randomIndex = UnityEngine.Random.Range(1, 2);
+        sfxName += "_0" + randomIndex;
+        AudioClip _audioClip = gimmickSFXAudioClips[sfxName];
+        if (_audioClip != null)
         {
-            float panValue = Mathf.Clamp((gameObject.transform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f,
+            Debug.Log("play sound : " + _audioClip.name);
+
+            float panValue = Mathf.Clamp(
+                (gameObject.transform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f,
                 -1.0f, 1.0f);
             _audioSource.panStereo = panValue;
             _audioSource.volume = gimmicVolume;
-            _audioSource.PlayOneShot(gimmickSFXAudioClips[sfxName]);
+            _audioSource.PlayOneShot(_audioClip);
         }
-        
+
+        return _audioClip.length;
     }
 }

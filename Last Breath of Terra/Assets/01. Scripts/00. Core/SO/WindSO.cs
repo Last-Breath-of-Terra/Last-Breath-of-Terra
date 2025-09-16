@@ -15,4 +15,5 @@ public class WindSO : ScriptableObject
     public float liftHeight = 0.5f;
     public float activationTime = 0.5f;
     public float deactivationTime = 0.5f;
+    public float moveTime;
 }

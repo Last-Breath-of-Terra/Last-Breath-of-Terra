@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class AudioManager : Singleton<AudioManager>
 {
+    public AudioMixerGroup bgmGroup;
+    public AudioMixerGroup ambientGroup;
     //[HideInInspector] public Dictionary<int, string> mapAmbienceDict;
 
     private ScenesManager scenesManager;
@@ -60,9 +63,11 @@ public class AudioManager : Singleton<AudioManager>
         GameObject bgmGameObject = new GameObject("BGM");
         bgmGameObject.transform.SetParent(transform);
         bgmSource = bgmGameObject.AddComponent<AudioSource>();
+        bgmSource.outputAudioMixerGroup = bgmGroup;
         bgmSource.volume = bgmVolume;
         bgmSource.loop = true;
         bgmSource.playOnAwake = false;
+        bgmSource.priority = 10;
 
         #endregion
 
@@ -78,9 +83,11 @@ public class AudioManager : Singleton<AudioManager>
         GameObject ambienceGameObject = new GameObject("Ambience");
         ambienceGameObject.transform.SetParent(transform);
         ambienceSource = ambienceGameObject.AddComponent<AudioSource>();
+        ambienceSource.outputAudioMixerGroup = ambientGroup;
         ambienceSource.volume = ambienceVolume;
         ambienceSource.loop = true;
         ambienceSource.playOnAwake = false;
+        ambienceSource.priority = 50;
 
         #endregion
 

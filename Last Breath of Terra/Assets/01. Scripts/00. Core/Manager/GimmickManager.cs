@@ -63,12 +63,16 @@ public class GimmickManager : Singleton<GimmickManager>
     }
 
 
-    public float PlayGimmickSFX(string sfxName, GameObject gameObject)
+    public float PlayGimmickSFX(string sfxName, GameObject gameObject, bool isRandom)
     {
         AudioSource _audioSource = gameObject.GetComponent<AudioSource>();
 
-        int randomIndex = UnityEngine.Random.Range(1, 3);
-        sfxName += "_0" + randomIndex;
+        if (isRandom)
+        {
+            int randomIndex = UnityEngine.Random.Range(1, 3);
+            sfxName += "_0" + randomIndex;
+        }
+
         AudioClip _audioClip = gimmickSFXAudioClips[sfxName];
         if (_audioClip != null)
         {

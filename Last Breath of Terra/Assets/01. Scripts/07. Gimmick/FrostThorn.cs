@@ -31,7 +31,7 @@ public class FrostThornTrap : MonoBehaviour
                 string sfxName = "Sfx_Gimmick_FrostRoad01";
                 if (SceneManager.GetActiveScene().name == "Stage1")
                     sfxName = "Sfx_Gimmick_forestthornRoad01";
-                GimmickManager.Instance.PlayGimmickSFX(sfxName, gameObject);
+                GimmickManager.Instance.PlayGimmickSFX(sfxName, gameObject, true);
                 
                 movement.ApplySpeedDebuff(slowMultiplier, slowDuration);
             }

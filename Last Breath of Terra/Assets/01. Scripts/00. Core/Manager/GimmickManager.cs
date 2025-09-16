@@ -76,7 +76,6 @@ public class GimmickManager : Singleton<GimmickManager>
         AudioClip _audioClip = gimmickSFXAudioClips[sfxName];
         if (_audioClip != null)
         {
-            Debug.Log("play sound : " + _audioClip.name);
 
             float panValue = Mathf.Clamp(
                 (gameObject.transform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f,

@@ -2,16 +2,16 @@ name: WebGL을 itch.io에 배포하기
 
 on:
   push:
-    branches: [ main ]      # main에 푸시하면 자동 실행
-  workflow_dispatch:         # Actions 탭에서 수동 실행 버튼 표시
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}       # ← SSO 계정이면 비번 만들어서 넣은 값
       UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-      UNITY_SERIAL: ''   # Personal이면 비워둬도 OK
+      UNITY_SERIAL: ''                              # Personal이면 비워둠
 
     steps:
       - name: 코드 체크아웃
@@ -30,10 +30,22 @@ jobs:
           restore-keys: |
             Library-${{ runner.os }}-
 
+      # ? 1) 라이선스 활성화 (이메일/비번 방식)
+      - name: Activate Unity
+        uses: game-ci/unity-activate@v4
+        with:
+          unityVersion: 2022.3.22f1          # 프로젝트 버전과 완전히 동일
+          # useHub: false                    # (기본값) 필요 시 명시 가능
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ''                   # Personal이면 공백
+
+      # ? 2) WebGL 빌드
       - name: WebGL 빌드
         uses: game-ci/unity-builder@v4
         with:
-          unityVersion: 2022.3.22f1     # 프로젝트 버전과 동일
+          unityVersion: 2022.3.22f1
           targetPlatform: WebGL
           projectPath: .
           buildsPath: Build
@@ -44,6 +56,12 @@ jobs:
           name: WebGL_Build
           path: Build/WebGL
 
+      # (선택) 라이선스 반납 ? 실패해도 실행
+      - name: Return Unity license
+        if: always()
+        uses: game-ci/unity-return-license@v4
+
+      # 3) itch.io 배포
       - name: itch.io에 배포
         run: |
           echo "Butler 툴 다운로드..."

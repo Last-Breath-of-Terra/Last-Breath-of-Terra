@@ -1,38 +1,52 @@
 name: WebGL을 itch.io에 배포하기
 
-# 'main' 브랜치에 코드가 푸시될 때 이 워크플로우가 실행됩니다.
 on:
   push:
-    branches:
-      - main 
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      # 단계 1: GitHub 저장소에서 코드를 가져옵니다.
-      - name: 코드 체크아웃
-        uses: actions/checkout@v3
-        with:
-          lfs: true 
 
-      # 단계 2: Unity 프로젝트를 WebGL로 빌드합니다.
+    steps:
+      # 0) 소스 가져오기 (LFS 포함)
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # 1) (선택) Library 캐시 ? 첫 빌드 후부터 속도↑
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ hashFiles('**/Packages/manifest.json') }}
+          restore-keys: |
+            Library-${{ runner.os }}-
+
+      # 2) Unity WebGL 빌드
       - name: WebGL 빌드
         uses: game-ci/unity-builder@v4
         with:
-          unityVersion: 2022.3.6f1 
+          unityVersion: 2022.3.22f1        # ← 프로젝트 버전과 정확히 일치
           targetPlatform: WebGL
-          projectPath: .
-          buildsPath: 'Build/WebGL'
+          projectPath: .                   # 프로젝트 루트가 여기면 그대로
+          buildsPath: Build                # 최종 산출물: Build/WebGL
+          # 필요하면 추가 (gzip 등)
+          # customParameters: -quit -nographics
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # ← ULF 본문을 Secret에 저장
 
-      # 단계 3: 빌드된 게임을 itch.io에 배포합니다.
-      # 외부 액션 대신 Butler 툴을 직접 실행합니다.
+      # 3) itch.io 배포 (Butler)
       - name: itch.io에 배포
         run: |
-          echo "Butler 툴 다운로드 중..."
+          echo "Butler 툴 다운로드..."
           curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip
-          
+          unzip butler.zip -d butler
+          chmod +x butler/butler
+
           echo "게임 배포 시작..."
-          ./butler push "Last-Breath-of-Terra/Last Breath of Terra/Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"
+          # WebGL 출력 폴더: Build/WebGL (index.html이 이 폴더 루트에 있어야 함)
+          butler/butler push "Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"
           echo "게임 배포 완료!"

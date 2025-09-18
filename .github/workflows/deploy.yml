@@ -22,7 +22,6 @@ jobs:
       - name: Git LFS pull
         run: git lfs pull
 
-      # 유니티 라이선스 활성화 및 WebGL 빌드
       - name: Unity 프로젝트 빌드
         uses: game-ci/unity-builder@v4
         with:
@@ -41,7 +40,6 @@ jobs:
         if: always()
         uses: game-ci/unity-return-license@v2
 
-      # itch.io 배포
       - name: itch.io에 배포
         run: |
           echo "Butler 툴 다운로드..."

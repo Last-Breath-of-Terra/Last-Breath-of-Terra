@@ -23,7 +23,7 @@ jobs:
           unityVersion: 2022.3.6f1 
           targetPlatform: WebGL
           projectPath: Last-Breath-of-Terra
-          buildsPath: 'Last-Breath-of-Terra/Last Breath of Terra/Build/WebGL'
+          buildsPath: 'Build/WebGL'
 
       # 단계 3: 빌드된 게임을 itch.io에 배포합니다.
       # 외부 액션 대신 Butler 툴을 직접 실행합니다.

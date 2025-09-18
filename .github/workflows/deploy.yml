@@ -1,0 +1,22 @@
+name: Deploy WebGL to itch.io
+
+on:
+  push:
+    branches:
+      - main  # 여기에 프로젝트의 메인 브랜치 이름(예: main, master)을 입력하세요.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to itch.io
+        uses: manley/butler-itchio-action@v2
+        with:
+          butler_api_key: ${{ secrets.ITCHIO_API_KEY }}
+          # 아래 2줄은 당신의 정보에 맞게 수정하세요.
+          itchio_user: 'PotatoTeam' 
+          itchio_game: 'attis' 
+          # 빌드된 게임 파일이 있는 폴더 경로를 입력하세요.
+          butler_path: 'Last-Breath-of-Terra/Last Breath of Terra/Build/WebGL'

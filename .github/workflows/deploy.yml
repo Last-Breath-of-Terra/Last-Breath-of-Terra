@@ -1,26 +1,15 @@
-name: WebGL을 itch.io에 배포하기
-
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    env:
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      UNITY_SERIAL: ''   # Personal이면 공백/생략 가능
     steps:
-      # 0) 소스 가져오기 (LFS 포함)
       - name: 코드 체크아웃
         uses: actions/checkout@v4
-        with:
-          lfs: true
+        with: { lfs: true }
 
-      # 0-1) (권장) LFS 안전장치 ? 큰 파일 누락 방지
-      - name: Git LFS pull
-        run: git lfs pull
-
-      # 1) (선택) Library 캐시 ? 2회차부터 빌드 빨라짐
       - name: Cache Unity Library
         uses: actions/cache@v4
         with:
@@ -29,34 +18,10 @@ jobs:
           restore-keys: |
             Library-${{ runner.os }}-
 
-      # 2) Unity WebGL 빌드
       - name: WebGL 빌드
         uses: game-ci/unity-builder@v4
         with:
-          unityVersion: 2022.3.22f1        # ← 프로젝트 실제 버전과 정확히 일치해야 함
+          unityVersion: 2022.3.22f1
           targetPlatform: WebGL
-          projectPath: .                    # ← 프로젝트가 루트에 없으면 폴더로 바꾸기 (예: ./UnityProject)
-          buildsPath: Build/WebGL                 # 결과: Build/WebGL
-          # customParameters: -quit -nographics
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # ← 로컬 ULF 본문을 Secret에 저장해둔 값
-
-      # 3) (옵션) 빌드 결과를 아티팩트로 보관
-      - name: Upload WebGL build (artifact)
-        uses: actions/upload-artifact@v4
-        with:
-          name: WebGL_Build
-          path: Build/WebGL
-
-      # 4) itch.io 배포 (Butler)
-      - name: itch.io에 배포
-        run: |
-          echo "Butler 툴 다운로드..."
-          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip -q butler.zip -d butler
-          chmod +x butler/butler
-
-          echo "게임 배포 시작..."
-          # WebGL 출력 폴더: Build/WebGL (index.html이 이 폴더 루트에 있어야 함)
-          butler/butler push "Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"
-          echo "게임 배포 완료!"
+          projectPath: .
+          buildsPath: Build

@@ -16,7 +16,11 @@ jobs:
         with:
           lfs: true
 
-      # 1) (선택) Library 캐시 ? 첫 빌드 후부터 속도↑
+      # 0-1) (권장) LFS 안전장치 ? 큰 파일 누락 방지
+      - name: Git LFS pull
+        run: git lfs pull
+
+      # 1) (선택) Library 캐시 ? 2회차부터 빌드 빨라짐
       - name: Cache Unity Library
         uses: actions/cache@v4
         with:
@@ -29,21 +33,27 @@ jobs:
       - name: WebGL 빌드
         uses: game-ci/unity-builder@v4
         with:
-          unityVersion: 2022.3.22f1        # ← 프로젝트 버전과 정확히 일치
+          unityVersion: 2022.3.22f1        # ← 프로젝트 실제 버전과 정확히 일치해야 함
           targetPlatform: WebGL
-          projectPath: .                   # 프로젝트 루트가 여기면 그대로
-          buildsPath: Build                # 최종 산출물: Build/WebGL
-          # 필요하면 추가 (gzip 등)
+          projectPath: .                    # ← 프로젝트가 루트에 없으면 폴더로 바꾸기 (예: ./UnityProject)
+          buildsPath: Build/WebGL                 # 결과: Build/WebGL
           # customParameters: -quit -nographics
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # ← ULF 본문을 Secret에 저장
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # ← 로컬 ULF 본문을 Secret에 저장해둔 값
 
-      # 3) itch.io 배포 (Butler)
+      # 3) (옵션) 빌드 결과를 아티팩트로 보관
+      - name: Upload WebGL build (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: WebGL_Build
+          path: Build/WebGL
+
+      # 4) itch.io 배포 (Butler)
       - name: itch.io에 배포
         run: |
           echo "Butler 툴 다운로드..."
           curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip -d butler
+          unzip -q butler.zip -d butler
           chmod +x butler/butler
 
           echo "게임 배포 시작..."

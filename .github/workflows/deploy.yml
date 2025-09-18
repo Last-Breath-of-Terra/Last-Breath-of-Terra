@@ -22,22 +22,8 @@ jobs:
       - name: Git LFS pull
         run: git lfs pull
 
-      - name: Cache Unity Library
-        uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-${{ runner.os }}-${{ hashFiles('**/Packages/manifest.json') }}
-          restore-keys: |
-            Library-${{ runner.os }}-
-
-      # ? 1) 라이선스 활성화 ? customImage 제거
-      - name: Activate Unity
-        uses: game-ci/unity-activate@v2
-        with:
-          unityVersion: 2022.3.22f1
-
-      # ? 2) WebGL 빌드 ? customImage 제거
-      - name: WebGL 빌드
+      # 유니티 라이선스 활성화 및 WebGL 빌드
+      - name: Unity 프로젝트 빌드
         uses: game-ci/unity-builder@v4
         with:
           unityVersion: 2022.3.22f1
@@ -51,12 +37,11 @@ jobs:
           name: WebGL_Build
           path: Build/WebGL
 
-      # (선택) 라이선스 반납 ? customImage 제거
       - name: Return Unity license
         if: always()
         uses: game-ci/unity-return-license@v2
 
-      # 3) itch.io 배포
+      # itch.io 배포
       - name: itch.io에 배포
         run: |
           echo "Butler 툴 다운로드..."

@@ -9,9 +9,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}       # Unity 계정 이메일
-      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }} # Unity 계정 비밀번호 (구글 SSO면 비번 새로 설정)
-      UNITY_SERIAL: ''                              # Personal이면 비움
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      UNITY_SERIAL: '' # Personal이면 비워둬도 OK
 
     steps:
       - name: 코드 체크아웃
@@ -30,13 +30,13 @@ jobs:
           restore-keys: |
             Library-${{ runner.os }}-
 
-      # ? 라이선스 활성화 (이메일/비번 방식) ? v2 사용
+      # ? 1) 라이선스 활성화
       - name: Activate Unity
         uses: game-ci/unity-activate@v2
         with:
           unityVersion: 2022.3.22f1
 
-      # ? WebGL 빌드 (빌더는 v4가 최신)
+      # ? 2) WebGL 빌드
       - name: WebGL 빌드
         uses: game-ci/unity-builder@v4
         with:
@@ -51,12 +51,12 @@ jobs:
           name: WebGL_Build
           path: Build/WebGL
 
-      # (옵션) 라이선스 반납 ? v2 사용, 실패해도 실행
+      # (선택) 라이선스 반납
       - name: Return Unity license
         if: always()
         uses: game-ci/unity-return-license@v2
 
-      # itch.io 배포
+      # 3) itch.io 배포
       - name: itch.io에 배포
         run: |
           echo "Butler 툴 다운로드..."

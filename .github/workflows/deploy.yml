@@ -37,7 +37,7 @@ jobs:
         uses: manley/butler-itchio-action@v1
         with:
           # GitHub Secrets에 저장한 itch.io API 키를 사용합니다.
-          butler_api_key: uds7awPCv8KazYIELikp9kc9fBgHobuCDeJyeya0
+          butler_api_key: ${{ secrets.ITCHIO_API_KEY }} 
           # 당신의 itch.io 사용자 이름입니다.
           itchio_user: 'PotatoTeam'
           # itch.io에 만든 게임 프로젝트의 이름입니다.

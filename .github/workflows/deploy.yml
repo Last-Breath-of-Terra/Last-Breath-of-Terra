@@ -11,7 +11,7 @@ jobs:
     env:
       UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
       UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-      UNITY_SERIAL: '' # Personal이면 비워둬도 OK
+      UNITY_SERIAL: ''
 
     steps:
       - name: 코드 체크아웃
@@ -30,13 +30,13 @@ jobs:
           restore-keys: |
             Library-${{ runner.os }}-
 
-      # ? 1) 라이선스 활성화
+      # ? 1) 라이선스 활성화 ? customImage 제거
       - name: Activate Unity
         uses: game-ci/unity-activate@v2
         with:
           unityVersion: 2022.3.22f1
 
-      # ? 2) WebGL 빌드
+      # ? 2) WebGL 빌드 ? customImage 제거
       - name: WebGL 빌드
         uses: game-ci/unity-builder@v4
         with:
@@ -51,7 +51,7 @@ jobs:
           name: WebGL_Build
           path: Build/WebGL
 
-      # (선택) 라이선스 반납
+      # (선택) 라이선스 반납 ? customImage 제거
       - name: Return Unity license
         if: always()
         uses: game-ci/unity-return-license@v2

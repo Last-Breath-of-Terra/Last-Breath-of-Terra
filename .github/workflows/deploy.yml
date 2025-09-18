@@ -33,11 +33,11 @@ jobs:
 
       # 단계 3: 빌드된 게임을 itch.io에 배포합니다.
       # Butler 툴을 이용해 파일을 업로드합니다.
-      - name: itch.io에 배포
-        uses: manley/butler-itchio-action@v2
+      - name: Deploy to itch.io
+        uses: manley/butler-itchio-action@v1
         with:
           # GitHub Secrets에 저장한 itch.io API 키를 사용합니다.
-          butler_api_key: ${{ secrets.ITCHIO_API_KEY }}
+          butler_api_key: uds7awPCv8KazYIELikp9kc9fBgHobuCDeJyeya0
           # 당신의 itch.io 사용자 이름입니다.
           itchio_user: 'PotatoTeam'
           # itch.io에 만든 게임 프로젝트의 이름입니다.

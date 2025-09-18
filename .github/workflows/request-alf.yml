@@ -1,13 +1,16 @@
-name: Request ULF (make .alf)
+name: Request Unity Activation File (.alf)
 on: workflow_dispatch
+
 jobs:
-  req:
+  request-alf:
     runs-on: ubuntu-latest
     steps:
-      - uses: game-ci/unity-request-activation-file@v4
+      - name: Request .alf for this runner
+        uses: game-ci/unity-request-activation-file@v2
         with:
-          unityVersion: 2022.3.22f1    # ← 프로젝트 버전과 정확히 일치시켜야 함
-      - uses: actions/upload-artifact@v4
+          unityVersion: 2022.3.22f1   # ← 빌드에 쓰는 Unity 버전과 "완전히 동일"해야 함
+      - name: Upload .alf artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: unity-activation-file
+          name: Unity_ActivationFile
           path: ./*.alf

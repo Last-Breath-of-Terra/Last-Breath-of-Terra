@@ -1,84 +1,46 @@
-name: Unity WebGL → itch.io Deploy
+name: UnityBuildTest
 
 on:
-  push:
-    branches: [ "main" ]      # main 푸시 시 자동 실행
-  workflow_dispatch:          # 수동 실행 지원
+  workflow_dispatch:
 
-env:
-  UNITY_VERSION: 2022.3.22f1
-  PROJECT_PATH: "Last Breath of Terra"   # Unity 프로젝트 폴더 (공백 포함, 따옴표 필수)
-  BUILD_NAME: WebGL
-  BUILDS_PATH: build
-
+permissions: write-all
+  
 jobs:
-  build-webgl:
+  #Job 설정
+  buildForAndroid: 
+    name: Build WebGL
     runs-on: ubuntu-latest
-    env:
-      # .ulf 전체 텍스트가 들어있는 GitHub Secret
-      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-
     steps:
-      - name: Checkout (with LFS)
+
+      # Step1 - Check Out
+      - name: Check Out
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           lfs: true
-          submodules: recursive
 
-      - name: Cache Unity Library
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.PROJECT_PATH }}/Library
-          key: Library-${{ env.BUILD_NAME }}-WebGL-${{ hashFiles('**/Packages/manifest.json') }}
+      # Step2 - Cache Library
+      - name: Cache Library
+        uses: actions/cache@v4.0.2
+        with: 
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
-            Library-${{ env.BUILD_NAME }}-WebGL-
             Library-
 
-      # ✅ 시리얼/계정 경로를 강제로 비워서 .ulf 전략만 사용
-      - name: Force license-file activation (disable serial & account)
-        run: |
-          echo "UNITY_SERIAL=" >> $GITHUB_ENV
-          echo "UNITY_EMAIL=" >> $GITHUB_ENV
-          echo "UNITY_PASSWORD=" >> $GITHUB_ENV
-
-      # 🚀 Unity WebGL 빌드
-      - name: Build WebGL
+      # Step3 - Unity Build
+      - name: Unity Build
         uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
-          unityVersion: ${{ env.UNITY_VERSION }}
-          projectPath: ${{ env.PROJECT_PATH }}
-          buildName: ${{ env.BUILD_NAME }}
-          buildsPath: ${{ env.BUILDS_PATH }}
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+      
+      # Step4 - Upload Build File
+      - name: Upload Build File
+      - uses: actions/upload-artifact@v3
         with:
-          name: WebGL-Build
-          path: ${{ env.BUILDS_PATH }}
-
-  deploy-itchio:
-    name: Deploy to itch.io
-    needs: build-webgl
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: WebGL-Build
-          path: ${{ env.BUILDS_PATH }}
-
-      - name: Install butler
-        run: |
-          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip -d butler
-          sudo mv butler/butler /usr/local/bin/
-          butler --version
-
-      # ⚠️ 여기를 네 계정/게임/채널로 변경 (보통 :html5 사용)
-      - name: Push to itch.io
-        run: |
-          butler push "${{ env.BUILDS_PATH }}/${{ env.BUILD_NAME }}/WebGL" PotatoTeam/attis:html5
-        env:
-          BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
+          name: Build-WebGL
+          path: build

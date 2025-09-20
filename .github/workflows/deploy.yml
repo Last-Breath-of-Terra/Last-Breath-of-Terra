@@ -18,7 +18,28 @@ jobs:
       - name: Git LFS pull
         run: git lfs pull
 
-      # (선택) Library 캐시 복원 ? 첫 빌드 이후 속도 향상
+      # ─────────────────────────────
+      # ? 사전 진단: 환경/경로/버전
+      # ─────────────────────────────
+      - name: Show project structure (top)
+        run: |
+          set -euxo pipefail
+          pwd
+          ls -la
+          echo "---- Assets/ ----" && (ls -la Assets || true)
+          echo "---- ProjectSettings/ ----" && (ls -la ProjectSettings || true)
+
+      - name: Show Unity version in project
+        run: |
+          set -euxo pipefail
+          if [ -f ProjectSettings/ProjectVersion.txt ]; then
+            echo "ProjectVersion.txt ====="
+            cat ProjectSettings/ProjectVersion.txt
+            echo "========================="
+          else
+            echo "ProjectSettings/ProjectVersion.txt not found ?"; exit 1
+          fi
+
       - name: Restore Library cache
         uses: actions/cache@v4
         with:
@@ -28,18 +49,54 @@ jobs:
             Library-WebGL-
             Library-
 
-      # ? 활성화 단계를 제거하고, 빌더에 UNITY_LICENSE를 env로 넘깁니다.
+      # ─────────────────────────────
+      # ? 시크릿/환경 점검 (값은 미노출)
+      # ─────────────────────────────
+      - name: Check UNITY_* environment keys (should NOT include SERIAL/EMAIL/PASSWORD)
+        run: |
+          set -e
+          echo "UNITY_* keys in job env (names only):"
+          env | awk -F= '{print $1}' | grep -E '^UNITY_' || true
+          # 실패 유도: 의도치 않은 키가 남아있는지 검사
+          BAD=$(env | awk -F= '{print $1}' | grep -E '^(UNITY_SERIAL|UNITY_EMAIL|UNITY_PASSWORD)$' || true)
+          if [ -n "$BAD" ]; then
+            echo "::error::Unexpected UNITY keys present -> $BAD"
+            exit 1
+          fi
+
+      - name: Check UNITY_LICENSE secret presence and size (safe)
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          set -e
+          if [ -z "${UNITY_LICENSE:-}" ]; then
+            echo "::error::UNITY_LICENSE secret is MISSING"; exit 1
+          fi
+          # 바이트 수만 출력(내용 노출 안 함)
+          BYTES=$(printf "%s" "$UNITY_LICENSE" | wc -c | tr -d ' ')
+          LINES=$(printf "%s\n" "$UNITY_LICENSE" | wc -l | tr -d ' ')
+          echo "UNITY_LICENSE present ?  bytes=$BYTES  lines=$LINES"
+          # UTF-8 유효성 대략 체크 (깨지면 nonzero)
+          printf "%s" "$UNITY_LICENSE" | iconv -f UTF-8 -t UTF-8 >/dev/null 2>&1 || {
+            echo "::warning::UNITY_LICENSE may not be UTF-8. Re-save .ulf as UTF-8."
+          }
+
+      # ─────────────────────────────
+      # ?? 빌드
+      # ─────────────────────────────
       - name: Unity 프로젝트 빌드 (WebGL)
         uses: game-ci/unity-builder@v4
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # 로컬 .ulf 내용 전체를 저장해둔 시크릿
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # Personal .ulf
         with:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL
           projectPath: .
           buildsPath: Build
 
-      # (선택) 캐시 저장 ? 다음 빌드 가속
+      # ─────────────────────────────
+      # ? 캐시 저장 & 로그/산출물 수집
+      # ─────────────────────────────
       - name: Save Library cache (post-build)
         if: always()
         uses: actions/cache@v4
@@ -48,23 +105,41 @@ jobs:
           key: Library-WebGL-${{ hashFiles('ProjectSettings/ProjectVersion.txt') }}
 
       - name: 빌드 산출물 업로드 (artifact)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: WebGL_Build
-          path: Build/WebGL
+          path: |
+            Build/WebGL
+          if-no-files-found: warn
 
-      # 라이선스 반환은 유지 (항상 실행)
+      # Unity 에디터/액션 로그 후보들 수집 (있으면 업로드)
+      - name: 수집 가능한 로그 업로드 (best-effort)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unity_Logs
+          path: |
+            # unity-builder가 워크스페이스로 복사한 로그가 있으면 포함
+            **/Editor.log
+            **/Upm.log
+            **/LicensingClient.log
+            Logs/**
+          if-no-files-found: ignore
+
       - name: Return Unity license
         if: always()
         uses: game-ci/unity-return-license@v2
 
+      # ─────────────────────────────
+      # ? itch.io 배포
+      # ─────────────────────────────
       - name: itch.io에 배포
         run: |
-          echo "Butler 툴 다운로드..."
+          set -euxo pipefail
+          echo "Download Butler"
           curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
           unzip -q butler.zip -d butler
           chmod +x butler/butler
-
-          echo "게임 배포 시작..."
+          echo "Push to itch.io"
           butler/butler push "Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"
-          echo "게임 배포 완료!"

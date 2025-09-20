@@ -19,32 +19,71 @@ jobs:
         run: git lfs pull
 
       # ─────────────────────────────
-      # ? 사전 진단: 환경/경로/버전
+      # ? Unity 프로젝트 경로 자동 탐지
+      #   - 최상위/하위 폴더 어디에 있어도 자동으로 찾아냄
       # ─────────────────────────────
-      - name: Show project structure (top)
+      - name: Detect Unity project path
+        id: detect
+        shell: bash
         run: |
-          set -euxo pipefail
-          pwd
+          set -euo pipefail
+          echo "== List top-level =="
           ls -la
-          echo "---- Assets/ ----" && (ls -la Assets || true)
-          echo "---- ProjectSettings/ ----" && (ls -la ProjectSettings || true)
 
-      - name: Show Unity version in project
-        run: |
-          set -euxo pipefail
-          if [ -f ProjectSettings/ProjectVersion.txt ]; then
-            echo "ProjectVersion.txt ====="
-            cat ProjectSettings/ProjectVersion.txt
-            echo "========================="
-          else
-            echo "ProjectSettings/ProjectVersion.txt not found ?"; exit 1
+          # 1차: Git 트래킹 파일에서 ProjectVersion.txt 찾기
+          CANDIDATES=$(git ls-files --cached --others --exclude-standard | \
+            grep -E '/?ProjectSettings/ProjectVersion.txt$' || true)
+
+          # 2차: 워킹디렉토리에서 직접 탐색 (깊이 3까지)
+          if [ -z "$CANDIDATES" ]; then
+            CANDIDATES=$(find . -maxdepth 3 -type f -path '*/ProjectSettings/ProjectVersion.txt' | sort || true)
           fi
 
+          echo "== Candidates =="
+          echo "$CANDIDATES"
+
+          # 첫 번째 후보 사용
+          FILE=$(echo "$CANDIDATES" | head -n1)
+          if [ -z "$FILE" ]; then
+            echo "::error::No Unity ProjectSettings/ProjectVersion.txt found in repo (check project location)"
+            exit 1
+          fi
+
+          # ProjectSettings의 상위 디렉토리가 프로젝트 루트
+          PROJ_DIR=$(dirname "$(dirname "$FILE")")
+          # 상대경로 정리
+          PROJ_DIR=${PROJ_DIR#./}
+
+          echo "Detected Unity project: $PROJ_DIR"
+          echo "project_path=$PROJ_DIR" >> "$GITHUB_OUTPUT"
+
+          echo "== ProjectVersion.txt =="
+          cat "$FILE" || true
+
+      # ─────────────────────────────
+      # ? 구조/버전 출력 (디버깅)
+      # ─────────────────────────────
+      - name: Show detected project structure
+        run: |
+          set -euxo pipefail
+          cd "${{ steps.detect.outputs.project_path }}"
+          pwd
+          echo "---- Assets/ ----" && (ls -la Assets || true)
+          echo "---- ProjectSettings/ ----" && (ls -la ProjectSettings || true)
+          echo "---- Packages/ ----" && (ls -la Packages || true)
+          echo "ProjectVersion.txt ====="
+          cat ProjectSettings/ProjectVersion.txt
+          echo "========================"
+
+      # ─────────────────────────────
+      # ? Library 캐시 (동적 경로 대응)
+      #   - 동적 경로의 hashFiles는 와일드카드로 대체
+      # ─────────────────────────────
       - name: Restore Library cache
         uses: actions/cache@v4
         with:
-          path: Library
-          key: Library-WebGL-${{ hashFiles('ProjectSettings/ProjectVersion.txt') }}
+          path: ${{ steps.detect.outputs.project_path }}/Library
+          key: Library-WebGL-${{ hashFiles('**/ProjectSettings/ProjectVersion.txt') }}
           restore-keys: |
             Library-WebGL-
             Library-
@@ -52,19 +91,18 @@ jobs:
       # ─────────────────────────────
       # ? 시크릿/환경 점검 (값은 미노출)
       # ─────────────────────────────
-      - name: Check UNITY_* environment keys (should NOT include SERIAL/EMAIL/PASSWORD)
+      - name: Check UNITY_* environment keys (no SERIAL/EMAIL/PASSWORD expected)
         run: |
           set -e
           echo "UNITY_* keys in job env (names only):"
           env | awk -F= '{print $1}' | grep -E '^UNITY_' || true
-          # 실패 유도: 의도치 않은 키가 남아있는지 검사
           BAD=$(env | awk -F= '{print $1}' | grep -E '^(UNITY_SERIAL|UNITY_EMAIL|UNITY_PASSWORD)$' || true)
           if [ -n "$BAD" ]; then
             echo "::error::Unexpected UNITY keys present -> $BAD"
             exit 1
           fi
 
-      - name: Check UNITY_LICENSE secret presence and size (safe)
+      - name: Check UNITY_LICENSE presence & size (safe)
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         run: |
@@ -72,17 +110,15 @@ jobs:
           if [ -z "${UNITY_LICENSE:-}" ]; then
             echo "::error::UNITY_LICENSE secret is MISSING"; exit 1
           fi
-          # 바이트 수만 출력(내용 노출 안 함)
           BYTES=$(printf "%s" "$UNITY_LICENSE" | wc -c | tr -d ' ')
           LINES=$(printf "%s\n" "$UNITY_LICENSE" | wc -l | tr -d ' ')
           echo "UNITY_LICENSE present ?  bytes=$BYTES  lines=$LINES"
-          # UTF-8 유효성 대략 체크 (깨지면 nonzero)
           printf "%s" "$UNITY_LICENSE" | iconv -f UTF-8 -t UTF-8 >/dev/null 2>&1 || {
             echo "::warning::UNITY_LICENSE may not be UTF-8. Re-save .ulf as UTF-8."
           }
 
       # ─────────────────────────────
-      # ?? 빌드
+      # ?? 빌드 (자동 탐지된 projectPath 사용)
       # ─────────────────────────────
       - name: Unity 프로젝트 빌드 (WebGL)
         uses: game-ci/unity-builder@v4
@@ -91,7 +127,7 @@ jobs:
         with:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL
-          projectPath: .
+          projectPath: ${{ steps.detect.outputs.project_path }}
           buildsPath: Build
 
       # ─────────────────────────────
@@ -101,8 +137,8 @@ jobs:
         if: always()
         uses: actions/cache@v4
         with:
-          path: Library
-          key: Library-WebGL-${{ hashFiles('ProjectSettings/ProjectVersion.txt') }}
+          path: ${{ steps.detect.outputs.project_path }}/Library
+          key: Library-WebGL-${{ hashFiles('**/ProjectSettings/ProjectVersion.txt') }}
 
       - name: 빌드 산출물 업로드 (artifact)
         if: always()
@@ -110,17 +146,15 @@ jobs:
         with:
           name: WebGL_Build
           path: |
-            Build/WebGL
+            ${{ steps.detect.outputs.project_path }}/Build/WebGL
           if-no-files-found: warn
 
-      # Unity 에디터/액션 로그 후보들 수집 (있으면 업로드)
-      - name: 수집 가능한 로그 업로드 (best-effort)
+      - name: Unity/UPM/라이선스 로그 수집 (best-effort)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Unity_Logs
           path: |
-            # unity-builder가 워크스페이스로 복사한 로그가 있으면 포함
             **/Editor.log
             **/Upm.log
             **/LicensingClient.log
@@ -142,4 +176,4 @@ jobs:
           unzip -q butler.zip -d butler
           chmod +x butler/butler
           echo "Push to itch.io"
-          butler/butler push "Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"
+          butler/butler push "${{ steps.detect.outputs.project_path }}/Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"

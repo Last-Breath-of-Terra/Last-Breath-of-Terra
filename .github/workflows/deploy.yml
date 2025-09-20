@@ -1,4 +1,4 @@
-name: WebGLÀ» itch.io¿¡ ¹èÆ÷ÇÏ±â
+name: WebGLì„ itch.ioì— ë°°í¬í•˜ê¸°
 
 on:
 push:
@@ -18,7 +18,7 @@ steps:
   - name: Git LFS pull
     run: git lfs pull
   
-  # Unity ¶óÀÌ¼±½º È°¼ºÈ­ (°èÁ¤ Á¤º¸ »ç¿ë)
+  # Unity ë¼ì´ì„ ìŠ¤ í™œì„±í™” (ê³„ì • ì •ë³´ ì‚¬ìš©)
   - name: Activate Unity License
     uses: game-ci/unity-activate@v2
     env:
@@ -26,7 +26,7 @@ steps:
       UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
       UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
 
-  # Unity ºôµå
+  # Unity ë¹Œë“œ
   - name: Build WebGL with Unity
     uses: game-ci/unity-builder@v4
     with:
@@ -39,7 +39,7 @@ steps:
         -quit -batchmode
         -executeMethod BuildScript.BuildWebGL
 
-  # ½ÇÆĞÇØµµ ÄÜ¼Ö¿¡¼­ ¹Ù·Î ·Î±× È®ÀÎ
+  # ì‹¤íŒ¨í•´ë„ ì½˜ì†”ì—ì„œ ë°”ë¡œ ë¡œê·¸ í™•ì¸
   - name: Show Editor log tail
     if: always()
     run: |
@@ -47,7 +47,7 @@ steps:
       (tail -n 200 /github/workspace/EditorCI.log || echo "EditorCI.log not found")
       echo "========================================="
 
-  # ºôµå »êÃâ¹°/·Î±× ¾÷·Îµå
+  # ë¹Œë“œ ì‚°ì¶œë¬¼/ë¡œê·¸ ì—…ë¡œë“œ
   - name: Upload WebGL build
     if: always()
     uses: actions/upload-artifact@v4
@@ -64,12 +64,12 @@ steps:
       path: /github/workspace/EditorCI.log
       if-no-files-found: ignore
 
-  # ¶óÀÌ¼±½º ¹İÈ¯ (ÇÊ¼ö)
+  # ë¼ì´ì„ ìŠ¤ ë°˜í™˜ (í•„ìˆ˜)
   - name: Return Unity license
     if: always()
     uses: game-ci/unity-return-license@v2
 
-  # ¼º°ø ½Ã itch.io ¹èÆ÷
+  # ì„±ê³µ ì‹œ itch.io ë°°í¬
   - name: Deploy to itch.io
     if: success()
     run: |

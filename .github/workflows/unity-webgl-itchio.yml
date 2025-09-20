@@ -47,28 +47,29 @@ jobs:
           name: Build-WebGL
           path: build
   
+  ######################################
 
-    deploy-itchio:
-    name: Deploy to itch.io
-    needs: build-webgl        # 빌드 성공 후 실행
-    runs-on: ubuntu-latest
+deploy-itchio:
+name: Deploy to itch.io
+needs: build-webgl        # 빌드 성공 후 실행
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: Build-WebGL
-          path: build         # build/WebGL 폴더가 생김
+steps:
+  - name: Download Build Artifact
+    uses: actions/download-artifact@v4
+    with:
+      name: Build-WebGL
+      path: build         # build/WebGL 폴더가 생김
 
-      - name: Install butler
-        run: |
-          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip -d butler
-          sudo mv butler/butler /usr/local/bin/
-          butler --version
+  - name: Install butler
+    run: |
+      curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+      unzip butler.zip -d butler
+      sudo mv butler/butler /usr/local/bin/
+      butler --version
 
-      - name: Push to itch.io
-        run: |
-          butler push build/WebGL PotatoTeam/attis:html5
-        env:
-          BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
+  - name: Push to itch.io
+    run: |
+      butler push build/WebGL PotatoTeam/attis:html5
+    env:
+      BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}

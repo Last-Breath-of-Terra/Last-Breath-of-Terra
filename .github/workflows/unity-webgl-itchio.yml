@@ -7,19 +7,15 @@ on:
 
 env:
   UNITY_VERSION: 2022.3.22f1
-  PROJECT_PATH: .
+  PROJECT_PATH: "Last Breath of Terra"   # ← 프로젝트 폴더(공백 포함, 따옴표 필수)
   BUILD_NAME: WebGL
   BUILDS_PATH: build
 
 jobs:
   build-webgl:
-    name: Build (WebGL)
     runs-on: ubuntu-latest
-    # ⬇️ 라이선스/계정 시크릿을 Job 레벨에 둡니다
     env:
-      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}        # (필수 아님, 라이선스만으로도 OK)
-      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}  # (필수 아님)
-      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}    # ← 반드시 .ulf 전체 내용
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
     steps:
       - name: Checkout (with LFS)
@@ -37,18 +33,23 @@ jobs:
             Library-${{ env.BUILD_NAME }}-WebGL-
             Library-
 
-      # (선택) 디버그: UNITY_ 변수가 보이는지만 출력(값은 마스킹됨)
-      - name: Show UNITY_* env names
-        run: env | sort | grep '^UNITY_'
+      - name: Activate Unity
+        uses: game-ci/unity-activate@v4
+        with:
+          unityVersion: ${{ env.UNITY_VERSION }}
 
       - name: Build WebGL
         uses: game-ci/unity-builder@v4
         with:
           targetPlatform: WebGL
           unityVersion: ${{ env.UNITY_VERSION }}
-          projectPath: ${{ env.PROJECT_PATH }}
+          projectPath: ${{ env.PROJECT_PATH }}   # ← 여기 중요
           buildName: ${{ env.BUILD_NAME }}
           buildsPath: ${{ env.BUILDS_PATH }}
+
+      - name: Return Unity License
+        if: always()
+        uses: game-ci/unity-return-license@v4
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -57,7 +58,6 @@ jobs:
           path: ${{ env.BUILDS_PATH }}
 
   deploy-itchio:
-    name: Deploy to itch.io
     needs: build-webgl
     runs-on: ubuntu-latest
     steps:

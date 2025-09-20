@@ -18,36 +18,19 @@ jobs:
       - name: Git LFS pull
         run: git lfs pull
 
-      # Unity 프로젝트 경로 자동 탐지 (ProjectSettings/ProjectVersion.txt 기준)
-      - name: Detect Unity project path
-        id: detect
-        shell: bash
-        run: |
-          set -euo pipefail
-          FILE=$(git ls-files --cached --others --exclude-standard | grep -E '/?ProjectSettings/ProjectVersion.txt$' | head -n1 || true)
-          if [ -z "$FILE" ]; then
-            FILE=$(find . -maxdepth 4 -type f -path '*/ProjectSettings/ProjectVersion.txt' | sort | head -n1 || true)
-          fi
-          [ -n "$FILE" ] || { echo "::error::Unity ProjectSettings/ProjectVersion.txt not found"; exit 1; }
-          PROJ_DIR=$(dirname "$(dirname "$FILE")"); PROJ_DIR=${PROJ_DIR#./}
-          echo "project_path=$PROJ_DIR" >> "$GITHUB_OUTPUT"
-
-      # 빌드 (Personal .ulf 사용) + 고정 로그 파일
+      # Unity 프로젝트 빌드 (Personal License .ulf 사용)
       - name: Unity 프로젝트 빌드 (WebGL)
         uses: game-ci/unity-builder@v4
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # .ulf 원문(UTF-8)
-          UNITY_SERIAL: ""          # 혹시 남아있어도 무력화
-          UNITY_EMAIL: ""           
-          UNITY_PASSWORD: ""        
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # .ulf 원문(UTF-8) 전체
         with:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL
-          projectPath: ${{ steps.detect.outputs.project_path }}
+          projectPath: "Last Breath of Terra"   # 공백 포함된 프로젝트 폴더명
           buildsPath: Build
           customParameters: -logFile /github/workspace/EditorCI.log
 
-      # 콘솔에 마지막 로그 출력(Artifacts 없어도 바로 확인 가능)
+      # Unity 로그 tail 출력 (실패 시 콘솔에서 바로 확인)
       - name: Show Editor log tail
         if: always()
         run: |
@@ -55,15 +38,16 @@ jobs:
           (tail -n 200 /github/workspace/EditorCI.log || echo "EditorCI.log not found")
           echo "========================================="
 
-      # 빌드물/로그 업로드
+      # 빌드 산출물 업로드 (Artifacts)
       - name: Upload build
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: WebGL_Build
-          path: ${{ steps.detect.outputs.project_path }}/Build/WebGL
+          path: "Last Breath of Terra/Build/WebGL"
           if-no-files-found: warn
 
+      # 전체 Unity 로그 업로드
       - name: Upload Editor log
         if: always()
         uses: actions/upload-artifact@v4
@@ -72,12 +56,12 @@ jobs:
           path: /github/workspace/EditorCI.log
           if-no-files-found: ignore
 
-      # 라이선스 반환
+      # Unity 라이선스 반환
       - name: Return Unity license
         if: always()
         uses: game-ci/unity-return-license@v2
 
-      # 성공 시에만 itch.io 배포
+      # 성공 시 itch.io에 배포
       - name: Deploy to itch.io
         if: success()
         run: |
@@ -85,4 +69,4 @@ jobs:
           curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
           unzip -q butler.zip -d butler
           chmod +x butler/butler
-          butler/butler push "${{ steps.detect.outputs.project_path }}/Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"
+          butler/butler push "Last Breath of Terra/Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"

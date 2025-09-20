@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 코드 체크아웃
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           lfs: true
@@ -18,19 +18,23 @@ jobs:
       - name: Git LFS pull
         run: git lfs pull
 
-      # Unity 프로젝트 빌드 (Personal License .ulf 사용)
-      - name: Unity 프로젝트 빌드 (WebGL)
+      # Unity 빌드 (.ulf Personal 라이선스 사용)
+      - name: Build WebGL with Unity
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # .ulf 원문(UTF-8) 전체
         with:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL
-          projectPath: "Last Breath of Terra"   # 공백 포함된 프로젝트 폴더명
+          projectPath: "Last Breath of Terra"   # 공백 포함 → 꼭 따옴표
           buildsPath: Build
-          customParameters: -logFile /github/workspace/EditorCI.log
+          # 고정 로그 파일 + 우리가 만든 메서드 실행
+          customParameters: >
+            -logFile /github/workspace/EditorCI.log
+            -quit -batchmode
+            -executeMethod BuildScript.BuildWebGL
 
-      # Unity 로그 tail 출력 (실패 시 콘솔에서 바로 확인)
+      # 실패해도 콘솔에서 바로 로그 확인
       - name: Show Editor log tail
         if: always()
         run: |
@@ -38,8 +42,8 @@ jobs:
           (tail -n 200 /github/workspace/EditorCI.log || echo "EditorCI.log not found")
           echo "========================================="
 
-      # 빌드 산출물 업로드 (Artifacts)
-      - name: Upload build
+      # 빌드 산출물/로그 업로드
+      - name: Upload WebGL build
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -47,7 +51,6 @@ jobs:
           path: "Last Breath of Terra/Build/WebGL"
           if-no-files-found: warn
 
-      # 전체 Unity 로그 업로드
       - name: Upload Editor log
         if: always()
         uses: actions/upload-artifact@v4
@@ -56,12 +59,12 @@ jobs:
           path: /github/workspace/EditorCI.log
           if-no-files-found: ignore
 
-      # Unity 라이선스 반환
+      # 라이선스 반환(안전)
       - name: Return Unity license
         if: always()
         uses: game-ci/unity-return-license@v2
 
-      # 성공 시 itch.io에 배포
+      # 성공 시 itch.io 배포
       - name: Deploy to itch.io
         if: success()
         run: |

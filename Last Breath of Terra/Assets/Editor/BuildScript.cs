@@ -1,25 +1,51 @@
-using UnityEditor;
+Ôªø#if UNITY_EDITOR
 using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Build.Reporting;
 
-public class BuildScript
+public static class BuildScript
 {
-    // GitHub Actions∞° ¿Ã ∏ﬁº≠µÂ∏¶ »£√‚«’¥œ¥Ÿ.
+    // GitHub ActionsÏóêÏÑú Ìò∏Ï∂úÌï† ÏóîÌä∏Î¶¨Ìè¨Ïù∏Ìä∏
     public static void BuildWebGL()
     {
-        // ∫ÙµÂµ… WebGL ∆ƒ¿œ¿Ã ¿˙¿Âµ… ∞Ê∑Œ∏¶ ¡ˆ¡§«’¥œ¥Ÿ.
-        string buildPath = "Build/WebGL";
+        // ÎπåÎìú Ï∂úÎ†• Í≤ΩÎ°ú
+        const string buildPath = "Build/WebGL";
 
-        // ±‚¡∏ ∫ÙµÂ ∆˙¥ı∏¶ ªË¡¶«ÿº≠ ±˙≤˝«œ∞‘ Ω√¿€«’¥œ¥Ÿ.
+        // ÌôúÏÑ±ÌôîÎêú(Ï≤¥ÌÅ¨Îêú) Ïî¨ ÏûêÎèô ÏàòÏßë
+        var scenes = EditorBuildSettings.scenes
+            .Where(s => s.enabled)
+            .Select(s => s.path)
+            .ToArray();
+
+        if (scenes.Length == 0)
+        {
+            throw new System.Exception(
+                "No scenes are enabled in Build Settings. " +
+                "Open File > Build Settings... and check at least one scene.");
+        }
+
+        // Í∏∞Ï°¥ ÎπåÎìú Ìè¥Îçî Ï†ïÎ¶¨
         if (Directory.Exists(buildPath))
         {
             Directory.Delete(buildPath, true);
         }
 
-        // ∫ÙµÂ«“ æ¿¿ª √ﬂ∞°«’¥œ¥Ÿ. 
-        // æ¿ ∆ƒ¿œ ∞Ê∑Œ∏¶ ¡§»Æ«œ∞‘ ¿‘∑¬«ÿ¡÷ººø‰.
-        string[] scenes = new[] { "Assets/Scenes/SampleScene.unity" };
+        // WebGL ÎπåÎìú Ïã§Ìñâ
+        var options = new BuildPlayerOptions
+        {
+            scenes = scenes,
+            locationPathName = buildPath,
+            target = BuildTarget.WebGL,
+            options = BuildOptions.None
+        };
 
-        // ∫ÙµÂ Ω√¿€!
-        BuildPipeline.BuildPlayer(scenes, buildPath, BuildTarget.WebGL, BuildOptions.None);
+        BuildReport report = BuildPipeline.BuildPlayer(options);
+        if (report.summary.result != BuildResult.Succeeded)
+        {
+            throw new System.Exception($"WebGL build failed: {report.summary.result}");
+        }
+
     }
 }
+#endif

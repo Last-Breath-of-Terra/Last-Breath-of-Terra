@@ -20,40 +20,30 @@ jobs:
 
       # ─────────────────────────────
       # ? Unity 프로젝트 경로 자동 탐지
-      #   (리포 어디에 있든 ProjectSettings/ProjectVersion.txt를 찾아냄)
       # ─────────────────────────────
       - name: Detect Unity project path
         id: detect
         shell: bash
         run: |
           set -euo pipefail
-          echo "== Top-level list =="
-          ls -la
-
+          echo "== Top-level list ==" && ls -la
           CANDIDATES=$(git ls-files --cached --others --exclude-standard | \
             grep -E '/?ProjectSettings/ProjectVersion.txt$' || true)
-
           if [ -z "$CANDIDATES" ]; then
             CANDIDATES=$(find . -maxdepth 4 -type f -path '*/ProjectSettings/ProjectVersion.txt' | sort || true)
           fi
-
-          echo "== Candidates =="; echo "$CANDIDATES"
+          echo "== Candidates ==" && echo "$CANDIDATES"
           FILE=$(echo "$CANDIDATES" | head -n1)
           if [ -z "$FILE" ]; then
             echo "::error::No Unity ProjectSettings/ProjectVersion.txt found in repo"; exit 1
           fi
-
           PROJ_DIR=$(dirname "$(dirname "$FILE")")
           PROJ_DIR=${PROJ_DIR#./}
           echo "Detected Unity project: $PROJ_DIR"
           echo "project_path=$PROJ_DIR" >> "$GITHUB_OUTPUT"
+          echo "== ProjectVersion.txt ==" && cat "$FILE" || true
 
-          echo "== ProjectVersion.txt =="
-          cat "$FILE" || true
-
-      # ─────────────────────────────
-      # ? 구조/버전 확인 (디버깅)
-      # ─────────────────────────────
+      # ? 구조/버전 출력
       - name: Show detected project structure
         run: |
           set -euxo pipefail
@@ -66,9 +56,7 @@ jobs:
           cat ProjectSettings/ProjectVersion.txt
           echo "========================"
 
-      # ─────────────────────────────
       # ?? Library 캐시 (동적 경로 대응)
-      # ─────────────────────────────
       - name: Restore Library cache
         uses: actions/cache@v4
         with:
@@ -78,9 +66,7 @@ jobs:
             Library-WebGL-
             Library-
 
-      # ─────────────────────────────
       # ? UNITY_* 환경 점검 (민감값 출력 없음)
-      # ─────────────────────────────
       - name: Check UNITY_* env keys (no SERIAL/EMAIL/PASSWORD expected)
         run: |
           set -e
@@ -102,30 +88,34 @@ jobs:
           BYTES=$(printf "%s" "$UNITY_LICENSE" | wc -c | tr -d ' ')
           LINES=$(printf "%s\n" "$UNITY_LICENSE" | wc -l | tr -d ' ')
           echo "UNITY_LICENSE present ?  bytes=$BYTES  lines=$LINES"
-          # UTF-8 대략 검사
           printf "%s" "$UNITY_LICENSE" | iconv -f UTF-8 -t UTF-8 >/dev/null 2>&1 || {
             echo "::warning::UNITY_LICENSE may not be UTF-8. Re-save .ulf as UTF-8."
           }
 
-      # ─────────────────────────────
-      # ?? 빌드 (ulf 전략 강제: SERIAL/EMAIL/PASSWORD 무력화)
-      # ─────────────────────────────
+      # ?? 빌드 (.ulf 전략 강제: SERIAL/EMAIL/PASSWORD 무력화)
       - name: Unity 프로젝트 빌드 (WebGL)
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # .ulf 원문(UTF-8) 전체
-          UNITY_SERIAL: ""          # ? 혹시 남아있어도 무력화
-          UNITY_EMAIL: ""           # ?
-          UNITY_PASSWORD: ""        # ?
+          UNITY_SERIAL: ""          # 혹시 남아있어도 무력화
+          UNITY_EMAIL: ""           # 무력화
+          UNITY_PASSWORD: ""        # 무력화
         with:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL
           projectPath: ${{ steps.detect.outputs.project_path }}
           buildsPath: Build
 
-      # ─────────────────────────────
+      # ? 실패 시 콘솔에서 바로 로그 확인 (Artifacts가 없어도 확인 가능)
+      - name: Show Unity Editor.log tail
+        if: always()
+        run: |
+          echo "===== Editor.log (last 200 lines) ====="
+          find /github/home -name "Editor.log" -exec tail -n 200 {} \; || echo "Editor.log not found under /github/home"
+          find "${{ steps.detect.outputs.project_path }}" -name "Editor.log" -exec tail -n 200 {} \; || true
+          echo "======================================"
+
       # ? 캐시 저장 & 로그/산출물 수집
-      # ─────────────────────────────
       - name: Save Library cache (post-build)
         if: always()
         uses: actions/cache@v4
@@ -151,6 +141,7 @@ jobs:
             **/Editor.log
             **/Upm.log
             **/LicensingClient.log
+            /github/home/.local/share/unity3d/**/Editor.log
             Logs/**
           if-no-files-found: ignore
 
@@ -158,10 +149,9 @@ jobs:
         if: always()
         uses: game-ci/unity-return-license@v2
 
-      # ─────────────────────────────
-      # ? itch.io 배포
-      # ─────────────────────────────
+      # ? itch.io 배포 (성공 시)
       - name: itch.io에 배포
+        if: success()
         run: |
           set -euxo pipefail
           echo "Download Butler"

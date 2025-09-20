@@ -18,12 +18,11 @@ jobs:
       - name: Git LFS pull
         run: git lfs pull
 
-      # Unity 빌드 (Email/Password 기반 Personal 라이선스 사용)
+      # Unity 빌드 (.ulf Personal 라이선스 사용)
       - name: Build WebGL with Unity
         uses: game-ci/unity-builder@v4
         env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # .ulf 원문(UTF-8) 전체
         with:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL

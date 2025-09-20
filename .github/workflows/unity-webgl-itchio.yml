@@ -2,8 +2,8 @@ name: Unity WebGL → itch.io Deploy
 
 on:
   push:
-    branches: [ "main" ]     # main 브랜치 push 시 실행
-  workflow_dispatch:         # 수동 실행 지원
+    branches: [ "main" ]      # main 푸시 시 자동 실행
+  workflow_dispatch:          # 수동 실행 지원
 
 env:
   UNITY_VERSION: 2022.3.22f1
@@ -15,7 +15,8 @@ jobs:
   build-webgl:
     runs-on: ubuntu-latest
     env:
-      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # .ulf 전체 내용
+      # .ulf 전체 텍스트가 들어있는 GitHub Secret
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
     steps:
       - name: Checkout (with LFS)
@@ -32,6 +33,13 @@ jobs:
           restore-keys: |
             Library-${{ env.BUILD_NAME }}-WebGL-
             Library-
+
+      # ✅ 시리얼/계정 경로를 강제로 비워서 .ulf 전략만 사용
+      - name: Force license-file activation (disable serial & account)
+        run: |
+          echo "UNITY_SERIAL=" >> $GITHUB_ENV
+          echo "UNITY_EMAIL=" >> $GITHUB_ENV
+          echo "UNITY_PASSWORD=" >> $GITHUB_ENV
 
       # 🚀 Unity WebGL 빌드
       - name: Build WebGL
@@ -68,7 +76,7 @@ jobs:
           sudo mv butler/butler /usr/local/bin/
           butler --version
 
-      # ⚠️ USERNAME/GAME:CHANNEL 수정 필요
+      # ⚠️ 여기를 네 계정/게임/채널로 변경 (보통 :html5 사용)
       - name: Push to itch.io
         run: |
           butler push "${{ env.BUILDS_PATH }}/${{ env.BUILD_NAME }}/WebGL" PotatoTeam/attis:html5

@@ -2,12 +2,12 @@ name: Unity WebGL → itch.io Deploy
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [ "main" ]     # main 브랜치 push 시 실행
+  workflow_dispatch:         # 수동 실행 지원
 
 env:
   UNITY_VERSION: 2022.3.22f1
-  PROJECT_PATH: "Last Breath of Terra"     # Unity 프로젝트 폴더(공백, 따옴표 필수)
+  PROJECT_PATH: "Last Breath of Terra"   # Unity 프로젝트 폴더 (공백 포함, 따옴표 필수)
   BUILD_NAME: WebGL
   BUILDS_PATH: build
 
@@ -15,7 +15,7 @@ jobs:
   build-webgl:
     runs-on: ubuntu-latest
     env:
-      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # .ulf 전체 텍스트
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}  # .ulf 전체 내용
 
     steps:
       - name: Checkout (with LFS)
@@ -33,12 +33,7 @@ jobs:
             Library-${{ env.BUILD_NAME }}-WebGL-
             Library-
 
-      # 🔑 라이선스 명시적 활성화 (v2)
-      - name: Activate Unity
-        uses: game-ci/unity-activate@v2
-        with:
-          unityVersion: ${{ env.UNITY_VERSION }}
-
+      # 🚀 Unity WebGL 빌드
       - name: Build WebGL
         uses: game-ci/unity-builder@v4
         with:
@@ -47,11 +42,6 @@ jobs:
           projectPath: ${{ env.PROJECT_PATH }}
           buildName: ${{ env.BUILD_NAME }}
           buildsPath: ${{ env.BUILDS_PATH }}
-
-      # ℹ️ 퍼스널이면 보통 반납 불필요. Pro만 쓰고 싶으면 아래 주석 해제.
-      # - name: Return Unity License
-      #   if: always()
-      #   uses: game-ci/unity-return-license@v2
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -78,6 +68,7 @@ jobs:
           sudo mv butler/butler /usr/local/bin/
           butler --version
 
+      # ⚠️ USERNAME/GAME:CHANNEL 수정 필요
       - name: Push to itch.io
         run: |
           butler push "${{ env.BUILDS_PATH }}/${{ env.BUILD_NAME }}/WebGL" PotatoTeam/attis:html5

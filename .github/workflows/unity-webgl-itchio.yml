@@ -6,12 +6,11 @@ on:
 permissions: write-all
   
 jobs:
-  #Job 설정
-  buildForAndroid: 
+  build-webgl: 
     name: Build WebGL
     runs-on: ubuntu-latest
-    steps:
 
+    steps:
       # Step1 - Check Out
       - name: Check Out
         uses: actions/checkout@v4
@@ -21,7 +20,7 @@ jobs:
 
       # Step2 - Cache Library
       - name: Cache Library
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4
         with: 
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
@@ -37,10 +36,10 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
-      
+
       # Step4 - Upload Build File
       - name: Upload Build File
-      - uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: Build-WebGL
           path: build

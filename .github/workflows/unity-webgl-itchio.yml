@@ -22,8 +22,8 @@ jobs:
       - name: Cache Library
         uses: actions/cache@v4
         with: 
-          path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          path: "Last Breath of Terra/Library"
+          key: Library-${{ hashFiles('Last Breath of Terra/Assets/**', 'Last Breath of Terra/Packages/**', 'Last Breath of Terra/ProjectSettings/**') }}
           restore-keys: |
             Library-
 
@@ -36,6 +36,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
+          projectPath: "Last Breath of Terra"   # 👈 여기 추가
 
       # Step4 - Upload Build File
       - name: Upload Build File

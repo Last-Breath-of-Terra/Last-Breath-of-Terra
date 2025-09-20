@@ -18,7 +18,7 @@ jobs:
       - name: Git LFS pull
         run: git lfs pull
 
-      # (선택) Library 캐시 복원
+      # (선택) Library 캐시 복원 ? 첫 빌드 이후 속도 향상
       - name: Restore Library cache
         uses: actions/cache@v4
         with:
@@ -28,23 +28,18 @@ jobs:
             Library-WebGL-
             Library-
 
-      # ? Personal 라이선스(.ulf)로 활성화 ? env로 전달!
-      - name: Activate Unity license
-        uses: game-ci/unity-activate@v2
-        with:
-          unityVersion: 2022.3.22f1
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-
+      # ? 활성화 단계를 제거하고, 빌더에 UNITY_LICENSE를 env로 넘깁니다.
       - name: Unity 프로젝트 빌드 (WebGL)
         uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # 로컬 .ulf 내용 전체를 저장해둔 시크릿
         with:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL
           projectPath: .
           buildsPath: Build
 
-      # (선택) 캐시 저장
+      # (선택) 캐시 저장 ? 다음 빌드 가속
       - name: Save Library cache (post-build)
         if: always()
         uses: actions/cache@v4
@@ -58,6 +53,7 @@ jobs:
           name: WebGL_Build
           path: Build/WebGL
 
+      # 라이선스 반환은 유지 (항상 실행)
       - name: Return Unity license
         if: always()
         uses: game-ci/unity-return-license@v2
@@ -68,6 +64,7 @@ jobs:
           curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
           unzip -q butler.zip -d butler
           chmod +x butler/butler
+
           echo "게임 배포 시작..."
           butler/butler push "Build/WebGL" "PotatoTeam/attis:WebGL" --api-key="${{ secrets.ITCHIO_API_KEY }}"
           echo "게임 배포 완료!"

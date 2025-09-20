@@ -20,40 +20,31 @@ jobs:
 
       # ─────────────────────────────
       # ? Unity 프로젝트 경로 자동 탐지
-      #   - 최상위/하위 폴더 어디에 있어도 자동으로 찾아냄
+      #   (리포 어디에 있든 ProjectSettings/ProjectVersion.txt를 찾아냄)
       # ─────────────────────────────
       - name: Detect Unity project path
         id: detect
         shell: bash
         run: |
           set -euo pipefail
-          echo "== List top-level =="
+          echo "== Top-level list =="
           ls -la
 
-          # 1차: Git 트래킹 파일에서 ProjectVersion.txt 찾기
           CANDIDATES=$(git ls-files --cached --others --exclude-standard | \
             grep -E '/?ProjectSettings/ProjectVersion.txt$' || true)
 
-          # 2차: 워킹디렉토리에서 직접 탐색 (깊이 3까지)
           if [ -z "$CANDIDATES" ]; then
-            CANDIDATES=$(find . -maxdepth 3 -type f -path '*/ProjectSettings/ProjectVersion.txt' | sort || true)
+            CANDIDATES=$(find . -maxdepth 4 -type f -path '*/ProjectSettings/ProjectVersion.txt' | sort || true)
           fi
 
-          echo "== Candidates =="
-          echo "$CANDIDATES"
-
-          # 첫 번째 후보 사용
+          echo "== Candidates =="; echo "$CANDIDATES"
           FILE=$(echo "$CANDIDATES" | head -n1)
           if [ -z "$FILE" ]; then
-            echo "::error::No Unity ProjectSettings/ProjectVersion.txt found in repo (check project location)"
-            exit 1
+            echo "::error::No Unity ProjectSettings/ProjectVersion.txt found in repo"; exit 1
           fi
 
-          # ProjectSettings의 상위 디렉토리가 프로젝트 루트
           PROJ_DIR=$(dirname "$(dirname "$FILE")")
-          # 상대경로 정리
           PROJ_DIR=${PROJ_DIR#./}
-
           echo "Detected Unity project: $PROJ_DIR"
           echo "project_path=$PROJ_DIR" >> "$GITHUB_OUTPUT"
 
@@ -61,7 +52,7 @@ jobs:
           cat "$FILE" || true
 
       # ─────────────────────────────
-      # ? 구조/버전 출력 (디버깅)
+      # ? 구조/버전 확인 (디버깅)
       # ─────────────────────────────
       - name: Show detected project structure
         run: |
@@ -76,8 +67,7 @@ jobs:
           echo "========================"
 
       # ─────────────────────────────
-      # ? Library 캐시 (동적 경로 대응)
-      #   - 동적 경로의 hashFiles는 와일드카드로 대체
+      # ?? Library 캐시 (동적 경로 대응)
       # ─────────────────────────────
       - name: Restore Library cache
         uses: actions/cache@v4
@@ -89,17 +79,16 @@ jobs:
             Library-
 
       # ─────────────────────────────
-      # ? 시크릿/환경 점검 (값은 미노출)
+      # ? UNITY_* 환경 점검 (민감값 출력 없음)
       # ─────────────────────────────
-      - name: Check UNITY_* environment keys (no SERIAL/EMAIL/PASSWORD expected)
+      - name: Check UNITY_* env keys (no SERIAL/EMAIL/PASSWORD expected)
         run: |
           set -e
-          echo "UNITY_* keys in job env (names only):"
+          echo "UNITY_* keys (names only):"
           env | awk -F= '{print $1}' | grep -E '^UNITY_' || true
           BAD=$(env | awk -F= '{print $1}' | grep -E '^(UNITY_SERIAL|UNITY_EMAIL|UNITY_PASSWORD)$' || true)
           if [ -n "$BAD" ]; then
-            echo "::error::Unexpected UNITY keys present -> $BAD"
-            exit 1
+            echo "::warning::Unexpected UNITY keys present in job env -> $BAD (will be neutralized at build step)"
           fi
 
       - name: Check UNITY_LICENSE presence & size (safe)
@@ -113,17 +102,21 @@ jobs:
           BYTES=$(printf "%s" "$UNITY_LICENSE" | wc -c | tr -d ' ')
           LINES=$(printf "%s\n" "$UNITY_LICENSE" | wc -l | tr -d ' ')
           echo "UNITY_LICENSE present ?  bytes=$BYTES  lines=$LINES"
+          # UTF-8 대략 검사
           printf "%s" "$UNITY_LICENSE" | iconv -f UTF-8 -t UTF-8 >/dev/null 2>&1 || {
             echo "::warning::UNITY_LICENSE may not be UTF-8. Re-save .ulf as UTF-8."
           }
 
       # ─────────────────────────────
-      # ?? 빌드 (자동 탐지된 projectPath 사용)
+      # ?? 빌드 (ulf 전략 강제: SERIAL/EMAIL/PASSWORD 무력화)
       # ─────────────────────────────
       - name: Unity 프로젝트 빌드 (WebGL)
         uses: game-ci/unity-builder@v4
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # Personal .ulf
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}   # .ulf 원문(UTF-8) 전체
+          UNITY_SERIAL: ""          # ? 혹시 남아있어도 무력화
+          UNITY_EMAIL: ""           # ?
+          UNITY_PASSWORD: ""        # ?
         with:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL

@@ -1,8 +1,10 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using System.Collections;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 /// <summary>
 /// UI 관련 요소와 효과(광원, 커서, 미니맵 등)를 관리하는 클래스.
@@ -17,11 +19,16 @@ public class UIManager : MonoBehaviour
     public GameObject movingLightEffect;
     public GameObject jumpLightEffect;
 
+    [Header("Fade Settings")]
+    public Image fadePanel;
+    public float fadeInDuration = 2f;
+
     private bool isHoldingClick;
 
     void Start()
     {
-        Cursor.visible = false;   
+        Cursor.visible = false;
+        StartCoroutine(SceneFadeIn());   
     }
 
     void Update()
@@ -35,6 +42,19 @@ public class UIManager : MonoBehaviour
     void FixedUpdate()
     {
         UpdateCursorIndicator();
+    }
+
+    private IEnumerator SceneFadeIn()
+    {
+        if (fadePanel != null)
+        {
+            fadePanel.gameObject.SetActive(true);
+            fadePanel.color = Color.black;
+
+            yield return fadePanel.DOFade(0f, fadeInDuration).SetEase(Ease.OutQuad).WaitForCompletion();
+
+            fadePanel.gameObject.SetActive(false);
+        }
     }
 
     public Vector2 GetMouseWorldPosition()

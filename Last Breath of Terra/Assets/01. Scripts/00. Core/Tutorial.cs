@@ -5,6 +5,8 @@ using UnityEngine;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using DG.Tweening;
 
 
 public class Tutorial : MonoBehaviour
@@ -12,6 +14,8 @@ public class Tutorial : MonoBehaviour
     public GameObject door;
     public GameObject obstacle;
     public GameObject revivalPractice;
+    public Image fadePanel;
+
     private void Update()
     {
         int count = InfuserManager.Instance.activatedInfusers.Count(x => x);
@@ -39,10 +43,18 @@ public class Tutorial : MonoBehaviour
 
         if (other.gameObject.name == "TutorialClear")
         {
-            //SceneManager.LoadScene("StageSelection");
-            StoryManager.Instance.ActivateStoryForScene("TutorialStory");
-            SceneManager.LoadScene("StoryScene");
+            StartCoroutine(LoadGameStage());
         }
-        
+    }
+
+    private IEnumerator LoadGameStage()
+    {
+        fadePanel.gameObject.SetActive(true);
+
+        fadePanel.color = new Color(1f, 1f, 1f, 0f);
+        yield return fadePanel.DOFade(1f, 1f).SetEase(Ease.OutQuad).WaitForCompletion();
+        yield return fadePanel.DOColor(Color.black, 1f).SetEase(Ease.InQuad).WaitForCompletion();
+        StoryManager.Instance.ActivateStoryForScene("TutorialStory");
+        SceneManager.LoadScene("StoryScene");
     }
 }

@@ -252,7 +252,7 @@ public class TitleSceneManager : MonoBehaviour
         if (particle == null) return;
 
         var main = particle.main;
-        main.startSize = Mathf.Lerp(0.5f, 1f, t);
+        main.startSize = Mathf.Lerp(1.7f, 5f, t);
     }
 
     private IEnumerator DeleteAndReturnToSave()

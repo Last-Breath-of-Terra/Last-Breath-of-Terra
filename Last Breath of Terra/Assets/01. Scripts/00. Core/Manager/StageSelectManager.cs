@@ -24,6 +24,7 @@ public class StageSelectManager : MonoBehaviour
     [Header("FX Elements")]
     public ParticleSystem flameGaugeParticle;
     public Image fadePanel;
+    public Image whiteFadePanel;
 
     private int currentIndex = 0;
 
@@ -70,12 +71,13 @@ public class StageSelectManager : MonoBehaviour
             holdTime += Time.deltaTime;
             float t = Mathf.Clamp01(holdTime / holdThreshold);
             UpdateFlameGauge(t);
-
-            etherisAnim.SetTrigger("Jump");
+            UpdateWhiteFade(t);
 
             if (holdTime >= holdThreshold)
             {
                 isHoldingSpace = false;
+                etherisAnim.SetTrigger("Jump");
+                ResetWhiteFade();
                 StartCoroutine(LoadSelectedStage());
             }
         }
@@ -85,6 +87,7 @@ public class StageSelectManager : MonoBehaviour
             isHoldingSpace = false;
             holdTime = 0f;
             UpdateFlameGauge(0f);
+            ResetWhiteFade();
         }
     }
 
@@ -146,15 +149,38 @@ public class StageSelectManager : MonoBehaviour
         main.startSize = Mathf.Lerp(1.5f, 5f, t);
     }
 
+    private void UpdateWhiteFade(float t)
+    {
+        if (whiteFadePanel == null) return;
+
+        Color color = whiteFadePanel.color;
+        color.a = Mathf.Lerp(0f, 30f / 255f, t);
+        whiteFadePanel.color = color;
+    }
+
+    private void ResetWhiteFade()
+    {
+        if (whiteFadePanel == null) return;
+
+        Color color = whiteFadePanel.color;
+        color.a = 0f;
+        whiteFadePanel.color = color;
+    }
+
     IEnumerator LoadSelectedStage()
     {
+        yield return new WaitForSeconds(1f);
+
         fadePanel.gameObject.SetActive(true);
 
         fadePanel.color = new Color(1f, 1f, 1f, 0f);
         yield return fadePanel.DOFade(1f, 1f).SetEase(Ease.OutQuad).WaitForCompletion();
         yield return fadePanel.DOColor(Color.black, 1f).SetEase(Ease.InQuad).WaitForCompletion();
 
-        SceneManager.LoadScene(stages[currentIndex].sceneName);
+        StoryManager.Instance.ActivateStoryForScene(stages[currentIndex].sceneName + "Story");
+        SceneManager.LoadScene("StoryScene");
+
+        // SceneManager.LoadScene(stages[currentIndex].sceneName);
         yield return null;
     }
 }

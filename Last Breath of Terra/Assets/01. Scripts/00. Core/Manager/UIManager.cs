@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using System.Collections;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -20,11 +21,16 @@ public class UIManager : Singleton<UIManager>
     public GameObject jumpLightEffect;
     public float hideDelay = 0.5f;
 
+    [Header("Fade Settings")]
+    public Image fadePanel;
+    public float fadeInDuration = 2f;
+
     private bool isHoldingClick;
 
     void Start()
     {
-        Cursor.visible = false;   
+        Cursor.visible = false;
+        StartCoroutine(SceneFadeIn());   
     }
 
     void Update()
@@ -38,6 +44,19 @@ public class UIManager : Singleton<UIManager>
     void FixedUpdate()
     {
         UpdateCursorIndicator();
+    }
+
+    private IEnumerator SceneFadeIn()
+    {
+        if (fadePanel != null)
+        {
+            fadePanel.gameObject.SetActive(true);
+            fadePanel.color = Color.black;
+
+            yield return fadePanel.DOFade(0f, fadeInDuration).SetEase(Ease.OutQuad).WaitForCompletion();
+
+            fadePanel.gameObject.SetActive(false);
+        }
     }
 
     public Vector2 GetMouseWorldPosition()

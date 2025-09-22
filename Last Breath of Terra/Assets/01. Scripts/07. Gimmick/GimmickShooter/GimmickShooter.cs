@@ -12,11 +12,12 @@ public class GimmickShooter : MonoBehaviour
     private GameObject obstacle;
     private Coroutine coroutine;
     private float respawnCooldown;
-
+    
     private void Start()
     {
         if (shootForce == 0f)
             shootForce = GimmickShooterManager.Instance.shootForce;
+
     }
 
     public void StartShooter()

@@ -94,11 +94,11 @@ public class TeleportManager : Singleton<TeleportManager>
         player.transform.position = teleportSet[targetID].transform.position + teleportOffset  * teleportDirection;
         Debug.Log("playerPos : " + player.transform.position + "targetPos : ");
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        //GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
         
         yield return new WaitForSeconds(0.2f);
 
-
+        
 
         //포탈 나와서
         if (teleportDirection == new Vector3(0, 1, 0)) //올라옴
@@ -180,6 +180,7 @@ public class TeleportManager : Singleton<TeleportManager>
 
         fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
+        gameObject.GetComponent<GimmickChange>().ChangeGimmick(teleportSet[targetID].GetComponent<Teleport>().mapID);
 
         //플레이어 이동 
         player.GetComponent<PlayerController>().canMove = true;

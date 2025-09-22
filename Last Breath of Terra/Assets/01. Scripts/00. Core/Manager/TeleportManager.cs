@@ -72,6 +72,7 @@ public class TeleportManager : Singleton<TeleportManager>
             player.transform.DOMove(player.transform.position + teleportDirection * 2, fadeDuration);
             //DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
         }
+        gameObject.GetComponent<GimmickChange>().ChangeGimmick(teleportSet[targetID].GetComponent<Teleport>().mapID);
 
         
         //fadein
@@ -98,7 +99,7 @@ public class TeleportManager : Singleton<TeleportManager>
         
         yield return new WaitForSeconds(0.2f);
 
-        
+
 
         //포탈 나와서
         if (teleportDirection == new Vector3(0, 1, 0)) //올라옴
@@ -180,7 +181,6 @@ public class TeleportManager : Singleton<TeleportManager>
 
         fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
-        gameObject.GetComponent<GimmickChange>().ChangeGimmick(teleportSet[targetID].GetComponent<Teleport>().mapID);
 
         //플레이어 이동 
         player.GetComponent<PlayerController>().canMove = true;

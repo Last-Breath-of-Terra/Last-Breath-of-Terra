@@ -11,6 +11,7 @@ public class GimmickShooterManager : Singleton<GimmickShooterManager>
     public float shootForce = 10f;
     [SerializeField] private GimmickGroup[] gimmickGroups;
     private GimmickGroup currentGroup;
+    
 
     void Start()
     {

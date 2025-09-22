@@ -21,6 +21,7 @@ public class GimmickShooter : MonoBehaviour
 
     public void StartShooter()
     {
+        GimmickManager.Instance.PlayGimmickSFX("Sfx_IceFlowerWarning01", gameObject, true);
         respawnCooldown = Random.Range(GimmickShooterManager.Instance.respawnTimeRange.x,
             GimmickShooterManager.Instance.respawnTimeRange.y);
         Debug.Log("respawnCooldown : " + respawnCooldown);
@@ -34,6 +35,7 @@ public class GimmickShooter : MonoBehaviour
 
     IEnumerator MoveShooter()
     {
+        float audioLength;
         while (true)
         {
             obstacle = PoolManager.Instance.GetObject(GimmickShooterManager.Instance.poolName);
@@ -53,11 +55,14 @@ public class GimmickShooter : MonoBehaviour
                 }
 
                 Rigidbody2D rb = obstacle.GetComponent<Rigidbody2D>();
-                
+                audioLength = GimmickManager.Instance.PlayGimmickSFX("Sfx_IceFlowerFire02", gameObject, true);
+
                 if(isStage1)
                     rb.AddForce(gameObject.transform.up.normalized * GimmickShooterManager.Instance.shootForce, ForceMode2D.Impulse);
                 else
                     rb.AddForce(gameObject.transform.right.normalized * GimmickShooterManager.Instance.shootForce, ForceMode2D.Impulse);
+                
+
                 /*
             obstacle.transform.DOMoveX(obstacle.transform.position.x - 10f / respawnCooldown, respawnCooldown)
                 .SetEase(Ease.Linear)
@@ -69,6 +74,9 @@ public class GimmickShooter : MonoBehaviour
             }
 
             yield return new WaitForSeconds(respawnCooldown);
+            audioLength = GimmickManager.Instance.PlayGimmickSFX("Sfx_IceFlowerWarning01", gameObject, true);
+            yield return new WaitForSeconds(audioLength);
+
             PoolManager.Instance.ReturnObject(GimmickShooterManager.Instance.poolName, obstacle);
         }
     }

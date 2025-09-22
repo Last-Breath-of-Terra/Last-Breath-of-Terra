@@ -30,14 +30,17 @@ public class SpikeTrapTriggerArea : MonoBehaviour
         {
             if (trap != null)
             {
+                float moveTime = 0;
                 trap.DOKill();
+                moveTime = GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_SpikeUp01", trap.gameObject, false);
                 trap.DOMoveY(transform.position.y + 2f, 1f)
                     .SetEase(Ease.OutQuad);
-                yield return new WaitForSeconds(SpikeTrapManager.Instance.spikeActiveTime);
+                yield return new WaitForSeconds(SpikeTrapManager.Instance.spikeActiveTime + moveTime);
                 trap.DOKill();
+                moveTime = GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_SpikeDown03", trap.gameObject, false);
                 trap.DOMoveY(transform.position.y - 2f, 1f)
                     .SetEase(Ease.InQuad);
-                yield return new WaitForSeconds(SpikeTrapManager.Instance.cooldownTime);
+                yield return new WaitForSeconds(SpikeTrapManager.Instance.cooldownTime + moveTime);
             }
         }
     }

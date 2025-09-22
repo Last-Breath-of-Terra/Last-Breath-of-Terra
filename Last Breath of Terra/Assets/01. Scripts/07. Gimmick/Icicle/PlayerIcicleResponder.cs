@@ -69,6 +69,7 @@ public class PlayerIcicleResponder : MonoBehaviour
         playerInput.SwitchCurrentActionMap("Player");
         gameObject.GetComponent<Animator>().SetBool("IcicleHit", false);
         Cursor.visible = false;
+        GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimickiceclefallbreakfree", gameObject, true);
     }
 
     public void OnClickPlayer(InputAction.CallbackContext context)

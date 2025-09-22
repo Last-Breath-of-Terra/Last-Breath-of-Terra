@@ -11,6 +11,7 @@ public class SpikeTrap : MonoBehaviour
     {
         if (other.transform.CompareTag("Player"))
         {
+            GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_SpikeDamage02", gameObject, true);
             Debug.Log("Spike");
             other.GetComponent<PlayerController>().HP -= damage;
             GimmickManager.Instance.ChangeLifeInfuserUISize();

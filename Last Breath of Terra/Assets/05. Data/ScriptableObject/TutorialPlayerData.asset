@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1de2538842d84eea998bf314cfb95c6, type: 3}
   m_Name: TutorialPlayerData
   m_EditorClassIdentifier: 
-  hp: 5
+  hp: -1
   maxSpeed: 8
   maxFallSpeed: 10
   fallAccelerationTime: 2
   moveAccelerationTime: 5
+  fallThreshold: 4
   jumpForce: 17
   walljumpForce: 8
   climbSpeed: 3

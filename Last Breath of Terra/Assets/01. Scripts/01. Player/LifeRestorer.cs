@@ -1,19 +1,16 @@
-using Cinemachine;
-using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using Cinemachine;
+using Unity.VisualScripting;
+using UnityEngine.UI;
+using DG.Tweening;
+using System.Linq;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
-
 
 public class LifeRestorer : MonoBehaviour
 {
@@ -21,16 +18,14 @@ public class LifeRestorer : MonoBehaviour
     public CinemachineVirtualCamera camera;
     public CinemachineVirtualCamera infuserTrackedCamera;
     public ObstacleManager obstacleManager;
-
+    
     [SerializeField] private InputActionMap selectMap;
 
     private PlayerInput playerInput;
-    private Vector2 defaultSize = new Vector2(174, 271);
+    private Vector2 defaultSize; //= new Vector2(174, 271);
     private Vector2 newSize;
     private int infuserNumber;
-
-    private bool isBigger = false;
-    private float uiTweenDuration = 2f; // 애니메이션을 2초 동안 실행
+    private float uiTweenDuration = 2f;
 
     private void Awake()
     {
@@ -40,16 +35,19 @@ public class LifeRestorer : MonoBehaviour
     private void Start()
     {
         InfuserManager.Instance.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
+        Transform[] transform = InfuserManager.Instance.infuserStatusChild;
+        defaultSize = InfuserManager.Instance.infuserStatusChild[0].GetComponent<RectTransform>().sizeDelta;
         newSize = defaultSize * 1.2f;
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.CompareTag("Obstacle"))
         {
-            var playerController = GetComponent<PlayerController>();
+            var playerController = gameObject.GetComponent<PlayerController>();
 
-            if (!InfuserManager.Instance.activatedInfusers.Any(active => active))
+            if (!InfuserManager.Instance.activatedInfusers.Any(infuser => infuser))
             {
                 SceneManager.LoadScene("StageSelection");
             }
@@ -58,47 +56,50 @@ public class LifeRestorer : MonoBehaviour
                 playerController.SetKnockdownState(true);
                 obstacleManager.isRestoring = true;
                 obstacleManager.StopAllObstacles();
-                Invoke(nameof(StartLifeRestorer), 1f);
+                Invoke("StartLifeRestorer", 1f);
             }
         }
     }
 
     private void StartLifeRestorer()
     {
-        Debug.Log("Start Life Restorer");
-
-        // 입력 모드 전환
+        Debug.Log("Deactivating obstacle");
+        
+        //마우스 조작 변경
         SwitchActionMap("Select");
+        //왼쪽 끝에서부터 설정
         infuserNumber = 0;
-
-        // UI 활성화
+        //UpdateRectSize(infuserNumber, newSize);
+        //UI 활성화
+        DOTween.To(() => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale, x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x, new Vector3(1f, 1f, 1f), 0.1f);
         lifeInfuserData.SetUIForInfuserStatus(true);
-
-        // 첫 번째 활성 인퓨저 선택 (크기 및 투명도 설정)
+        //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 1.0f);
+        //lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
         for (int i = 0; i + infuserNumber < InfuserManager.Instance.activatedInfusers.Length; i++)
         {
             if (InfuserManager.Instance.activatedInfusers[i + infuserNumber])
             {
-                SelectReviveLife(i);
+                if (i + infuserNumber <= InfuserManager.Instance.activatedInfusers.Length)
+                {
+                    SelectReviveLife(i);
+
+                }
                 break;
             }
         }
 
-        // 카메라 설정
+        //카메라 이동
         infuserTrackedCamera.Follow = InfuserManager.Instance.infuser[infuserNumber].transform;
+        //infuserTrackedCamera.transform.position = lifeInfuserData.infuser[infuserNumber].transform.position;
         infuserTrackedCamera.gameObject.SetActive(true);
     }
 
     public void SwitchActionMap(string actionMapName)
     {
-        Debug.Log("Switching ActionMap to " + actionMapName);
         playerInput.SwitchCurrentActionMap(actionMapName);
     }
-
-    public void GameOver()
-    {
-        SceneManager.LoadScene("StageSelection");
-    }
+    
+    #region SelectInputSetting
 
     private void OnEnable()
     {
@@ -119,6 +120,9 @@ public class LifeRestorer : MonoBehaviour
             playerInput.actions["Select/Select"].performed -= OnSelect;
         }
     }
+
+    #endregion
+
 
     public void OnLeftSelect(InputAction.CallbackContext context)
     {
@@ -141,6 +145,7 @@ public class LifeRestorer : MonoBehaviour
             if (InfuserManager.Instance.activatedInfusers[i + infuserNumber])
             {
                 SelectReviveLife(i);
+                
                 break;
             }
         }
@@ -148,31 +153,35 @@ public class LifeRestorer : MonoBehaviour
 
     public void OnSelect(InputAction.CallbackContext context)
     {
+        //부활사운드
         AudioManager.Instance.PlayPlayer("revival", 0f);
+        
+        //오브젝트 변경
+        InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().sprite = lifeInfuserData.InfuserInactiveImage[InfuserManager.Instance.infuser[infuserNumber].GetComponent<LifeInfuser>().infuserType];
+        InfuserManager.Instance.infuser[infuserNumber].GetComponent<SpriteRenderer>().material = lifeInfuserData.defaultMaterial;
+        //자식 오브젝트 변경
+        InfuserManager.Instance.infuserStatusChild[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
+        InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.4f);
 
-        // UI 축소 및 투명도 변경
-        isBigger = false;
-        AnimateSlotUI(infuserNumber, defaultSize, 0.5f);
-        lifeInfuserData.SetUIForInfuserStatus(false);
-
-        // 상태 업데이트
+        //상태 업데이트
         InfuserManager.Instance.activatedInfusers[infuserNumber] = false;
         InfuserManager.Instance.canInfusion[infuserNumber] = true;
-
         Invoke(nameof(Revival), 1f);
     }
 
     private void Revival()
     {
-        // 부활 후 UI 축소
-        isBigger = false;
-        AnimateSlotUI(infuserNumber, defaultSize, 0.5f);
+        //UI 변경
+        UpdateRectSize(infuserNumber, defaultSize);
+        lifeInfuserData.SetUIForInfuserStatus(false);
 
-        // 입력 및 카메라 복귀
+        //카메라 비활성화
         infuserTrackedCamera.gameObject.SetActive(false);
+
+        //마우스 조작 변경
         SwitchActionMap("Player");
 
-        var playerController = GetComponent<PlayerController>();
+        var playerController = gameObject.GetComponent<PlayerController>();
         playerController.SetKnockdownState(false);
         playerController.SetCanMove(true);
         obstacleManager.isRestoring = false;
@@ -181,45 +190,35 @@ public class LifeRestorer : MonoBehaviour
 
     public void SelectReviveLife(int amount)
     {
-        // 이전 슬롯 작게
-        AnimateSlotUI(infuserNumber, defaultSize, 0.5f);
-        InfuserManager.Instance.infuserStatusChild[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
-
-        int newIndex = infuserNumber + amount;
-
-        // 새 슬롯 크게
-        isBigger = true;
-        AnimateSlotUI(newIndex, newSize, 1f);
-        InfuserManager.Instance.infuserStatusChild[newIndex].transform.GetChild(0).gameObject.SetActive(true);
-
-        // 이펙트 및 카메라 조정
-        var selected = InfuserManager.Instance.infuser[newIndex];
+        //선택한 오브젝트 빛나기...
+        GameObject selectedInfuser = InfuserManager.Instance.infuser[infuserNumber];
+        selectedInfuser.GetComponent<SpriteRenderer>().material.SetFloat("_Enabled", 1f);
+        InfuserManager.Instance.infuser[infuserNumber+1].GetComponent<SpriteRenderer>().material.SetFloat("_Enabled", 0f);
         GameManager.Instance._shaderManager.LifeSacrificeEffect(
-            selected.GetComponent<SpriteRenderer>().material,
-            Camera.main.GetComponent<Volume>(),
+            selectedInfuser.GetComponent<SpriteRenderer>().material, 
+            Camera.main.GetComponent<Volume>(), 
             lifeInfuserData.infusionDuration);
 
-        infuserTrackedCamera.Follow = selected.transform;
-        infuserNumber = newIndex;
+        //기존 값
+        UpdateRectSize(infuserNumber, defaultSize);
+        InfuserManager.Instance.infuserStatusChild[infuserNumber].transform.GetChild(0).gameObject.SetActive(false);
+
+        //새로운 값
+        Debug.Log("infuserNumber : " + infuserNumber + ", amount : " + amount + " newInfuserNumber : " + infuserNumber + amount);
+        infuserNumber += amount;//Mathf.Clamp(setValue, 0, lifeInfuserData.totalInfuser);
+        InfuserManager.Instance.infuserStatusChild[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
+        UpdateRectSize(infuserNumber, newSize);
+
+
+        //카메라 이동
+        infuserTrackedCamera.Follow = InfuserManager.Instance.infuser[infuserNumber].transform;
     }
-
-    /// <summary>
-    /// 인퓨저 UI 슬롯의 크기와 투명도를 Tween으로 변경
-    /// </summary>
-    /// <summary>
-    /// 인퓨저 UI 슬롯의 크기와 투명도를 Tween으로 변경
-    /// </summary>
-    private void AnimateSlotUI(int index, Vector2 targetSize, float targetAlpha)
+    
+    private void UpdateRectSize(int setValue, Vector2 changeSize)
     {
-        var slot = InfuserManager.Instance.infuserStatusChild[index];
-        var rect = slot.GetComponent<RectTransform>();
-        // UnityEngine.UI.Image를 명시적으로 사용하여 모호성 제거
-        UnityEngine.UI.Image img = slot.GetComponent<UnityEngine.UI.Image>();
-
-        Debug.Log($"[AnimateSlotUI] index:{index}, targetSize:{targetSize}, targetAlpha:{targetAlpha}, duration:{uiTweenDuration}, isBigger:{isBigger}");
-
-        DOTween.Kill(rect);
-        rect.DOSizeDelta(targetSize, uiTweenDuration).SetEase(Ease.InOutCubic); // 부드러운 In-Out Cubic 이징
-        img.DOFade(targetAlpha, uiTweenDuration).SetEase(Ease.InOutCubic); // 부드러운 In-Out Cubic 이징
+        RectTransform rectTransform = InfuserManager.Instance.infuserStatusChild[setValue].GetComponent<RectTransform>();
+        rectTransform.sizeDelta = changeSize;
+        rectTransform.DOSizeDelta(changeSize, uiTweenDuration).SetEase(Ease.InOutCubic); 
+        
     }
 }

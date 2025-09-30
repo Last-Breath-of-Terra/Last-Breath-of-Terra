@@ -72,6 +72,7 @@ public class TeleportManager : Singleton<TeleportManager>
             player.transform.DOMove(player.transform.position + teleportDirection * 2, fadeDuration);
             //DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
         }
+        gameObject.GetComponent<GimmickChange>().ChangeGimmick(teleportSet[targetID].GetComponent<Teleport>().mapID);
 
         
         //fadein
@@ -94,7 +95,7 @@ public class TeleportManager : Singleton<TeleportManager>
         player.transform.position = teleportSet[targetID].transform.position + teleportOffset  * teleportDirection;
         Debug.Log("playerPos : " + player.transform.position + "targetPos : ");
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
+        //GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
         
         yield return new WaitForSeconds(0.2f);
 

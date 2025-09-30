@@ -21,7 +21,6 @@ public class Stone : MonoBehaviour
     private void Start()
     {
         fallSpeed = 0f;
-
         seq = DOTween.Sequence();
         transform.DOShakeRotation(
             duration: 0.3f,
@@ -33,10 +32,18 @@ public class Stone : MonoBehaviour
         seq.AppendInterval(0.2f).AppendCallback(() => FallStone());
     }
 
+    private void OnEnable()
+    {
+        GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_stonefallnotice_01", gameObject, false);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
+        float audioTime = 1f;
         if (other.gameObject.CompareTag("Player"))
         {
+            audioTime = GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_stonefallhit_04", gameObject, true);
+
             PlayerController player = other.GetComponent<PlayerController>();
             PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
             if (player == null || playerMovement == null) return;
@@ -67,6 +74,8 @@ public class Stone : MonoBehaviour
 
         if (other.gameObject.CompareTag("Ground"))
         {
+            audioTime = GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_stonefallground_03", gameObject, true);
+
             Debug.Log("충돌 : " + other.gameObject.name);
             PoolManager.Instance.ReturnObject(IcicleManager.Instance.poolName, gameObject);
         }
@@ -74,6 +83,8 @@ public class Stone : MonoBehaviour
 
     public void FallStone()
     {
+        GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_stonefallnotice_02", gameObject, true);
+
         DOTween.To(() => fallSpeed, x => fallSpeed = x, maxFallSpeed, fallDuration)
             .SetEase(Ease.InQuad);
     }

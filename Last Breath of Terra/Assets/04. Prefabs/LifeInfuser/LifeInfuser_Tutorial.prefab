@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ba1176708b21146b75f4f00095d32a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifeInfuserData: {fileID: 11400000, guid: 8fb6ba2920c5aa646bc77e9de7c28c8c, type: 2}
+  lifeInfuserData: {fileID: 11400000, guid: 6f9c077d6d39a8146b908a4c7992fba3, type: 2}
   obstacleSpawnPoints:
   - {fileID: 6591045163204003044}
   - {fileID: 4091875733053358933}
@@ -206,10 +206,11 @@ MonoBehaviour:
   - {fileID: 5416006234300100790}
   - {fileID: 8302633193433872823}
   infuserNumber: 0
-  infuserType: 3
+  infuserType: 0
   spawnDelay: 1
   spawnInterval: 2
   arrivalPoint: {fileID: 1086495019099698222}
+  mapID: 
 --- !u!82 &3060583005976478257
 AudioSource:
   m_ObjectHideFlags: 0
@@ -644,7 +645,7 @@ Transform:
   m_GameObject: {fileID: 6101807795544075950}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -14.15, z: 0}
+  m_LocalPosition: {x: 5.9, y: -13.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

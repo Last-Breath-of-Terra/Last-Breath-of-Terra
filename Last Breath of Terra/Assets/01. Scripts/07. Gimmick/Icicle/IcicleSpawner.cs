@@ -7,11 +7,21 @@ using Random = UnityEngine.Random;
 public class IcicleSpawner : MonoBehaviour
 {
     private BoxCollider2D boxCollider;
+    private Coroutine coroutine;
 
     private void Start()
     {
         boxCollider = GetComponent<BoxCollider2D>();
-        StartCoroutine(SpawnIcicle());
+    }
+
+    private void OnEnable()
+    {
+        coroutine = StartCoroutine(SpawnIcicle());
+    }
+
+    private void OnDisable()
+    {
+        StopCoroutine(coroutine);
     }
 
     IEnumerator SpawnIcicle()

@@ -15,7 +15,6 @@ public class Icicle : MonoBehaviour
     private void Start()
     {
         fallSpeed = 0f;
-        GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_iciclefallnotice_01", gameObject, true);
         Sequence seq = DOTween.Sequence();
         transform.DOShakeRotation(
             duration: 0.3f,
@@ -27,6 +26,11 @@ public class Icicle : MonoBehaviour
         seq.AppendInterval(0.2f);
         seq.AppendCallback(() => Fallicicle());
         Invoke("Fallicicle", 0.2f);
+    }
+
+    private void OnEnable()
+    {
+        GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_iciclefallnotice_01", gameObject, true);
     }
 
     private void Update()

@@ -15,10 +15,10 @@ public class CameraController : MonoBehaviour
     public bool isYlockZone;
     void Start()
     {
-        CinemachineVirtualCamera virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
-        if (virtualCamera != null)
+        _virtualCamera = gameObject.GetComponent<CinemachineVirtualCamera>();
+        if (_virtualCamera != null)
         {
-            _framingTransposer = virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+            _framingTransposer = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         }
 
     }

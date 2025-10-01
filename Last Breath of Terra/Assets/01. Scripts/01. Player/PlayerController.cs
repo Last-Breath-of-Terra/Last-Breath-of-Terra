@@ -29,6 +29,11 @@ public class PlayerController : MonoBehaviour
         get => hp;
         set { if (value == hp) return; hp=value; UIManager.Instance.UpdatePlayerHPUI(hp); }
     }
+
+    public void setGravity(int scale)
+    {
+        Rb.gravityScale = scale;
+    }
     void Awake()
     {
         Rb = GetComponent<Rigidbody2D>();

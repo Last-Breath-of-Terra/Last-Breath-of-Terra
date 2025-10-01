@@ -56,7 +56,7 @@ public class TeleportManager : Singleton<TeleportManager>
         //포탈 들어가기 전
         if (teleportDirection == Vector3.up) //위로 갈 때
         {
-            player.GetComponent<Rigidbody2D>().gravityScale = 0;
+            player.GetComponent<PlayerController>().setGravity(0);
             animator.SetBool("isJumping", true);
         }
         else if (teleportDirection != Vector3.down)
@@ -134,7 +134,7 @@ public class TeleportManager : Singleton<TeleportManager>
 
         if (teleportDirection == Vector3.up)
         {
-            player.GetComponent<Rigidbody2D>().gravityScale = 3;
+            player.GetComponent<PlayerController>().setGravity(3);
             animator.SetBool("Jump", false);
         }
         else if (teleportDirection != Vector3.down)

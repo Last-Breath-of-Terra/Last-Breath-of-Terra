@@ -45,11 +45,6 @@ public class Teleport : MonoBehaviour
             TeleportManager.Instance.MoveToPortal();
             GameManager.Instance._stageminimapManager.OnMapEntered(targetMapID);
             TeleportManager.Instance.CoFade(targetID, directionOffsets[portalDirection]);
-            //※※※※※※※※※※※※※※※임시 코드※※※※※※※※※※※※※※※※※※※※※※※※※
-            //StartCoroutine(ResetTeleportingFlag());
-            //※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-            //player.transform.position = TeleportManager.Instance.teleportSO.portals[targetID];
-            //TeleportManager.Instance.ChangeCamera(targetID / 2);
         }
     }
 }

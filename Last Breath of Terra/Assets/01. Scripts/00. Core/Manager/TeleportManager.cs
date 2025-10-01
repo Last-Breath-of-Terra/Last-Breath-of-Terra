@@ -12,6 +12,8 @@ public class TeleportManager : Singleton<TeleportManager>
     public Image fadeImage;
     public float fadeDuration = 1f;
 
+    [SerializeField] LayerMask mask;
+
     private GameObject player;
     private Animator animator;
 
@@ -21,7 +23,6 @@ public class TeleportManager : Singleton<TeleportManager>
 
     private void Start()
     {
-        Debug.Log("teleportSet.Length : " + teleportSet.Length);
         player = GameObject.FindGameObjectWithTag("Player");
         animator = player.GetComponent<Animator>();
     }
@@ -31,17 +32,14 @@ public class TeleportManager : Singleton<TeleportManager>
         var confiner = virtualCamera.GetComponent<CinemachineConfiner2D>();
         if (confiner == null)
         {
-            // CinemachineConfiner가 없다면 추가하기
             confiner = virtualCamera.gameObject.AddComponent<CinemachineConfiner2D>();
-            Debug.Log("CinemachineConfiner component added.");
         }
 
-        Debug.Log("mapID" + mapID);
         virtualCamera.GetComponent<CinemachineConfiner2D>().m_BoundingShape2D = camBorders[mapID];
     }
 
-    
 
+    //텔레포트 시작 코루틴 시작
     public void CoFade(int targetID, Vector3 teleportDirection)
     {
         StartCoroutine(Fade(targetID, teleportDirection));
@@ -56,121 +54,93 @@ public class TeleportManager : Singleton<TeleportManager>
         int teleportOffset = 2;
 
         //포탈 들어가기 전
-        if (teleportDirection == new Vector3(0, 1, 0)) //위로 갈 때
+        if (teleportDirection == Vector3.up) //위로 갈 때
         {
             player.GetComponent<Rigidbody2D>().gravityScale = 0;
             animator.SetBool("isJumping", true);
         }
-        else if (teleportDirection == new Vector3(0, -1, 0))
-        {
-            animator.SetBool("isFalling", true);
-        }
-
-        if (teleportDirection == new Vector3(1, 0, 0) || teleportDirection == new Vector3(-1, 0, 0))
+        else if (teleportDirection != Vector3.down)
         {
             animator.SetBool("MoveToPortal", true);
             player.transform.DOMove(player.transform.position + teleportDirection * 2, fadeDuration);
-            //DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + teleportDirection * 2, 1f);
         }
+
         gameObject.GetComponent<GimmickChange>().ChangeGimmick(teleportSet[targetID].GetComponent<Teleport>().mapID);
 
-        
-        //fadein
+
+        //fadein 
         for (float i = 0; i < 1f; i += 0.02f)
         {
             yield return new WaitForSeconds(0.01f);
             fadeImage.color = new Color(0f, 0f, 0f, i);
         }
 
-        //animator.Play("Idle");
-//        virtualCamera.enabled = false;
-        //포탈이동
-        /*
-        virtualCamera.Follow = null;
-        virtualCamera.transform.position = teleportSet[targetID].transform.position;
-                virtualCamera.Follow = player.transform;
-
-        */
         player.transform.DOKill();
-        player.transform.position = teleportSet[targetID].transform.position + teleportOffset  * teleportDirection;
-        Debug.Log("playerPos : " + player.transform.position + "targetPos : ");
+        player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
         //GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        
+
         yield return new WaitForSeconds(0.2f);
 
-
+        
 
         //포탈 나와서
-        if (teleportDirection == new Vector3(0, 1, 0)) //올라옴
+        if (teleportDirection == Vector3.up)
         {
-            //player.transform.position = teleportSet[targetID].GetComponent<Teleport>().targetPos.position;
-            teleportOffset = 3;
-            //player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
-            //DOTween.To(() => player.transform.position, x => player.transform.position = x, player.transform.position + new Vector3(2, 0, 0), 2.5f);
-
-            Vector3 targetPosition;
-
-            if (teleportSet[targetID].GetComponent<Teleport>().isRight)
+            Vector3 direction;
+            float dist = 1f;
+            if (teleportSet[targetID].GetComponent<Teleport>().isRight) direction = Vector2.right;
+            else direction = Vector2.left;
+            direction *= 3;
+            bool checkDestance = true;
+            RaycastHit2D hit = Physics2D.Raycast(player.transform.position, direction, 1f, mask);
+            while (true) 
             {
-                targetPosition = player.transform.position + new Vector3(3, 2, 0);
+                hit = Physics2D.Raycast(player.transform.position, direction, 1f, mask);
+                Debug.DrawRay(player.transform.position, direction, Color.red, 1f);
+                if (hit.collider == null)
+                    break;
+                Debug.Log("올라가는중" + hit.collider.gameObject.name);
+                if (checkDestance)
+                {
+                    if (hit.collider != null)
+                    {
+                        dist = hit.distance;
+                    }
+                    checkDestance = false;
+                }
+                player.transform.position += Vector3.up;
+                yield return new WaitForSeconds(0.01f);
             }
-            else
-            {
-                targetPosition = player.transform.position + new Vector3(-3, 2, 0);
-            }
+
+            Vector3 targetPosition = player.transform.position + dist * direction;
 
             // 중간 높이 포인트 설정 (포물선의 정점)
 
-            player.transform.DOJump(targetPosition, 3, 1, 1);
-         //   player.GetComponent<Rigidbody2D>().gravityScale = 3;
-
-            //layer.transform.DOPath(path, 3f, PathType.CatmullRom);//.SetEase(Ease.InOutQuad);
-        } /*
-        else if (teleportDirection == new Vector3(0, -1, 0)) //내려옴
-        {
-
-            //player.transform.DOMove(player.transform.position + teleportOffset * teleportDirection, fadeDuration);
-
-            player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
-        }*/
-        else
+            player.transform.DOJump(targetPosition, 2, 1, 0.5f);
+        }
+        else if (teleportDirection != Vector3.down)
         {
             player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
             yield return new WaitForSeconds(0.1f);
-
-            //player.transform.DOMove(player.transform.position + teleportDirection * 2, fadeDuration);
-
-            //player.transform.DOMove(player.transform.position + teleportOffset * teleportDirection, fadeDuration);
         }
 
         #region audio
 
         // ※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-        //AudioManager.Instance.UpdatePlayerAuidoSettingsByMap(teleportSet[targetID].GetComponent<Teleport>().mapID);
         AudioManager.Instance.SwitchAmbienceAndBGM(teleportSet[targetID].GetComponent<Teleport>().mapID);
 
         #endregion
 
-        if (teleportDirection == new Vector3(0, 1, 0))
+        if (teleportDirection == Vector3.up)
         {
             player.GetComponent<Rigidbody2D>().gravityScale = 3;
             animator.SetBool("Jump", false);
         }
-        else if (teleportDirection == new Vector3(0, -1, 0))
-        {
-            animator.SetBool("isFalling", false);
-        }
-        else
+        else if (teleportDirection != Vector3.down)
         {
             animator.SetBool("MoveToPortal", false);
         }
-
-        //테스트용으로 주석 처리
-        GameManager.Instance._stageminimapManager.OnMapEntered("MAP" + teleportSet[targetID].GetComponent<Teleport>().mapID);
-
-
-        //yield return new WaitForSeconds(0.5f);
 
         //fadeout
         for (float i = 1; i > 0f; i -= 0.02f)
@@ -181,6 +151,12 @@ public class TeleportManager : Singleton<TeleportManager>
 
         fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
+        //테스트용으로 주석 처리
+        GameManager.Instance._stageminimapManager.OnMapEntered("MAP" + teleportSet[targetID].GetComponent<Teleport>()
+            .mapID);
+
+
+        
 
         //플레이어 이동 
         player.GetComponent<PlayerController>().canMove = true;
@@ -189,7 +165,6 @@ public class TeleportManager : Singleton<TeleportManager>
     public void MoveToPortal()
     {
         player.GetComponent<PlayerController>().canMove = false;
-        Debug.Log("MoveToPortal called");
         //animator.SetBool("MoveToPortal", true);
     }
 }

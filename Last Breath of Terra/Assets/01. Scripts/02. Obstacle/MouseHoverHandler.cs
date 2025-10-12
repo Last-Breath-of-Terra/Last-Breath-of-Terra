@@ -6,10 +6,12 @@ using UnityEngine.InputSystem;
 public class MouseHoverHandler : MonoBehaviour
 {
     private Obstacle parentObstacle;
+    private ObstacleProjectile parentProjectile;
 
     private void Start()
     {
         parentObstacle = GetComponentInParent<Obstacle>();
+        parentProjectile = GetComponentInParent<ObstacleProjectile>();
     }
 
     private void Update()
@@ -22,11 +24,25 @@ public class MouseHoverHandler : MonoBehaviour
 
         if (hit.collider != null && hit.collider.gameObject == gameObject)
         {
-            parentObstacle.SetHovered(true);
+            if (parentObstacle != null)
+            {
+                parentObstacle.SetHovered(true);
+            }
+            else if (parentProjectile != null)
+            {
+                parentProjectile.SetHovered(true);
+            }
         }
         else
         {
-            parentObstacle.SetHovered(false);
+            if (parentObstacle != null)
+            {
+                parentObstacle.SetHovered(false);
+            }
+            else if (parentProjectile != null)
+            {
+                parentProjectile.SetHovered(false);
+            }
         }
     }
 }

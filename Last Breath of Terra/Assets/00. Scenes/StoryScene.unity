@@ -586,6 +586,64 @@ MonoBehaviour:
   fadeDuration: 1
   sceneWaitTime: 2
   nextSceneName: StageSelection
+--- !u!1 &879115001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 879115002}
+  - component: {fileID: 879115003}
+  m_Layer: 0
+  m_Name: Stage1ExitStory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &879115002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 879115001}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -719.3897, y: -479.2042, z: 13.320135}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1826615317}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &879115003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 879115001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2674cecbc7474d0aa0d0a904230f6e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeImage: {fileID: 781443049}
+  background: {fileID: 2068672415}
+  backgroundTextPairs:
+  - backgroundImage: {fileID: 21300000, guid: 09deea25fb58349e5b41a7499de82d61, type: 3}
+    sentences: []
+    backgroundType: 3
+  moveDuration: 15
+  textParent: {fileID: 650053321}
+  textLinePrefab: {fileID: 1531817748922207602, guid: 4a4ef7773731345e0985a2c31c05af29, type: 3}
+  textDisplayDuration: 2
+  waitBetweenText: 1
+  fadeDuration: 1
+  sceneWaitTime: 2
+  nextSceneName: StageSelection
 --- !u!1 &980985957
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,6 +838,64 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1528618813
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1528618814}
+  - component: {fileID: 1528618815}
+  m_Layer: 0
+  m_Name: Stage2ExitStory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1528618814
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1528618813}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -719.3897, y: -479.2042, z: 13.320135}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1826615317}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1528618815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1528618813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2674cecbc7474d0aa0d0a904230f6e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeImage: {fileID: 781443049}
+  background: {fileID: 2068672415}
+  backgroundTextPairs:
+  - backgroundImage: {fileID: 21300000, guid: 680adbceaaf524bfa837482e55f090af, type: 3}
+    sentences: []
+    backgroundType: 2
+  moveDuration: 15
+  textParent: {fileID: 650053321}
+  textLinePrefab: {fileID: 1531817748922207602, guid: 4a4ef7773731345e0985a2c31c05af29, type: 3}
+  textDisplayDuration: 2
+  waitBetweenText: 1
+  fadeDuration: 1
+  sceneWaitTime: 2
+  nextSceneName: StageSelection
 --- !u!1 &1693615127
 GameObject:
   m_ObjectHideFlags: 0
@@ -1090,7 +1206,9 @@ Transform:
   - {fileID: 1724627757}
   - {fileID: 863158793}
   - {fileID: 473064300}
+  - {fileID: 879115002}
   - {fileID: 980985958}
+  - {fileID: 1528618814}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2068672414

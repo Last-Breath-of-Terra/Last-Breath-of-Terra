@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce44423cc1ee96f448f59b6a35759ef3, type: 3}
+  m_Name: Stage1LifeInfuser
+  m_EditorClassIdentifier: 
+  infusionDuration: 10
+  infusionWaitTime: 2
+  defaultLensSize: 8
+  targetLensSize: 10
+  arcHeight: 6.5
+  InfuserActiveImage:
+  - {fileID: 21300000, guid: fdb8ecf44b96c714694acf68a49e252d, type: 3}
+  - {fileID: 21300000, guid: 09e5efa0b12810a40bfdc3f91801f23c, type: 3}
+  - {fileID: 21300000, guid: 6a2f2a31a9249cc478831e4e23a6dd02, type: 3}
+  - {fileID: 21300000, guid: 76ddac85c608c41caad93b0743a1f20f, type: 3}
+  InfuserInactiveImage:
+  - {fileID: 21300000, guid: 8ccd2924de4a98a44b672148ac160d01, type: 3}
+  - {fileID: 21300000, guid: 6a68f6fcc57aa534c86245fd989345d5, type: 3}
+  - {fileID: 21300000, guid: 426457d2095d7df469b4c973c9a7f1af, type: 3}
+  - {fileID: 21300000, guid: 5735b790fd9b442f0817e6f2830bd980, type: 3}
+  activeIcon: {fileID: 21300000, guid: 2f5fd1488aaf7f84a89ed3d8f113bfde, type: 3}
+  inactiveIcon: {fileID: 21300000, guid: 854edce3c4b675a42ad20820db641384, type: 3}
+  defaultMaterial: {fileID: 2100000, guid: f8a9ab2961abd4a55b8e537d72217c7b, type: 2}
+  sacrificeMaterial: {fileID: 2100000, guid: ee4caaf5cd06a41f28be458446ab4421, type: 2}
+  lineRendererSegments: 500
+  infusedLifeCount: 61
+  uiTweenDuration: 0.5

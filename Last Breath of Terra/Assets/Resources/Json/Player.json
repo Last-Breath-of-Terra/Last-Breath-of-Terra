@@ -1,0 +1,17 @@
+{
+  "players": [
+    {
+      "stages": [
+        { "stageId": 1, "isCleared": false },
+        { "stageId": 2, "isCleared": false }
+      ]
+    },
+    {
+      "stages": [
+        { "stageId": 1, "isCleared": false },
+        { "stageId": 2, "isCleared": false }
+      ]
+    },
+    null
+  ]
+}

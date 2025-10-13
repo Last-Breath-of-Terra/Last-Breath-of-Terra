@@ -3,20 +3,29 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ground
+  - Obstacle
+  - Cursor
+  - Wall
+  - LockXPositon
+  - LockYPositon
+  - ChangeLensSize
+  - InfuserObject
+  - IcicleSpawner
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Obstacle
+  - Minimap
+  - Map
+  - Wall
+  - obstacleHover
+  - Ground
   - 
   - 
   - 
@@ -40,4 +49,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 797271009
+    locked: 0
+  - name: Ground
+    uniqueID: 3896722453
+    locked: 0
+  - name: Object
+    uniqueID: 2515707365
+    locked: 0
+  - name: Player
+    uniqueID: 1622868477
+    locked: 0
+  - name: UI
+    uniqueID: 167974279
     locked: 0

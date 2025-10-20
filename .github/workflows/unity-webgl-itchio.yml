@@ -2,25 +2,17 @@ name: UnityBuildTest
 
 on:
   push:
-    branches: [ "main" ]           # main push 시 자동
-  workflow_dispatch:                # 수동 실행도 가능
+    branches: [ "main" ]   # main 브랜치 push 시 자동 실행
+  workflow_dispatch:        # 수동 실행도 가능
 
-permissions:
-  contents: read
-  packages: read
-
+permissions: write-all
+  
 jobs:
-  build-webgl:
+  build-webgl: 
     name: Build WebGL
     runs-on: ubuntu-latest
 
     steps:
-      # Step0 - Clean old outputs (섞임 방지)
-      - name: Clean old build folder
-        run: |
-          rm -rf build/WebGL || true
-          rm -rf Build || true
-
       # Step1 - Check Out
       - name: Check Out
         uses: actions/checkout@v4
@@ -28,46 +20,28 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      # Step2 - (선택) Cache Library
+      # Step2 - Cache Library
       - name: Cache Library
         uses: actions/cache@v4
-        with:
+        with: 
           path: "Last Breath of Terra/Library"
           key: Library-${{ hashFiles('Last Breath of Terra/Assets/**', 'Last Breath of Terra/Packages/**', 'Last Breath of Terra/ProjectSettings/**') }}
           restore-keys: |
             Library-
 
-      # Step3 - Pre-pull Unity editor image (도커 504 대비 재시도)
-      - name: Pre-pull unityci/editor (retry)
-        run: |
-          set -e
-          IMAGE="unityci/editor:2022.3.22f1-webgl-3"   # 표준 태그
-          for i in 1 2 3 4 5; do
-            echo "Pull attempt $i..."
-            if docker pull "$IMAGE"; then exit 0; fi
-            sleep $((10*i))
-          done
-          echo "Failed to pull $IMAGE" >&2
-          exit 1
-
-      # Step4 - Unity Build (Development 1회로 상세 로그 확보)
+      # Step3 - Unity Build
       - name: Unity Build
         uses: game-ci/unity-builder@v4
-        with:
-          unityVersion: 2022.3.22f1
-          targetPlatform: WebGL
-          projectPath: "Last Breath of Terra"
-          buildsPath: build                 # ← 산출물 경로 명시
-          buildName: WebGL                  # ← build/WebGL 폴더 생성
-          buildOptions: Development         # ← 1회 진단용, 해결 후 제거 가능
-          customImage: "unityci/editor:2022.3.22f1-webgl-3"  # ← Step3과 동일
         env:
-          # 라이선스는 둘 중 하나만: ULF 파일(UNITY_LICENSE) 또는 이메일/비번/시리얼
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: 2022.3.22f1
+          targetPlatform: WebGL
+          projectPath: "Last Breath of Terra"   # Unity 프로젝트 폴더
 
-      # Step5 - Upload Build File (산출물 업로드)
+      # Step4 - Upload Build File
       - name: Upload Build File
         uses: actions/upload-artifact@v4
         with:
@@ -76,7 +50,7 @@ jobs:
 
   deploy-itchio:
     name: Deploy to itch.io
-    needs: build-webgl
+    needs: build-webgl        # 빌드 성공 후 실행
     runs-on: ubuntu-latest
 
     steps:
@@ -84,7 +58,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Build-WebGL
-          path: build           # build/WebGL 폴더가 생김
+          path: build         # build/WebGL 폴더가 생김
 
       - name: Install butler
         run: |
@@ -93,9 +67,8 @@ jobs:
           sudo mv butler/butler /usr/local/bin/
           butler --version
 
-      # 버전 태그로 캐시 충돌 방지(브라우저/itch 캐시 무효화)
       - name: Push to itch.io
-        env:
-          BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
         run: |
-          butler push build/WebGL PotatoTeam/attis:html5 --userversion "${{ github.sha }}"
+          butler push build/WebGL PotatoTeam/attis:html5
+        env:
+          BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }} 

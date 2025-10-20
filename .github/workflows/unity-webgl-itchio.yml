@@ -2,12 +2,10 @@ name: UnityBuildTest
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches: [ "main" ]       # main 브랜치에 push 시 자동 실행
+  workflow_dispatch:            # 수동 실행도 가능
 
-permissions:
-  contents: read
-  packages: read
+permissions: write-all
 
 jobs:
   build-webgl:
@@ -15,51 +13,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # (권장) 이전 산출물 삭제 — 섞임 방지
-      - name: Clean old build folder
-        run: |
-          rm -rf build/WebGL || true
-          rm -rf Build || true
-
+      # Step1 - Check Out
       - name: Check Out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
 
-      # ✅ GHCR 로그인 (Docker Hub 장애 우회)
-      - name: Login to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      # Step2 - Cache Library
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: "Last Breath of Terra/Library"
+          key: Library-${{ hashFiles('Last Breath of Terra/Assets/**', 'Last Breath of Terra/Packages/**', 'Last Breath of Terra/ProjectSettings/**') }}
+          restore-keys: |
+            Library-
 
-      # ✅ 에디터 이미지 사전 pull (재시도 포함)
-      - name: Pre-pull unityci/editor (retry)
-        run: |
-          set -e
-          IMAGE="ghcr.io/unityci/editor:2022.3.22f1-webgl-3"
-          for i in 1 2 3 4 5; do
-            echo "Pull attempt $i..."
-            if docker pull "$IMAGE"; then exit 0; fi
-            sleep $((10*i))
-          done
-          echo "Failed to pull $IMAGE" >&2
-          exit 1
-
-      # Unity Build (GHCR 이미지를 사용)
+      # Step3 - Unity Build
       - name: Unity Build
         uses: game-ci/unity-builder@v4
-        with:
-          unityVersion: 2022.3.22f1
-          targetPlatform: WebGL
-          projectPath: "Last Breath of Terra"
-          buildsPath: build
-          buildName: WebGL
-          buildOptions: Development    # 문제 잡는 동안만. 해결되면 제거해도 됨
-          customImage: "ghcr.io/unityci/editor:2022.3.22f1-webgl-3"
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: 2022.3.22f1
+          targetPlatform: WebGL
+          projectPath: "Last Breath of Terra"   # Unity 프로젝트 폴더
 
+      # Step4 - Upload Build File
       - name: Upload Build File
         uses: actions/upload-artifact@v4
         with:
@@ -68,7 +50,7 @@ jobs:
 
   deploy-itchio:
     name: Deploy to itch.io
-    needs: build-webgl
+    needs: build-webgl         # 빌드 성공 후 실행
     runs-on: ubuntu-latest
 
     steps:
@@ -76,7 +58,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Build-WebGL
-          path: build
+          path: build           # build/WebGL 폴더가 생김
 
       - name: Install butler
         run: |
@@ -85,9 +67,8 @@ jobs:
           sudo mv butler/butler /usr/local/bin/
           butler --version
 
-      # 캐시 충돌 방지용 버전 태깅
       - name: Push to itch.io
+        run: |
+          butler push build/WebGL PotatoTeam/attis:html5
         env:
           BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
-        run: |
-          butler push build/WebGL PotatoTeam/attis:html5 --userversion "${{ github.sha }}"

@@ -2,7 +2,7 @@ name: UnityBuildTest
 
 on:
   push:
-    branches: [ "main" ]       # main 브랜치에 push 시 자동 실행
+    branches: [ "main" ]       # main 브랜치 push 시 자동 실행
   workflow_dispatch:            # 수동 실행도 가능
 
 permissions: write-all
@@ -13,50 +13,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 0) 디스크 확보: 대용량 SDK/툴 삭제 + 도커 정리 (수~십 GB 확보)
-      - name: Free disk space (hosted runner)
-        run: |
-          echo "Before cleanup:"
-          df -h
-          sudo rm -rf /usr/local/lib/android || true
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
-          sudo rm -rf /usr/local/.ghcup || true
-          sudo rm -rf /usr/local/share/boost || true
-          docker system prune -af || true
-          # 도커 스토리지까지 꽉 찬 경우 아래 두 줄로 강제 초기화
-          # sudo rm -rf /var/lib/docker || true
-          # sudo systemctl restart docker || true
-          echo "After cleanup:"
-          df -h
-
-      # (선택) 남는 파티션을 합쳐 추가 확보하고 싶을 때 주석 해제
-      # - name: Maximize build space
-      #   uses: easimon/maximize-build-space@v11
-      #   with:
-      #     root-reserve-mb: 1024
-      #     remove-dotnet: true
-      #     remove-android: true
-      #     remove-haskell: true
-      #     remove-codeql: true
-      #     remove-docker-images: true
-
-      # Step1 - Check Out (LFS 비활성화로 디스크 절약)
+      # Step1 - Check Out
       - name: Check Out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          lfs: false
+          lfs: true
 
-      # Step2 - (임시) Library 캐시 비활성화 — 공간 아끼기 위해 주석 처리
-      # - name: Cache Library
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: "Last Breath of Terra/Library"
-      #     key: Library-${{ hashFiles('Last Breath of Terra/Assets/**', 'Last Breath of Terra/Packages/**', 'Last Breath of Terra/ProjectSettings/**') }}
-      #     restore-keys: |
-      #       Library-
+      # Step2 - Cache Library
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: "Last Breath of Terra/Library"
+          key: Library-${{ hashFiles('Last Breath of Terra/Assets/**', 'Last Breath of Terra/Packages/**', 'Last Breath of Terra/ProjectSettings/**') }}
+          restore-keys: |
+            Library-
 
       # Step3 - Unity Build
       - name: Unity Build
@@ -69,9 +40,6 @@ jobs:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL
           projectPath: "Last Breath of Terra"   # Unity 프로젝트 폴더
-          buildsPath: build
-          buildName: WebGL
-          # buildOptions: Development   # 필요 시 1회만 켜서 로그 자세히 보기
 
       # Step4 - Upload Build File
       - name: Upload Build File
@@ -80,18 +48,9 @@ jobs:
           name: Build-WebGL
           path: build
 
-      # Step5 - (권장) 빌드 후 로컬 정리 — 다음 실행을 위해 공간 비우기
-      - name: Post-build cleanup
-        if: always()
-        run: |
-          rm -rf "Last Breath of Terra/Library" || true
-          rm -rf "Last Breath of Terra/Temp" || true
-          rm -rf "Last Breath of Terra/Logs" || true
-          rm -rf build || true
-
   deploy-itchio:
     name: Deploy to itch.io
-    needs: build-webgl         # 빌드 성공 후 실행
+    needs: build-webgl           # 빌드 성공 후 실행
     runs-on: ubuntu-latest
 
     steps:
@@ -99,7 +58,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Build-WebGL
-          path: build           # build/WebGL 폴더가 생김
+          path: build             # build/WebGL 폴더가 생김
 
       - name: Install butler
         run: |

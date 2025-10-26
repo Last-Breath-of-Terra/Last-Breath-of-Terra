@@ -140,14 +140,14 @@ public class PlayerWallClimb : MonoBehaviour
         Debug.Log("1단계 완료, 2단계: 앞으로 이동 시작");
         
         // 2단계: 앞으로 이동
-        float forwardTime = 0.4f;
+        float forwardTime = 0.45f;
         float currentForwardTime = 0f;
         
         while (currentForwardTime < forwardTime)
         {
             float progress = currentForwardTime / forwardTime;
-            float forwardSpeed = Mathf.Lerp(3f, 1f, progress);
-            float upSpeed = Mathf.Lerp(0.5f, 0f, progress);
+            float forwardSpeed = Mathf.Lerp(4f, 2f, progress);
+            float upSpeed = Mathf.Lerp(1f, 0f, progress);
             
             Vector2 newVelocity = new Vector2(dir * forwardSpeed, upSpeed);
             controller.Rb.velocity = newVelocity;

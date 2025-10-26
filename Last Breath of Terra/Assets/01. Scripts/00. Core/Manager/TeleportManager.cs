@@ -83,41 +83,68 @@ public class TeleportManager : Singleton<TeleportManager>
         yield return new WaitForSeconds(0.2f);
 
         
+        //fadeout
+        for (float i = 1; i > 0f; i -= 0.02f)
+        {
+            yield return new WaitForSeconds(0.01f);
+            fadeImage.color = new Color(0f, 0f, 0f, i);
+        }
+
+        fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
         //포탈 나와서
         if (teleportDirection == Vector3.up)
         {
             Vector3 direction;
-            float dist = 1f;
-            if (teleportSet[targetID].GetComponent<Teleport>().isRight) direction = Vector2.right;
-            else direction = Vector2.left;
-            direction *= 3;
-            bool checkDestance = true;
-            RaycastHit2D hit = Physics2D.Raycast(player.transform.position, direction, 1f, mask);
-            while (true) 
+            float dist = 5f;
+            direction = teleportSet[targetID].GetComponent<Teleport>().isRight 
+                ? Vector2.right : Vector2.left;
+            
+            RaycastHit2D[] hits;
+            hits = Physics2D.RaycastAll(player.transform.position, direction, 3f, ~0);
+            Debug.DrawRay(player.transform.position, direction * 3f, Color.red, 100f);
+            Debug.Log("몇마리 걸렸냐 " + hits.Length);
+            while (true)
             {
-                hit = Physics2D.Raycast(player.transform.position, direction, 1f, mask);
-                Debug.DrawRay(player.transform.position, direction, Color.red, 1f);
-                if (hit.collider == null)
-                    break;
-                Debug.Log("올라가는중" + hit.collider.gameObject.name);
-                if (checkDestance)
+                GameObject ground = null;
+                foreach (RaycastHit2D hit in hits)
                 {
-                    if (hit.collider != null)
+                    Debug.Log("뭐가 걸렸나 봅시다 : " + hit.collider.gameObject.name);
+                    if (hit.collider.CompareTag("Ground"))
                     {
-                        dist = hit.distance;
+                        ground = hit.collider.gameObject;
+                        Debug.Log("Ground : " + ground.name);
+                        break;
                     }
-                    checkDestance = false;
                 }
+
+                Debug.Log("---------------");
+                if (ground == null)
+                {
+                    Debug.Log("아무것도 없지용");
+                    break;
+                }
+                
+                Debug.Log("올라가는중" + ground.name);
                 player.transform.position += Vector3.up;
                 yield return new WaitForSeconds(0.01f);
+                
+                hits = Physics2D.RaycastAll(player.transform.position, direction, 3f, ~0);
+                Debug.DrawRay(player.transform.position, direction * 3f, Color.blue, 100f);
+                Debug.Log("몇마리 걸렸냐 " + hits.Length);
             }
+            Debug.Log("위로 이동 끝");
 
-            Vector3 targetPosition = player.transform.position + dist * direction;
+            
+            Vector3 dir = direction.normalized;
+            float height = 2f;
+            float duration = 1f;
 
-            // 중간 높이 포인트 설정 (포물선의 정점)
+            Vector3 target = player.transform.position + dir * dist;
+            player.transform.DOJump(target, height, 1, duration)
+                .SetEase(Ease.OutQuad)
+                .OnComplete(() => Debug.Log("착지 완료"));
 
-            player.transform.DOJump(targetPosition, 2, 1, 0.5f);
         }
         else if (teleportDirection != Vector3.down)
         {
@@ -142,14 +169,6 @@ public class TeleportManager : Singleton<TeleportManager>
             animator.SetBool("MoveToPortal", false);
         }
 
-        //fadeout
-        for (float i = 1; i > 0f; i -= 0.02f)
-        {
-            yield return new WaitForSeconds(0.01f);
-            fadeImage.color = new Color(0f, 0f, 0f, i);
-        }
-
-        fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
         //테스트용으로 주석 처리
         GameManager.Instance._stageminimapManager.OnMapEntered("MAP" + teleportSet[targetID].GetComponent<Teleport>()

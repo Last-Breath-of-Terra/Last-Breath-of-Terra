@@ -5,7 +5,6 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-# 같은 브랜치에서 새 커밋 오면 이전 잡 취소 -> 불필요한 중복 빌드/디스크 사용 방지
 concurrency:
   group: unity-webgl-${{ github.ref }}
   cancel-in-progress: true
@@ -18,17 +17,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # (0) 현재 디스크 상태
       - name: Disk usage (before)
         run: |
           echo "::group::Disk usage before"
           df -h
-          echo
-          echo "Docker space:"
           docker system df || true
           echo "::endgroup::"
 
-      # (1) 러너 디스크 크게 확보
       - name: Maximize build space
         uses: easimon/maximize-build-space@v10
         with:
@@ -39,7 +34,6 @@ jobs:
           root-reserve-mb: 1024
           swap-size-mb: 1024
 
-      # (2) 도커/툴 캐시 추가 정리
       - name: Extra prune & clean
         run: |
           docker system prune -af --volumes || true
@@ -47,36 +41,27 @@ jobs:
           sudo rm -rf /opt/hostedtoolcache || true
           sudo rm -rf "$AGENT_TOOLSDIRECTORY" || true
 
-      # (3) 디스크 상태 재확인
       - name: Disk usage (after cleanup)
         run: |
           echo "::group::Disk usage after cleanup"
           df -h
-          echo
-          echo "Docker space:"
           docker system df || true
           echo "::endgroup::"
 
-      # Step1 - Check Out (깊이 1로 가볍게, LFS 필요하면 true 유지)
       - name: Check Out
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           lfs: true
 
-      # Step2 - Cache Library
-      #  👉 캐시 키를 manifest + ProjectVersion 기준으로만 설정해서
-      #     스크립트/씬 변경에도 캐시가 쉽게 안 깨지도록
       - name: Cache Library
         uses: actions/cache@v4
         with:
-          path: |
-            Last Breath of Terra/Library
+          path: Last Breath of Terra/Library
           key: library-${{ runner.os }}-webgl-${{ hashFiles('Last Breath of Terra/Packages/manifest.json', 'Last Breath of Terra/ProjectSettings/ProjectVersion.txt') }}
           restore-keys: |
             library-${{ runner.os }}-webgl-
 
-      # Step3 - Unity Build
       - name: Unity Build
         uses: game-ci/unity-builder@v4
         env:
@@ -88,17 +73,15 @@ jobs:
           targetPlatform: WebGL
           projectPath: "Last Breath of Terra"
           buildName: WebGL
-          buildPath: build/WebGL
-          # 더 가벼운 에디터 이미지 사용(3이 너무 크면 1이나 0 권장)
+          buildsPath: build
+          # ↓ webgl-1이 없어 실패했으니 3으로 고정(또는 이 두 줄을 통째로 제거)
           containerRegistryRepository: unityci/editor
-          containerRegistryImageVersion: 1
-          # 필요시 Accelerator 연결 (있다면 주석 해제)
+          containerRegistryImageVersion: 3
           # customParameters: >
           #   -cacheServerEndpoint your.accelerator.host:10080
           #   -cacheServerEnableDownload true
           #   -cacheServerEnableUpload true
 
-      # Step4 - Upload Build File (산출물 폴더만 업로드)
       - name: Upload WebGL build
         uses: actions/upload-artifact@v4
         with:
@@ -131,5 +114,4 @@ jobs:
         env:
           BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
         run: |
-          # build/WebGL 폴더 전체를 html5 채널로 업로드
           butler push build/WebGL PotatoTeam/attis:html5

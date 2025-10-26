@@ -66,7 +66,7 @@ jobs:
 
       # Step2 - Cache Library
       #  👉 캐시 키를 manifest + ProjectVersion 기준으로만 설정해서
-      #     Assets/Scenes/Script 변경에도 캐시가 '안' 깨지도록!
+      #     스크립트/씬 변경에도 캐시가 쉽게 안 깨지도록
       - name: Cache Library
         uses: actions/cache@v4
         with:
@@ -87,18 +87,26 @@ jobs:
           unityVersion: 2022.3.22f1
           targetPlatform: WebGL
           projectPath: "Last Breath of Terra"
+          buildName: WebGL
+          buildPath: build/WebGL
+          # 더 가벼운 에디터 이미지 사용(3이 너무 크면 1이나 0 권장)
+          containerRegistryRepository: unityci/editor
+          containerRegistryImageVersion: 1
           # 필요시 Accelerator 연결 (있다면 주석 해제)
           # customParameters: >
           #   -cacheServerEndpoint your.accelerator.host:10080
           #   -cacheServerEnableDownload true
           #   -cacheServerEnableUpload true
 
-      # Step4 - Upload Build File
-      - name: Upload Build File
+      # Step4 - Upload Build File (산출물 폴더만 업로드)
+      - name: Upload WebGL build
         uses: actions/upload-artifact@v4
         with:
           name: Build-WebGL
-          path: build
+          path: build/WebGL
+          if-no-files-found: error
+          compression-level: 9
+          retention-days: 7
 
   deploy-itchio:
     name: Deploy to itch.io

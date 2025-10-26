@@ -94,8 +94,8 @@ GameObject:
   - component: {fileID: 7578914277012739383}
   - component: {fileID: 1727361869467118593}
   - component: {fileID: 6743859117064608632}
-  - component: {fileID: 621504808547185959}
   - component: {fileID: 1856818411440103085}
+  - component: {fileID: 2401724579330619494}
   m_Layer: 6
   m_Name: GimmickObstacle
   m_TagString: Obstacle
@@ -234,35 +234,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &621504808547185959
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2380780527199600930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb7d6c33ab5864155956664bfc28cfbe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 8bc7ab49ee7b34f4da13345bcf6d5dfe, type: 2}
-  lifeInfuserSO: {fileID: 11400000, guid: 8fb6ba2920c5aa646bc77e9de7c28c8c, type: 2}
-  obstacleSprites:
-  - {fileID: 21300000, guid: eba4bc29ef155704cb7d4db4d1495a70, type: 3}
-  - {fileID: 21300000, guid: 75f5481a446a24b41a78022b216abf0f, type: 3}
-  - {fileID: 21300000, guid: f69b24f74cc291242b8d79ff7fe1fb7b, type: 3}
-  attackPoints:
-  - {fileID: 3544274121468092378}
-  - {fileID: 6719746487878657740}
-  - {fileID: 4082392446713929217}
-  timingIndicator: {fileID: 1333905242434506353}
-  targetPoint: {fileID: 0}
-  attackGroup: {fileID: 5605050973237194310}
-  destroyEffectPrefab: {fileID: 2955623459812423943, guid: f5507a8c6a22c404ab324980c4e8a11b, type: 3}
-  bodyAttackEffectPrefab: {fileID: 1845955007268882, guid: 67a684e320da6e7439421a07e3fa265c, type: 3}
-  attackEffectPrefab: {fileID: 8580561002065202627, guid: 7dd51f291465ab04f8619bc508117bc2, type: 3}
-  smokeEffectPrefab: {fileID: 6969245875107871824, guid: 2e187e22a11f364409b0a3f4d03c36a8, type: 3}
 --- !u!82 &1856818411440103085
 AudioSource:
   m_ObjectHideFlags: 0
@@ -359,6 +330,34 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2401724579330619494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2380780527199600930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f5b87550c7da4759a6ef78dd033dd5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clicksToDestroy: 3
+  damageSprites:
+  - {fileID: 21300000, guid: eba4bc29ef155704cb7d4db4d1495a70, type: 3}
+  - {fileID: 21300000, guid: 75f5481a446a24b41a78022b216abf0f, type: 3}
+  - {fileID: 21300000, guid: f69b24f74cc291242b8d79ff7fe1fb7b, type: 3}
+  attackPoints:
+  - {fileID: 3544274121468092378}
+  - {fileID: 6719746487878657740}
+  - {fileID: 4082392446713929217}
+  timingIndicator: {fileID: 1333905242434506353}
+  attackGroup: {fileID: 5605050973237194310}
+  timingRotationSpeed: 100
+  destroyEffectPrefab: {fileID: 2955623459812423943, guid: f5507a8c6a22c404ab324980c4e8a11b, type: 3}
+  attackEffectPrefab: {fileID: 8580561002065202627, guid: 7dd51f291465ab04f8619bc508117bc2, type: 3}
+  bodyAttackEffectPrefab: {fileID: 1845955007268882, guid: 67a684e320da6e7439421a07e3fa265c, type: 3}
+  smokeEffectPrefab: {fileID: 6969245875107871824, guid: 2e187e22a11f364409b0a3f4d03c36a8, type: 3}
 --- !u!1 &4468284405698314292
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,7 +458,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7270705082966723041
 Transform:
   m_ObjectHideFlags: 0

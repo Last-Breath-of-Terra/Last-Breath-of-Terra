@@ -1,0 +1,127 @@
+name: UnityBuildTest
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+# 같은 브랜치에서 새 커밋 오면 이전 잡 취소 -> 불필요한 중복 빌드/디스크 사용 방지
+concurrency:
+  group: unity-webgl-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: write-all
+
+jobs:
+  build-webgl:
+    name: Build WebGL
+    runs-on: ubuntu-latest
+
+    steps:
+      # (0) 현재 디스크 상태
+      - name: Disk usage (before)
+        run: |
+          echo "::group::Disk usage before"
+          df -h
+          echo
+          echo "Docker space:"
+          docker system df || true
+          echo "::endgroup::"
+
+      # (1) 러너 디스크 크게 확보
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@v10
+        with:
+          remove-dotnet: true
+          remove-android: true
+          remove-haskell: true
+          remove-codeql: true
+          root-reserve-mb: 1024
+          swap-size-mb: 1024
+
+      # (2) 도커/툴 캐시 추가 정리
+      - name: Extra prune & clean
+        run: |
+          docker system prune -af --volumes || true
+          sudo apt-get clean
+          sudo rm -rf /opt/hostedtoolcache || true
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || true
+
+      # (3) 디스크 상태 재확인
+      - name: Disk usage (after cleanup)
+        run: |
+          echo "::group::Disk usage after cleanup"
+          df -h
+          echo
+          echo "Docker space:"
+          docker system df || true
+          echo "::endgroup::"
+
+      # Step1 - Check Out (깊이 1로 가볍게, LFS 필요하면 true 유지)
+      - name: Check Out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: true
+
+      # Step2 - Cache Library
+      #  👉 캐시 키를 manifest + ProjectVersion 기준으로만 설정해서
+      #     Assets/Scenes/Script 변경에도 캐시가 '안' 깨지도록!
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: |
+            Last Breath of Terra/Library
+          key: library-${{ runner.os }}-webgl-${{ hashFiles('Last Breath of Terra/Packages/manifest.json', 'Last Breath of Terra/ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: |
+            library-${{ runner.os }}-webgl-
+
+      # Step3 - Unity Build
+      - name: Unity Build
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL:    ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: 2022.3.22f1
+          targetPlatform: WebGL
+          projectPath: "Last Breath of Terra"
+          # 필요시 Accelerator 연결 (있다면 주석 해제)
+          # customParameters: >
+          #   -cacheServerEndpoint your.accelerator.host:10080
+          #   -cacheServerEnableDownload true
+          #   -cacheServerEnableUpload true
+
+      # Step4 - Upload Build File
+      - name: Upload Build File
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-WebGL
+          path: build
+
+  deploy-itchio:
+    name: Deploy to itch.io
+    needs: build-webgl
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Build-WebGL
+          path: build
+
+      - name: Install butler
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip -qq butler.zip -d butler
+          sudo mv butler/butler /usr/local/bin/
+          butler --version
+
+      - name: Push to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
+        run: |
+          # build/WebGL 폴더 전체를 html5 채널로 업로드
+          butler push build/WebGL PotatoTeam/attis:html5

@@ -83,14 +83,7 @@ public class TeleportManager : Singleton<TeleportManager>
         yield return new WaitForSeconds(0.2f);
 
         
-        //fadeout
-        for (float i = 1; i > 0f; i -= 0.02f)
-        {
-            yield return new WaitForSeconds(0.01f);
-            fadeImage.color = new Color(0f, 0f, 0f, i);
-        }
-
-        fadeImage.color = new Color(0f, 0f, 0f, 0f);
+        
 
         //포탈 나와서
         if (teleportDirection == Vector3.up)
@@ -105,35 +98,9 @@ public class TeleportManager : Singleton<TeleportManager>
             Vector3 hitPoint = Vector3.zero;
             while (true)
             {
-                GameObject ground = null;
-                if (hit.collider != null)
-                {
-                    ground = hit.collider.gameObject;
-                    Debug.Log("hit name : " + ground.name);
-                    hitPoint = new Vector3(hit.point.x, hit.point.y, 0);
-                }
-                /*
-                foreach (RaycastHit2D hit in hits)
-                {
-                    Debug.Log("뭐가 걸렸나 봅시다 : " + hit.collider.gameObject.name + "tag : " + hit.collider.gameObject.tag);
-                    if (hit.collider.CompareTag("Ground"))
-                    {
-                        ground = hit.collider.gameObject;
-                        Debug.Log("hit name : " + ground.name);
-                        targetObject = player.gameObject.transform.position - ground.gameObject.transform.position;
-                        Debug.Log("Ground : " + ground.name);
-                        break;
-                    }
-                }
-*/
-                Debug.Log("---------------");
-                if (ground == null)
-                {
-                    Debug.Log("아무것도 없지용");
+                if (hit.collider == null)
                     break;
-                }
-                
-                Debug.Log("올라가는중" + ground.name);
+                hitPoint = new Vector3(hit.point.x, hit.point.y, 0);
                 player.transform.position += Vector3.up;
                 yield return new WaitForSeconds(0.01f);
                 
@@ -176,6 +143,15 @@ public class TeleportManager : Singleton<TeleportManager>
             animator.SetBool("MoveToPortal", false);
         }
 
+        
+        //fadeout
+        for (float i = 1; i > 0f; i -= 0.02f)
+        {
+            yield return new WaitForSeconds(0.01f);
+            fadeImage.color = new Color(0f, 0f, 0f, i);
+        }
+
+        fadeImage.color = new Color(0f, 0f, 0f, 0f);
 
         //테스트용으로 주석 처리
         GameManager.Instance._stageminimapManager.OnMapEntered("MAP" + teleportSet[targetID].GetComponent<Teleport>()

@@ -12,7 +12,7 @@ public class TeleportManager : Singleton<TeleportManager>
     public Image fadeImage;
     public float fadeDuration = 1f;
 
-    [SerializeField] LayerMask mask;
+    [SerializeField] LayerMask groundLayerMask;
 
     private GameObject player;
     private Animator animator;
@@ -95,29 +95,37 @@ public class TeleportManager : Singleton<TeleportManager>
         //포탈 나와서
         if (teleportDirection == Vector3.up)
         {
-            Vector3 direction;
-            float dist = 5f;
-            direction = teleportSet[targetID].GetComponent<Teleport>().isRight 
+            Vector3 direction = teleportSet[targetID].GetComponent<Teleport>().isRight 
                 ? Vector2.right : Vector2.left;
             
-            RaycastHit2D[] hits;
-            hits = Physics2D.RaycastAll(player.transform.position, direction, 3f, ~0);
+            RaycastHit2D hit;
+            hit = Physics2D.Raycast(player.transform.position, direction, 3f, groundLayerMask);
             Debug.DrawRay(player.transform.position, direction * 3f, Color.red, 100f);
-            Debug.Log("몇마리 걸렸냐 " + hits.Length);
+
+            Vector3 hitPoint = Vector3.zero;
             while (true)
             {
                 GameObject ground = null;
+                if (hit.collider != null)
+                {
+                    ground = hit.collider.gameObject;
+                    Debug.Log("hit name : " + ground.name);
+                    hitPoint = new Vector3(hit.point.x, hit.point.y, 0);
+                }
+                /*
                 foreach (RaycastHit2D hit in hits)
                 {
-                    Debug.Log("뭐가 걸렸나 봅시다 : " + hit.collider.gameObject.name);
+                    Debug.Log("뭐가 걸렸나 봅시다 : " + hit.collider.gameObject.name + "tag : " + hit.collider.gameObject.tag);
                     if (hit.collider.CompareTag("Ground"))
                     {
                         ground = hit.collider.gameObject;
+                        Debug.Log("hit name : " + ground.name);
+                        targetObject = player.gameObject.transform.position - ground.gameObject.transform.position;
                         Debug.Log("Ground : " + ground.name);
                         break;
                     }
                 }
-
+*/
                 Debug.Log("---------------");
                 if (ground == null)
                 {
@@ -129,9 +137,8 @@ public class TeleportManager : Singleton<TeleportManager>
                 player.transform.position += Vector3.up;
                 yield return new WaitForSeconds(0.01f);
                 
-                hits = Physics2D.RaycastAll(player.transform.position, direction, 3f, ~0);
-                Debug.DrawRay(player.transform.position, direction * 3f, Color.blue, 100f);
-                Debug.Log("몇마리 걸렸냐 " + hits.Length);
+                hit = Physics2D.Raycast(player.transform.position, direction, 3f, groundLayerMask);
+                Debug.DrawRay(player.transform.position, direction.normalized * 3f, Color.blue, 100f);
             }
             Debug.Log("위로 이동 끝");
 
@@ -140,7 +147,7 @@ public class TeleportManager : Singleton<TeleportManager>
             float height = 2f;
             float duration = 1f;
 
-            Vector3 target = player.transform.position + dir * dist;
+            Vector3 target = new Vector3(hitPoint.x + direction.x * 1.5f, player.transform.position.y + height, player.transform.position.z);
             player.transform.DOJump(target, height, 1, duration)
                 .SetEase(Ease.OutQuad)
                 .OnComplete(() => Debug.Log("착지 완료"));

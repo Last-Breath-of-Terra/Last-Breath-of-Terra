@@ -9,8 +9,8 @@ public class GimmickShooterManager : Singleton<GimmickShooterManager>
     public string poolName;
     public Vector2 respawnTimeRange = new Vector2(1f, 3f);
     public float shootForce = 10f;
-    [SerializeField] private GimmickGroup[] gimmickGroups;
-    private GimmickGroup currentGroup;
+   // [SerializeField] private GimmickGroup[] gimmickGroups;
+  //  private GimmickGroup currentGroup;
 
 
     void Start()

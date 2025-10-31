@@ -12,6 +12,8 @@ public class ProjectileObstacleController : MonoBehaviour
     private int currentDestroyedCount = 0;
     private bool isDestroyed = false;
 
+    public bool isStage1 = false;
+    
     public GameObject obstacleVisual;
     private Collider2D obstacleCollider;
 
@@ -45,6 +47,30 @@ public class ProjectileObstacleController : MonoBehaviour
     {
         if (isDestroyed) return;
 
+        switch (currentDestroyedCount)
+        {
+            case 0:
+                if(isStage1)
+                    GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_RockBreakNotice_01", gameObject, true);
+                else
+                    GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_IceRockBreakNotice_01", gameObject, true);
+
+                Debug.Log("play destroy sound 1");
+                break;
+            case 1:
+                if(isStage1)
+                    GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_RockBreak_02_01", gameObject, false);
+                else
+                    GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_IceRockBreak_02", gameObject, true);
+                Debug.Log("play destroy sound 2");
+                break;
+            /*
+            case 2:
+                GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimmick_RockFragment_03", gameObject, false);
+                Debug.Log("play destroy sound 3");
+                break;*/
+            
+        }
         currentDestroyedCount++;
 
         if (stage1Renderer != null)

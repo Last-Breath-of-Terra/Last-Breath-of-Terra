@@ -95,7 +95,7 @@ public class TeleportManager : Singleton<TeleportManager>
             hit = Physics2D.Raycast(player.transform.position, direction, 3f, groundLayerMask);
             Debug.DrawRay(player.transform.position, direction * 3f, Color.red, 100f);
 
-            Vector3 hitPoint = Vector3.zero;
+            Vector3 hitPoint = player.transform.position;
             while (true)
             {
                 if (hit.collider == null)
@@ -114,6 +114,7 @@ public class TeleportManager : Singleton<TeleportManager>
             float height = 2f;
             float duration = 1f;
 
+            //상승 후 포물선 이동 관련 수정은 여기!!!
             Vector3 target = new Vector3(hitPoint.x + direction.x * 1.5f, player.transform.position.y + height, player.transform.position.z);
             player.transform.DOJump(target, height, 1, duration)
                 .SetEase(Ease.OutQuad)

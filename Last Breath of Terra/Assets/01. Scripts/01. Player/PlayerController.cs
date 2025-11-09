@@ -94,13 +94,21 @@ public class PlayerController : MonoBehaviour
             {
                 if (contact.point.y < transform.position.y)
                 {
+                    WallClimb.ResetWallState();
+                    
                     if (Movement.IsSignificantFall())
                     {
-                        StartCoroutine(Movement.HandleLandingDelayExternally());
+                        if (!Movement.IsLanding)
+                        {
+                            StartCoroutine(Movement.HandleLandingDelayExternally());
+                        }
                     }
                     else
                     {
-                        AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
+                        if (!Movement.IsLanding)
+                        {
+                            AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
+                        }
                     }
 
                     AudioHandler.PlayLandingSound();
@@ -117,10 +125,13 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall") && WallClimb.IsOnWall() && !WallClimb.IsWallJumping() && !WallClimb.IsClimbingOverWall())
+        if (collision.gameObject.CompareTag("Wall") && WallClimb.IsOnWall() && !WallClimb.IsWallJumping())
         {
-            Debug.Log("떨어짐");
-            WallClimb.FallOffWall();
+            if (!!WallClimb.IsClimbingOverWall())
+            {
+                Debug.Log("떨어짐");
+                WallClimb.FallOffWall();
+            }
         }
     }
 } 

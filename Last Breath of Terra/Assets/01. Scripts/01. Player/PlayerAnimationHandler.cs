@@ -40,7 +40,7 @@ public class PlayerAnimationHandler : MonoBehaviour
             case AnimationState.Run:
                 break;
             case AnimationState.Jump:
-                animator.SetTrigger("Jump");
+                animator.SetBool("isJump", true);
                 break;
             case AnimationState.Fall:
                 animator.SetBool("isFalling", true);
@@ -68,7 +68,7 @@ public class PlayerAnimationHandler : MonoBehaviour
 
     private void ResetAllTriggers()
     {
-        animator.ResetTrigger("Jump");
+        animator.SetBool("isJump", false);
         animator.ResetTrigger("Landing");
         animator.SetBool("isFalling", false);
         animator.SetBool("isClimbing", false);

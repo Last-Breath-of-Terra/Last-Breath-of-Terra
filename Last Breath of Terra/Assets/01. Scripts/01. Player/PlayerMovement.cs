@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     private float originalDrag;
     private bool isSliding = false;
     private bool _isJumping;
+    private bool isLanding;
     private bool _isSignificantFall;
     private bool isSlowed;
     private bool isHoldingClick;
@@ -77,9 +78,15 @@ public class PlayerMovement : MonoBehaviour
         {
             _isJumping = false;
 
-            if (_isSignificantFall)
+            if (!controller.canMove)
+            {
+                controller.SetCanMove(true);
+            }
+
+            if (_isSignificantFall && !isLanding)
             {
                 _isSignificantFall = false;
+                isLanding = true;
                 controller.StartCoroutine(HandleLandingDelay());
             }
 
@@ -242,10 +249,10 @@ public class PlayerMovement : MonoBehaviour
 
         yield return new WaitForSeconds(controller.data.moveDelayAfterFall);
 
-        ResetState();
-
         controller.SetCanMove(true);
         controller.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
+
+        isLanding = false;
     }
 
     public void ResetState()
@@ -318,6 +325,7 @@ public class PlayerMovement : MonoBehaviour
 
     public float GetCurrentSpeed() => currentSpeed;
     public bool IsHoldingClick => isHoldingClick;
+    public bool IsLanding => isLanding;
     public void StartMoving() => isHoldingClick = true;
     public bool IsJumping() => _isJumping;
     public bool IsSignificantFall() => _isSignificantFall;

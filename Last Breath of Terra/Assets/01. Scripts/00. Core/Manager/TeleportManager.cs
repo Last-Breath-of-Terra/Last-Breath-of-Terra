@@ -47,6 +47,8 @@ public class TeleportManager : Singleton<TeleportManager>
 
     IEnumerator Fade(int targetID, Vector3 teleportDirection)
     {
+        player.GetComponent<PlayerMovement>().StartTeleport();
+
         //※※※※※※※※※※※※※※※※※※※※※※오디오 세팅※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
         AudioManager.Instance.FadeOutBGM(1f);
         AudioManager.Instance.FadeOutAmbience(1f);
@@ -76,6 +78,7 @@ public class TeleportManager : Singleton<TeleportManager>
         }
 
         player.transform.DOKill();
+        player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
         //GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
@@ -118,6 +121,10 @@ public class TeleportManager : Singleton<TeleportManager>
             Vector3 target = new Vector3(hitPoint.x + direction.x * 1.5f, player.transform.position.y + height, player.transform.position.z);
             player.transform.DOJump(target, height, 1, duration)
                 .SetEase(Ease.OutQuad)
+                .OnStart(() =>
+                {
+                    player.GetComponent<PlayerController>().AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Idle);
+                })
                 .OnComplete(() => Debug.Log("착지 완료"));
 
         }
@@ -159,7 +166,7 @@ public class TeleportManager : Singleton<TeleportManager>
             .mapID);
 
 
-        
+        player.GetComponent<PlayerMovement>().EndTeleport();
 
         //플레이어 이동 
         player.GetComponent<PlayerController>().canMove = true;

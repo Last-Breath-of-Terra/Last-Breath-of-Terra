@@ -8,7 +8,7 @@ public class GimmickGroup : MonoBehaviour
     public int mapID;
     [SerializeField] private List<GimmickShooter> shooters;
 
-    public void StartShooter()
+    private void OnEnable()
     {
         foreach (var shooter in shooters)
         {
@@ -16,11 +16,12 @@ public class GimmickGroup : MonoBehaviour
         }
     }
 
-    public void StopShooter()
+    private void OnDisable()
     {
         foreach (var shooter in shooters)
         {
             shooter.StopShooter();
         }
     }
+
 }

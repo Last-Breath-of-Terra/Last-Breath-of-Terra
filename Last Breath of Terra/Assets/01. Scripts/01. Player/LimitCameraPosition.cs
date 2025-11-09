@@ -8,21 +8,14 @@ using UnityEngine;
 public class LimitCameraPosition : MonoBehaviour
 {
     public float changelensRatio;
-    private CinemachineVirtualCamera virtualCamera;
-    private CinemachineFramingTransposer framingTransposer;
-    private CameraController cameraController;
+    private CameraController _cameraController;
 
     void Start()
     {
-        virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
-        cameraController = FindObjectOfType<CameraController>();
-        if (cameraController == null)
+        _cameraController = FindObjectOfType<CameraController>();
+        if (_cameraController == null)
         {
             Debug.LogError("CameraController not found!");
-        }
-        if (virtualCamera != null)
-        {
-            framingTransposer = virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
         }
     }
     private void OnTriggerEnter2D(Collider2D other)
@@ -31,15 +24,15 @@ public class LimitCameraPosition : MonoBehaviour
         {
             if (gameObject.CompareTag("LockXPositon"))
             {
-                LockCameraXPosition();
+                _cameraController.LockCameraXPosition();
             }
             else if (gameObject.CompareTag("LockYPositon"))
             {
-                LockCameraYPosition();
+                _cameraController.LockCameraYPosition();
             }
             else if (gameObject.CompareTag("ChangeLensSize"))
             {
-                ChangeCameraLensSize(changelensRatio);
+                _cameraController.ChangeCameraLensSize(changelensRatio);
             }
         }
     }
@@ -50,44 +43,18 @@ public class LimitCameraPosition : MonoBehaviour
         {
             if (gameObject.CompareTag("LockXPositon"))
             {
-                UnlockCameraXPosition();
+                _cameraController.UnlockCameraXPosition();
             }
             else if (gameObject.CompareTag("LockYPositon"))
             {
-                UnlockCameraYPosition();
+                _cameraController.UnlockCameraYPosition();
             }
             else if (gameObject.CompareTag("ChangeLensSize"))
             {
-                ChangeCameraLensSize(1f / changelensRatio);
+                _cameraController.ChangeCameraLensSize(1f / changelensRatio);
             }
         }
     }
     
-    private void LockCameraXPosition()
-    {
-        Debug.Log("Fixing camera X position");
-        framingTransposer.m_DeadZoneWidth = 1f;
-    }
-    private void UnlockCameraXPosition(){
-        Debug.Log("Unlocking camera X position");
-        framingTransposer.m_DeadZoneWidth = 0;
-    }
     
-    private void LockCameraYPosition()
-    {
-        cameraController.isYlockZone = true;
-        Debug.Log("Fixing camera Y position");
-        framingTransposer.m_DeadZoneHeight = 1f;
-    }
-    private void UnlockCameraYPosition(){
-        cameraController.isYlockZone = false;
-        Debug.Log("Unlocking camera Y position");
-        framingTransposer.m_DeadZoneHeight = 0;
-    }
-    private void ChangeCameraLensSize(float targetLensRatio)
-    {
-        float defaultLensSize = virtualCamera.m_Lens.OrthographicSize;
-        float targetLensSize = defaultLensSize * targetLensRatio;
-        DOTween.To(() => defaultLensSize, x => virtualCamera.m_Lens.OrthographicSize = x, targetLensSize, 1.5f);
-    }
 }

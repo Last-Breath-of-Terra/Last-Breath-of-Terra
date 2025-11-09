@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     private PhysicsMaterial2D originalMaterial;
     private float originalDrag;
     private bool isSliding = false;
+    private bool _isTeleporting;
     private bool _isJumping;
     private bool isLanding;
     private bool _isSignificantFall;
@@ -139,6 +140,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateFallingSpeed()
     {
+        if (_isTeleporting) return;
+
         if (controller.Rb.velocity.y < 0)
         {
             float newFallSpeed = controller.Rb.velocity.y - controller.data.fallAccelerationTime * Time.fixedDeltaTime;
@@ -323,8 +326,20 @@ public class PlayerMovement : MonoBehaviour
         controller.Rb.drag = originalDrag;
     }
 
+    public void StartTeleport()
+    {
+        _isTeleporting = true;
+        controller.Rb.velocity = Vector2.zero;
+    }
+
+    public void EndTeleport()
+    {
+        _isTeleporting = false;
+    }
+
     public float GetCurrentSpeed() => currentSpeed;
     public bool IsHoldingClick => isHoldingClick;
+    public bool IsTeleporting => _isTeleporting;
     public bool IsLanding => isLanding;
     public void StartMoving() => isHoldingClick = true;
     public bool IsJumping() => _isJumping;

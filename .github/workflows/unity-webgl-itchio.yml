@@ -33,31 +33,55 @@ jobs:
           remove-codeql: true
           root-reserve-mb: 1024
           swap-size-mb: 1024
+          remove-docker-images: true   # 도커 이미지도 정리
 
       - name: Extra prune & clean
         run: |
-          docker system prune -af --volumes || true
+          # 도커 및 빌더 캐시 완전 정리
+          sudo docker system prune -af --volumes || true
+          sudo docker builder prune -af || true
+
+          # 패키지 캐시 정리
           sudo apt-get clean
-          sudo rm -rf /opt/hostedtoolcache || true
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || true
+
+          # 대용량 SDK 및 개발도구 제거 (수십 GB 절약)
+          sudo rm -rf /usr/share/dotnet /opt/ghc "/usr/local/lib/android" \
+                       /opt/hostedtoolcache "$AGENT_TOOLSDIRECTORY" \
+                       /usr/lib/jvm /usr/local/share/swift /usr/lib/google-cloud-sdk \
+                       /usr/local/.ghcup /usr/local/share/boost /opt/az \
+                       /usr/local/lib/heroku /usr/local/graalvm /usr/local/lib/llvm* \
+                       /usr/local/share/chromium /usr/local/share/gradle* /usr/share/gradle* || true
 
       - name: Disk usage (after cleanup)
         run: |
           echo "::group::Disk usage after cleanup"
           df -h
           docker system df || true
+          sudo du -sh /var/lib/docker || true
           echo "::endgroup::"
+
+      # Unity 에디터 이미지 사전 Pull (공간 여유 확보 후)
+      - name: Pull Unity editor image first
+        run: docker pull unityci/editor:ubuntu-2022.3.22f1-webgl-3
+
+      # Pull 전 여유 공간 검증
+      - name: Check disk for docker pull safety
+        run: |
+          FREE=$(df -Pm / | awk 'NR==2{print $4}')
+          echo "Free MB: $FREE"
+          [ "$FREE" -ge 30000 ] || (echo "Need >= 30000MB free"; exit 1)
 
       - name: Check Out
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          lfs: true
+          lfs: false         # 대용량 LFS 비활성화
+          submodules: false
 
       - name: Cache Library
         uses: actions/cache@v4
         with:
-          path: Last Breath of Terra/Library
+          path: "Last Breath of Terra/Library"
           key: library-${{ runner.os }}-webgl-${{ hashFiles('Last Breath of Terra/Packages/manifest.json', 'Last Breath of Terra/ProjectSettings/ProjectVersion.txt') }}
           restore-keys: |
             library-${{ runner.os }}-webgl-
@@ -73,14 +97,10 @@ jobs:
           targetPlatform: WebGL
           projectPath: "Last Breath of Terra"
           buildName: WebGL
-          buildsPath: build
-          # ↓ webgl-1이 없어 실패했으니 3으로 고정(또는 이 두 줄을 통째로 제거)
+          buildPath: build
           containerRegistryRepository: unityci/editor
           containerRegistryImageVersion: 3
-          # customParameters: >
-          #   -cacheServerEndpoint your.accelerator.host:10080
-          #   -cacheServerEnableDownload true
-          #   -cacheServerEnableUpload true
+          allowDirtyBuild: true
 
       - name: Upload WebGL build
         uses: actions/upload-artifact@v4

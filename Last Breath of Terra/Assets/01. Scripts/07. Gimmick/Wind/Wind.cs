@@ -29,24 +29,7 @@ public class Wind : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
-            int velocity = rb.velocity.x > 0 ? 1 : -1;
-            if ((int)windDirection == velocity)
-            {
-                WindManager.Instance.ApplyWindEffect(WindManager.WindType.Fast);
-
-                //왼쪽
-                // player.transform.position = new Vector3(playerX + moveAmount, player.transform.position.y, player.transform.position.z);
-            }
-            else
-            {
-                WindManager.Instance.ApplyWindEffect(WindManager.WindType.Slow);
-
-                //오른쪽
-                // player.transform.position = new Vector3(playerX + moveAmount, player.transform.position.y, player.transform.position.z);
-            }
-
-            rb.AddForce(moveAmount * (int)windDirection * Vector2.right);
-
+            WindManager.Instance.ApplyWindEffect(windDirection, rb.velocity);
         }
     }
 

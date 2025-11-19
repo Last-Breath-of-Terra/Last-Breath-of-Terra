@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -17,7 +18,7 @@ public class WindManager : Singleton<WindManager>
     public enum WindType
     {
         Fast,
-        Slow
+        Slow,
     }
 
 
@@ -27,29 +28,24 @@ public class WindManager : Singleton<WindManager>
     private GameObject windObject;
 
 
-
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
     }
 
-    public void ApplyWindEffect(WindType windType)
-    {
-        float drag = 1f;
-        switch (windType)
-        {
-            case WindType.Fast:
-                drag = windSO.fastRate;
-                break;
-            case WindType.Slow:
-                drag = windSO.slowRate;
-                break;
-            default:
-                drag = 1f;
-                break;
-        }
 
-        player.SpeedChangeRate = drag;
+    public void ApplyWindEffect(WindDirection windDirection, Vector2 velocity)
+    {
+        if (velocity.magnitude > 0)
+        {
+            float drag = 0 > velocity.x ? windSO.fastRate : windSO.slowRate;
+            player.SpeedChangeRate = drag;
+        }
+        else
+        {
+            player.transform.DOMoveX(
+                player.transform.position.x + (int)windDirection * 0.3f, 0.5f, false);
+        }
     }
 
     public void RemoveWindEffect(WindType windType)
@@ -65,6 +61,7 @@ public class WindManager : Singleton<WindManager>
         windObject = gameObject;
         _coroutine = StartCoroutine(PlayWindAudioCoroutine());
     }
+
     IEnumerator PlayWindAudioCoroutine()
     {
         while (true)

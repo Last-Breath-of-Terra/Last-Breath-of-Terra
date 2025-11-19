@@ -12,7 +12,7 @@ public class TutorialRevivalPractice : MonoBehaviour
         {
             other.gameObject.GetComponent<PlayerController>().SetCanMove(false);
             obstacle.SetActive(true);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }

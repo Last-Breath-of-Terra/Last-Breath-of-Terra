@@ -64,9 +64,20 @@ public class TutorialClear : MonoBehaviour
         Debug.Log(count + " infusers activated");
         if (count >= 4) //추후 변경 필요
         {
-            Debug.Log("stage cleared");
-            DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 0, true);
-            SceneManager.LoadScene("StageSelection");
+            GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().SetCanMove(false);
+            StartCoroutine(ClearTutorical());
         }
+    }
+
+    IEnumerator ClearTutorical()
+    {
+        for (float i = 0; i < 1f; i += 0.02f)
+        {
+            yield return new WaitForSeconds(0.01f);
+            fadeImage.color = new Color(0f, 0f, 0f, i);
+        }
+
+        DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 0, true);
+        SceneManager.LoadScene("StageSelection");
     }
 }

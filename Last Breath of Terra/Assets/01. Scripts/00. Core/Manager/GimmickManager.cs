@@ -11,7 +11,6 @@ public class GimmickManager : Singleton<GimmickManager>
 
     [Header("SFX")] private AudioClip[] gimmickSFXInitClips;
     private Dictionary<string, AudioClip> gimmickSFXAudioClips;
-    public AudioSource[] sfxSources;
     private float sfxVolume = 1.0f;
 
     protected override void Awake()
@@ -24,20 +23,6 @@ public class GimmickManager : Singleton<GimmickManager>
         }
     }
 
-
-    /*
-    private void Start()
-    {
-        if (InfuserManager.Instance == null)
-        {
-            Debug.LogError("[GimmickManager] InfuserManager.Instance is NULL (초기화 전?)", this);
-            return;
-        }
-
-        lifeInfuserSO = InfuserManager.Instance.LifeInfuserSO;
-        if (lifeInfuserSO == null)
-            Debug.LogError("[GimmickManager] lifeInfuserSO is NULL! (매니저에 할당 안 됨)", this);
-    }*/
 
     public void ChangeLifeInfuserUISize()
     {
@@ -66,6 +51,10 @@ public class GimmickManager : Singleton<GimmickManager>
     public float PlayGimmickSFX(string sfxName, GameObject gameObject, bool isRandom)
     {
         AudioSource _audioSource = gameObject.GetComponent<AudioSource>();
+        if (_audioSource == null)
+        {
+            _audioSource = gameObject.AddComponent<AudioSource>();
+        }
 
         if (isRandom)
         {
@@ -86,5 +75,12 @@ public class GimmickManager : Singleton<GimmickManager>
         }
 
         return _audioClip.length;
+    }
+
+    public void StopGimmickSFX()
+    {
+        AudioSource _audioSource = gameObject.GetComponent<AudioSource>();
+        if(_audioSource != null)
+            _audioSource.Stop();
     }
 }

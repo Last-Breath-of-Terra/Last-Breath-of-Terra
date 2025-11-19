@@ -55,7 +55,7 @@ public class WindManager : Singleton<WindManager>
     public void RemoveWindEffect(WindType windType)
     {
         StopCoroutine(_coroutine);
-        gameObject.GetComponent<AudioSource>().Stop();
+        GimmickManager.Instance.StopGimmickSFX();
         GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_windpushend_03", windObject, false);
         player.SpeedChangeRate = 1f;
     }

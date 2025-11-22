@@ -15,6 +15,7 @@ public class LifeInfuserSO : ScriptableObject
     public float defaultLensSize;
     public float targetLensSize;
     public float arcHeight;
+    public float arcOffsetX;
 
     public Sprite[] InfuserActiveImage;
     public Sprite[] InfuserInactiveImage;
@@ -173,6 +174,7 @@ public class LifeInfuserSO : ScriptableObject
 
     void DrawArc(float progress, Vector3 targetPosition, float radius, LineRenderer lineRenderer, [CanBeNull] ParticleSystem gaugeParticle = null)
     {
+        targetPosition = new Vector3(targetPosition.x + arcOffsetX, targetPosition.y, targetPosition.z);
         int visibleSegments = Mathf.FloorToInt(progress * lineRendererSegments);
         Vector3[] positions = new Vector3[visibleSegments];
 

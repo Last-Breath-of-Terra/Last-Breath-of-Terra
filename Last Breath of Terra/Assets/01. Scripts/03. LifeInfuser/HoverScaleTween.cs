@@ -12,6 +12,7 @@ public class HoverScaleTween : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        Debug.Log("올라왔나요?");
         isHovered = true;
         if (_coroutine != null) { StopCoroutine(_coroutine); _coroutine = null; }
 

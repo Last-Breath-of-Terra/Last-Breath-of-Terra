@@ -150,6 +150,7 @@ public class UIManager : Singleton<UIManager>
     public void ReleaseClick()
     {
         Vector3 originalScale = movingLightEffect.transform.localScale;
+        
         movingLightEffect.transform
             .DOScale(Vector3.zero, 0.5f)
             .SetEase(Ease.InOutSine)

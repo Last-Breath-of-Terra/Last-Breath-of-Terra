@@ -27,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isHoldingClick;
     private Coroutine speedDebuffCoroutine;
 
-    void Awake()
+    void Start()
     {
         controller = GetComponent<PlayerController>();
         originalMaterial = controller.Rb.sharedMaterial;

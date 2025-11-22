@@ -10,9 +10,9 @@ public class TutorialRevivalPractice : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<PlayerController>().canMove = false;
+            other.gameObject.GetComponent<PlayerController>().SetCanMove(false);
             obstacle.SetActive(true);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }

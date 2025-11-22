@@ -16,11 +16,6 @@ public class TeleportManager : Singleton<TeleportManager>
 
     private GameObject player;
     private Animator animator;
-
-    // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-    public GameObject parallaxBackgroundObject;
-    // ※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※※
-
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -81,13 +76,9 @@ public class TeleportManager : Singleton<TeleportManager>
         player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         player.transform.position = teleportSet[targetID].transform.position + teleportOffset * teleportDirection;
         ChangeCamera(teleportSet[targetID].GetComponent<Teleport>().mapID);
-        //GimmickShooterManager.Instance.ChangeGimmickGroup(teleportSet[targetID].GetComponent<Teleport>().mapID);
 
         yield return new WaitForSeconds(0.2f);
-
         
-        
-
         //포탈 나와서
         if (teleportDirection == Vector3.up)
         {
@@ -175,6 +166,5 @@ public class TeleportManager : Singleton<TeleportManager>
     public void MoveToPortal()
     {
         player.GetComponent<PlayerController>().canMove = false;
-        //animator.SetBool("MoveToPortal", true);
     }
 }

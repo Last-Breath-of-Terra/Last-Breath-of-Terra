@@ -55,8 +55,6 @@ public class InfuserManager : Singleton<InfuserManager>
         int i = 0;
         foreach (Transform child in infuserStatusChild)
         {
-          //  infuserStatusParticle[i] = Instantiate(activeParticle, child.position, Quaternion.identity, child);
-          //  infuserStatusParticle[i].Stop();
             i++;
             Image image = child.GetComponent<Image>();
             if (image != null)

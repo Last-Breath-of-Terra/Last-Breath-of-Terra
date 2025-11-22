@@ -88,12 +88,4 @@ public class Stone : MonoBehaviour
         DOTween.To(() => fallSpeed, x => fallSpeed = x, maxFallSpeed, fallDuration)
             .SetEase(Ease.InQuad);
     }
-
-    IEnumerator ChangeMoveSpeed(GameObject player)
-    {
-        yield return new WaitForSeconds(moveDisableDuration);
-        Debug.Log("속도가 안돌아오는 이유가 뭘까");
-        player.GetComponent<PlayerController>().SetCanMove(true);
-        player.GetComponent<PlayerMovement>().SpeedChangeRate = 1f;
-    }
 }

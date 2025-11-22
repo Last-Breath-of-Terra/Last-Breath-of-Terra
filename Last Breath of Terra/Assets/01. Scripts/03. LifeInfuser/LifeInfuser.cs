@@ -13,7 +13,6 @@ public class LifeInfuser : MonoBehaviour
     public float spawnDelay = 1f;
     public float spawnInterval = 2f;
     public Transform arrivalPoint;
-    //public bool[] canInfusion;
 
     [Header("Minimap")] public string mapID;
 

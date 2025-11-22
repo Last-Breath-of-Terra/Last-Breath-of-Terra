@@ -33,11 +33,6 @@ public class Icicle : MonoBehaviour
         GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_iciclefallnotice_01", gameObject, true);
     }
 
-    private void Update()
-    {
-        //  gameObject.transform.position += fallSpeed * Time.deltaTime * Vector3.down ;
-    }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         float audioTime = 1f;
@@ -46,20 +41,13 @@ public class Icicle : MonoBehaviour
             audioTime = GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_iceclefallhit_04", gameObject, true);
             other.gameObject.GetComponent<PlayerIcicleResponder>().FreezePlayer();
             Invoke("Returnicicle", audioTime);
-
         }
 
         if (other.gameObject.CompareTag("Ground"))
         {
             audioTime = GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_iceclefallhit_04", gameObject, true);
             Invoke("Returnicicle", audioTime);
-
-           // audioTime = GimmickManager.Instance.PlayGimmickSFX("Sfx_Gimick_iceclefallground03", gameObject, true);
         }
-        /*if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
-        {
-
-        }*/
     }
 
     public void Fallicicle()
@@ -72,6 +60,5 @@ public class Icicle : MonoBehaviour
     private void Returnicicle()
     {
         PoolManager.Instance.ReturnObject(IcicleManager.Instance.poolName, gameObject);
-
     }
 }

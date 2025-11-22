@@ -12,19 +12,18 @@ public class GimmickShooter : MonoBehaviour
     private GameObject obstacle;
     private Coroutine coroutine;
     private float respawnCooldown;
-    
+
     private void Start()
     {
         if (shootForce == 0f)
             shootForce = GimmickShooterManager.Instance.shootForce;
-
     }
 
     public void StartShooter()
     {
         if (isStage1)
             GimmickManager.Instance.PlayGimmickSFX("Sfx_ShootingWarning01_01", gameObject, false);
-        else 
+        else
             GimmickManager.Instance.PlayGimmickSFX("Sfx_IceFlowerWarning01", gameObject, true);
         respawnCooldown = Random.Range(GimmickShooterManager.Instance.respawnTimeRange.x,
             GimmickShooterManager.Instance.respawnTimeRange.y);
@@ -59,28 +58,20 @@ public class GimmickShooter : MonoBehaviour
                 }
 
                 Rigidbody2D rb = obstacle.GetComponent<Rigidbody2D>();
-                audioLength = isStage1 ? 
-                    GimmickManager.Instance.PlayGimmickSFX("Sfx_ShootingFire02", gameObject, true) 
+                audioLength = isStage1
+                    ? GimmickManager.Instance.PlayGimmickSFX("Sfx_ShootingFire02", gameObject, true)
                     : GimmickManager.Instance.PlayGimmickSFX("Sfx_IceFlowerFire02", gameObject, true);
-                if(isStage1)
-                    rb.AddForce(gameObject.transform.up.normalized * GimmickShooterManager.Instance.shootForce, ForceMode2D.Impulse);
+                if (isStage1)
+                    rb.AddForce(gameObject.transform.up.normalized * GimmickShooterManager.Instance.shootForce,
+                        ForceMode2D.Impulse);
                 else
-                    rb.AddForce(gameObject.transform.right.normalized * GimmickShooterManager.Instance.shootForce, ForceMode2D.Impulse);
-                
-
-                /*
-            obstacle.transform.DOMoveX(obstacle.transform.position.x - 10f / respawnCooldown, respawnCooldown)
-                .SetEase(Ease.Linear)
-                .OnComplete(() =>
-                {
-                    obstacle.transform.SetParent(null);
-                    PoolManager.Instance.ReturnObject(gimmickShooterController.poolName, obstacle);
-                });*/
+                    rb.AddForce(gameObject.transform.right.normalized * GimmickShooterManager.Instance.shootForce,
+                        ForceMode2D.Impulse);
             }
 
             yield return new WaitForSeconds(respawnCooldown);
-            audioLength = isStage1 ? 
-                GimmickManager.Instance.PlayGimmickSFX("Sfx_ShootingWarning01_01", gameObject, false) 
+            audioLength = isStage1
+                ? GimmickManager.Instance.PlayGimmickSFX("Sfx_ShootingWarning01_01", gameObject, false)
                 : GimmickManager.Instance.PlayGimmickSFX("Sfx_IceFlowerWarning01", gameObject, true);
             yield return new WaitForSeconds(audioLength);
 

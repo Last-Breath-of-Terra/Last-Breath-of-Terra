@@ -24,7 +24,7 @@ public class LifeInfuserSO : ScriptableObject
     public Sprite inactiveIcon;
     public Material defaultMaterial;
     public Material sacrificeMaterial;
-    
+
     public int lineRendererSegments = 100;
     public int infusedLifeCount;
 
@@ -57,22 +57,21 @@ public class LifeInfuserSO : ScriptableObject
         InfuserManager.Instance.glowLineRenderer.positionCount = 0;
         InfuserManager.Instance.brightLineRenderer.positionCount = 0;
 
-       // ParticleSystem.MainModule main;
-       
+
         currentTween = DOTween.To(() => progress, x => progress = x, 1f, infusionDuration)
             .SetEase(Ease.Linear)
             .OnStart(() =>
             {
-              //  main = InfuserManager.Instance.infuserStatusParticle[infuserNumber].main;
-              //  InfuserManager.Instance.infuserStatusParticle[infuserNumber].Play();
-                
-                DrawArc(1f, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.backLineRenderer);
+                DrawArc(1f, targetInfuser.transform.position, InfuserManager.Instance.radius,
+                    InfuserManager.Instance.backLineRenderer);
             })
             .OnUpdate(() =>
             {
                 float circularProgress = (1 - Mathf.Cos(progress * Mathf.PI)) / 2;
-                DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.brightLineRenderer, InfuserManager.Instance.gaugeParticle);
-                DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius, InfuserManager.Instance.glowLineRenderer);
+                DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius,
+                    InfuserManager.Instance.brightLineRenderer, InfuserManager.Instance.gaugeParticle);
+                DrawArc(circularProgress, targetInfuser.transform.position, InfuserManager.Instance.radius,
+                    InfuserManager.Instance.glowLineRenderer);
             })
             .OnComplete(() =>
             {
@@ -95,7 +94,8 @@ public class LifeInfuserSO : ScriptableObject
 
         targetInfuser.GetComponent<SpriteRenderer>().sprite = InfuserActiveImage[infuserType];
         targetInfuser.GetComponent<SpriteRenderer>().material = sacrificeMaterial;
-        InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1, 0.8f);
+        InfuserManager.Instance.infuserStatusChild[infuserNumber].GetComponent<UnityEngine.UI.Image>().color =
+            new Color(1, 1, 1, 0.8f);
 
         UnityEngine.Debug.Log("infusion completed");
         isStartInfusion = false;
@@ -117,7 +117,8 @@ public class LifeInfuserSO : ScriptableObject
         {
             currentTween.Kill();
             AudioManager.Instance.StopCancelable(audioSource);
-            DOTween.To(() => targetLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, defaultLensSize, 0.3f);
+            DOTween.To(() => targetLensSize, x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x,
+                defaultLensSize, 0.3f);
             SetUIForInfuserStatus(false);
 
             UnityEngine.Debug.Log("infusion stopped");
@@ -135,6 +136,7 @@ public class LifeInfuserSO : ScriptableObject
             if (activatedInfuser == false)
                 return false;
         }
+
         return true;
     }
 
@@ -143,7 +145,7 @@ public class LifeInfuserSO : ScriptableObject
      */
     public void SetUIForInfuserStatus(bool isStart)
     {
-         isUIExpanded = isStart;
+        isUIExpanded = isStart;
 
         float transparency = isStart ? 0.3f : -0.3f;
         Vector3 canvasScale = isUIExpanded ? new Vector3(1f, 1f, 1f) : new Vector3(0.5f, 0.5f, 0.5f);
@@ -172,7 +174,8 @@ public class LifeInfuserSO : ScriptableObject
         }
     }
 
-    void DrawArc(float progress, Vector3 targetPosition, float radius, LineRenderer lineRenderer, [CanBeNull] ParticleSystem gaugeParticle = null)
+    void DrawArc(float progress, Vector3 targetPosition, float radius, LineRenderer lineRenderer,
+        [CanBeNull] ParticleSystem gaugeParticle = null)
     {
         targetPosition = new Vector3(targetPosition.x + arcOffsetX, targetPosition.y, targetPosition.z);
         int visibleSegments = Mathf.FloorToInt(progress * lineRendererSegments);
@@ -181,7 +184,8 @@ public class LifeInfuserSO : ScriptableObject
         for (int i = 0; i < visibleSegments; i++)
         {
             float angle = Mathf.Lerp(Mathf.PI, 0, i / (float)(lineRendererSegments - 1));
-            positions[i] = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius - arcHeight, 0) + targetPosition;
+            positions[i] = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius - arcHeight, 0) +
+                           targetPosition;
         }
 
         lineRenderer.positionCount = visibleSegments;

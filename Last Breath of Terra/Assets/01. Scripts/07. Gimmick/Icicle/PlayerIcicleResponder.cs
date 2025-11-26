@@ -74,8 +74,6 @@ public class PlayerIcicleResponder : MonoBehaviour
 
     public void OnClickPlayer(InputAction.CallbackContext context)
     {
-        //particleSystem.transform.position = transform.position;
-        //particleSystem.Play();
         Vector2 mousePos = Mouse.current.position.ReadValue();
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
 

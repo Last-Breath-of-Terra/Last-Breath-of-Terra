@@ -69,14 +69,11 @@ public class LifeRestorer : MonoBehaviour
         SwitchActionMap("Select");
         //왼쪽 끝에서부터 설정
         infuserNumber = 0;
-        //UpdateRectSize(infuserNumber, newSize);
         //UI 활성화
         DOTween.To(() => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale,
             x => InfuserManager.Instance.infuserStatus.GetComponent<RectTransform>().localScale = x,
             new Vector3(1f, 1f, 1f), 0.1f);
         lifeInfuserData.SetUIForInfuserStatus(true);
-        //lifeInfuserData.SetUITransparency(lifeInfuserData.InfuserStatusUI.transform, 1.0f);
-        //lifeInfuserData.infuserStatusUI[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
         for (int i = 0; i + infuserNumber < InfuserManager.Instance.activatedInfusers.Length; i++)
         {
             if (InfuserManager.Instance.activatedInfusers[i + infuserNumber])
@@ -92,7 +89,6 @@ public class LifeRestorer : MonoBehaviour
 
         //카메라 이동
         infuserTrackedCamera.Follow = InfuserManager.Instance.infuser[infuserNumber].transform;
-        //infuserTrackedCamera.transform.position = lifeInfuserData.infuser[infuserNumber].transform.position;
         infuserTrackedCamera.gameObject.SetActive(true);
     }
 
@@ -213,7 +209,7 @@ public class LifeRestorer : MonoBehaviour
         //새로운 값
         Debug.Log("infuserNumber : " + infuserNumber + ", amount : " + amount + " newInfuserNumber : " + infuserNumber +
                   amount);
-        infuserNumber += amount; //Mathf.Clamp(setValue, 0, lifeInfuserData.totalInfuser);
+        infuserNumber += amount; 
         InfuserManager.Instance.infuserStatusChild[infuserNumber].transform.GetChild(0).gameObject.SetActive(true);
         UpdateRectSize(infuserNumber, newSize);
 

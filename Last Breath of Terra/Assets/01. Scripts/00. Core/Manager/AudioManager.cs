@@ -8,7 +8,6 @@ public class AudioManager : Singleton<AudioManager>
 {
     public AudioMixerGroup bgmGroup;
     public AudioMixerGroup ambientGroup;
-    //[HideInInspector] public Dictionary<int, string> mapAmbienceDict;
 
     private ScenesManager scenesManager;
 
@@ -46,7 +45,6 @@ public class AudioManager : Singleton<AudioManager>
     private void Start()
     {
         PlayBGMForCurrentScene();
-        //PlayAmbience("ambi_livingroom");
     }
 
     private void AudioInit()
@@ -267,26 +265,6 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    /*
-     * 씬 & 맵에 따라 플레이어 오디오 세팅
-     */
-    public void UpdatePlayerAuidoSettingsByMap(int mapID)
-    {/*
-        if (mapAmbienceDict.ContainsKey(mapID))
-        {
-            GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = true;
-            GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 40f;
-            GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 60f;
-        }
-        else
-        {
-            GameManager.Instance.playerTr.GetComponent<AudioChorusFilter>().enabled = false;
-            GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().minDistance = 10f;
-            GameManager.Instance.playerTr.GetComponent<AudioReverbZone>().maxDistance = 15f;
-        }
-        */
-    }
-
     public void UpdatePlayerAuidoSettingsByScene()
     {
         SCENE_TYPE currentScene = scenesManager.GetCurrentSceneType();
@@ -349,7 +327,6 @@ public class AudioManager : Singleton<AudioManager>
     {
         audioSource.Stop();
         audioSource.panStereo = 0;
-        //PlaySFX(audioName, audioSource, soundTransform);
     }
 
     public void StopAudio()

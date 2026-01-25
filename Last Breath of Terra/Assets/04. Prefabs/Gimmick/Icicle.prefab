@@ -100,8 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3154eac9d1419a4e9251a5993cedbbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fallDuration: 5
-  maxFallSpeed: 1
+  fallDuration: 10
+  maxFallSpeed: 5
 --- !u!60 &3355779949741688912
 PolygonCollider2D:
   m_ObjectHideFlags: 0

@@ -57,16 +57,11 @@ public class Stone : MonoBehaviour
             }
 
             player.SetCanMove(false);
-            
-            float dirX = Mathf.Sign(player.transform.position.x - transform.position.x);
-
-            Vector2 knockbackDir = new Vector2(dirX, 1f).normalized;
-
+            Vector2 knockbackDir = (player.transform.position - transform.position).normalized;
             Rigidbody2D rb = player.Rb;
             rb.velocity = Vector2.zero;
+            rb.AddForce(knockbackDir * knockbackForce, ForceMode2D.Impulse);
 
-            rb.velocity = knockbackDir * knockbackForce;
-            
             seq = DOTween.Sequence();
             seq.AppendInterval(moveDisableDuration).AppendCallback(() =>
                 {

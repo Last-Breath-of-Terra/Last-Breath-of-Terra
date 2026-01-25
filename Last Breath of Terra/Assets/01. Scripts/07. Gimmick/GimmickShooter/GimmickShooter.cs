@@ -47,7 +47,7 @@ public class GimmickShooter : MonoBehaviour
                 obstacle.transform.position = gameObject.transform.position;
 
                 float zRotation = gameObject.transform.eulerAngles.z;
-/*
+
                 if (zRotation > 90f && zRotation < 270f)
                 {
                     obstacle.GetComponent<SpriteRenderer>().flipX = false;
@@ -55,15 +55,7 @@ public class GimmickShooter : MonoBehaviour
                 else
                 {
                     obstacle.GetComponent<SpriteRenderer>().flipX = true;
-                }*/
-                
-                bool shouldFlip = !(zRotation > 90f && zRotation < 270f);
-
-                var t = obstacle.transform;
-                Vector3 s = t.localScale;
-                s.x = Mathf.Abs(s.x) * (shouldFlip ? -1f : 1f);
-                t.localScale = s;
-
+                }
 
                 Rigidbody2D rb = obstacle.GetComponent<Rigidbody2D>();
                 audioLength = isStage1

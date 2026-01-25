@@ -13,12 +13,7 @@ public class ObstacleProjectile : MonoBehaviour
     private ProjectileObstacleController obstacleController;
     
     [Header("Click Destruction")]
-    public int clicksToDestroy = 3;
-    public Sprite[] damageSprites; // 0타, 1타, 2타 스프라이트
-    public Transform[] attackPoints; // 클릭 포인트들
-    public Transform timingIndicator; // 타이밍 인디케이터
-    public GameObject attackGroup;
-    public float timingRotationSpeed = 100f;
+    public int clicksToDestroy = 1;
     
     [Header("Effects")]
     public GameObject destroyEffectPrefab;
@@ -39,23 +34,6 @@ public class ObstacleProjectile : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        
-        if (timingIndicator != null)
-            initialTimingIndicatorPos = timingIndicator.localPosition;
-
-        // 공격 포인트 초기화
-        if (attackPoints != null)
-        {
-            foreach (Transform point in attackPoints)
-            {
-                attackPointStates[point] = true;
-            }
-        }
-        
-        if (damageSprites != null && damageSprites.Length > 0)
-        {
-            spriteRenderer.sprite = damageSprites[0];
-        }
     }
 
     public void Initialize(Vector3 targetPos, GameObject playerObject, float moveSpeed, 
@@ -89,12 +67,6 @@ public class ObstacleProjectile : MonoBehaviour
             DestroyProjectile(false); // 파괴 없이 제거
         }
         
-        // 타이밍 인디케이터 회전
-        if (isHovered && isRotating && timingIndicator != null)
-        {
-            timingIndicator.RotateAround(transform.position, Vector3.back, 
-                                        timingRotationSpeed * Time.deltaTime);
-        }
     }
 
     private void OnClickPerformed(InputAction.CallbackContext context)
@@ -128,47 +100,6 @@ public class ObstacleProjectile : MonoBehaviour
         if (isHovered == hovered || isDestroyed) return;
 
         isHovered = hovered;
-        HandleHoverEffect();
-    }
-
-    private void HandleHoverEffect()
-    {
-        if (attackGroup == null || isDestroyed) return;
-        
-        SpriteRenderer renderer = attackGroup.GetComponent<SpriteRenderer>();
-        if (renderer == null) return;
-        
-        renderer.DOKill();
-        
-        if (isHovered)
-        {
-            attackGroup.SetActive(true);
-            DOTween.To(() => renderer.color.a, 
-                    x => {
-                        if (renderer != null && attackGroup != null)
-                        {
-                            renderer.color = new Color(1, 1, 1, x);
-                        }
-                    }, 
-                    1f, 0.5f);
-        }
-        else
-        {
-            DOTween.To(() => renderer.color.a, 
-                    x => {
-                        if (renderer != null && attackGroup != null)
-                        {
-                            renderer.color = new Color(1, 1, 1, x);
-                        }
-                    }, 
-                    0f, 0.2f)
-                .OnComplete(() => { 
-                    if (attackGroup != null)
-                    {
-                        attackGroup.SetActive(false); 
-                    }
-                });
-        }
     }
 
     private void OnPlayerAttack()
@@ -320,10 +251,6 @@ public class ObstacleProjectile : MonoBehaviour
         isDestroyed = true;
 
         transform.DOKill();
-        if (attackGroup != null)
-        {
-            attackGroup.GetComponent<SpriteRenderer>()?.DOKill();
-        }
 
         if (countAsDestroyed)
         {
@@ -368,13 +295,5 @@ public class ObstacleProjectile : MonoBehaviour
         }
         
         transform.DOKill();
-        if (attackGroup != null)
-        {
-            SpriteRenderer renderer = attackGroup.GetComponent<SpriteRenderer>();
-            if (renderer != null)
-            {
-                renderer.DOKill();
-            }
-        }
     }
 }

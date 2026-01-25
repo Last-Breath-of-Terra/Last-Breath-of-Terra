@@ -188,7 +188,8 @@ MonoBehaviour:
   requiredDestroyedCount: 3
   respawnTime: 5
   destroyDelay: 0.5
-  obstacleVisual: {fileID: 0}
+  isStage1: 0
+  obstacleVisual: {fileID: 283685807788094987}
   stageObjects:
   - {fileID: 283685807788094987}
   - {fileID: 4253000062656615814}

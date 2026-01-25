@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
     {
         Movement.HandleUpdate();
         WallClimb.HandleUpdate();
+        AnimHandler.SetGrounded(Movement.IsGrounded());
         AnimHandler.UpdateSpeedParameter(Movement.GetCurrentSpeed());
     }
 

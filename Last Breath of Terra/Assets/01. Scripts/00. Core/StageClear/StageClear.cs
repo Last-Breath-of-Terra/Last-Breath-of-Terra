@@ -111,6 +111,7 @@ public class StageClear : MonoBehaviour
             yield return StartCoroutine(MoveCamera());
         else
             yield return StartCoroutine(BreakIceWall());
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

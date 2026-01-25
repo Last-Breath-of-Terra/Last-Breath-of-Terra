@@ -40,7 +40,8 @@ public class PlayerAnimationHandler : MonoBehaviour
             case AnimationState.Run:
                 break;
             case AnimationState.Jump:
-                animator.SetBool("isJump", true);
+                //animator.SetBool("isJump", true);
+                animator.SetTrigger("Jump");
                 break;
             case AnimationState.Fall:
                 animator.SetBool("isFalling", true);
@@ -66,9 +67,15 @@ public class PlayerAnimationHandler : MonoBehaviour
         }
     }
 
+    public void SetGrounded(bool grounded)
+    {
+        animator.SetBool("Grounded", grounded);
+    }
+
     private void ResetAllTriggers()
     {
-        animator.SetBool("isJump", false);
+        //animator.SetBool("isJump", false);
+        animator.ResetTrigger("Jump");
         animator.ResetTrigger("Landing");
         animator.SetBool("isFalling", false);
         animator.SetBool("isClimbing", false);

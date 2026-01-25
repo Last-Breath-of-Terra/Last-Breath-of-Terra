@@ -235,6 +235,7 @@ public class ObstacleProjectile : MonoBehaviour
                                                        Quaternion.identity);
                     bodyEffect.GetComponent<ParticleSystem>().Play();
                     Destroy(bodyEffect, 2f);
+                    
                 }
 
                 // 포인트 비활성화

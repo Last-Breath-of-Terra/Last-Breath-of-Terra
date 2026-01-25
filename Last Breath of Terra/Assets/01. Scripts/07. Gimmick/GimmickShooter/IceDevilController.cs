@@ -20,12 +20,24 @@ public class IceDevilController : MonoBehaviour
         player.HP -= damage;
         GimmickManager.Instance.ChangeLifeInfuserUISize();
 
+        /*
         Vector2 knockbackDir = (player.transform.position - transform.position).normalized;
 
         Rigidbody2D rb = player.Rb;
         rb.velocity = Vector2.zero;
         rb.AddForce(knockbackDir * knockbackForce, ForceMode2D.Impulse);
+*/
+        
+        float dirX = Mathf.Sign(player.transform.position.x - transform.position.x);
+// 좌우만: new Vector2(dirX, 0f)
+// 위로 살짝 띄우기:
+        Vector2 knockbackDir = new Vector2(dirX, 1f).normalized;
 
+        Rigidbody2D rb = player.Rb;
+        rb.velocity = Vector2.zero;
+
+// knockbackForce를 "속도"처럼 쓰기 (예: 8~15 정도로 튜닝)
+        rb.velocity = knockbackDir * knockbackForce;
         player.SetCanMove(false);
         player.StartCoroutine(EnablePlayerMovementAfterDelay(player));
     }

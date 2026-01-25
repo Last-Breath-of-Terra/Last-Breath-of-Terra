@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9d81bab95642934e99281670cef0bb5, type: 3}
   m_Name: WindData
   m_EditorClassIdentifier: 
-  fastRate: 1.5
+  fastRate: 3
   slowRate: 0.5
   liftHeight: 20
   activationTime: 7

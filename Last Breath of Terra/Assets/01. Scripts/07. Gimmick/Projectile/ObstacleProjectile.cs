@@ -106,7 +106,143 @@ public class ObstacleProjectile : MonoBehaviour
     {
         if (!isHovered || isDestroyed) return;
 
-        DestroyProjectile(true);
+        bool timingMatched = CheckTiming();
+
+        if (timingMatched)
+        {
+            HandleSuccessfulAttack();
+        }
+        else
+        {
+            StartCoroutine(DeactivateAllPointsTemporarily(2f));
+        }
+    }
+
+    private bool CheckTiming()
+    {
+        if (attackPoints == null || timingIndicator == null) return false;
+        
+        foreach (Transform point in attackPoints)
+        {
+            float distance = Vector3.Distance(timingIndicator.position, point.position);
+
+            if (distance < 0.3f && !clickedPoints.Contains(point) && attackPointStates[point])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void HandleSuccessfulAttack()
+    {
+        foreach (Transform point in attackPoints)
+        {
+            if (Vector3.Distance(timingIndicator.position, point.position) < 0.3f && 
+                attackPointStates[point])
+            {
+                // 오디오 재생
+                string audioName = "obstacle_click_" + point.name[point.name.Length - 1];
+                AudioManager.Instance.PlaySFX(audioName, 
+                                             gameObject.GetComponent<AudioSource>(), 
+                                             transform);
+
+                // 흔들림 효과
+                transform.DOShakePosition(0.5f, 0.1f);
+                
+                // 이펙트 생성
+                if (attackEffectPrefab != null)
+                {
+                    GameObject attackEffect = Instantiate(attackEffectPrefab, point.position, 
+                                                         Quaternion.identity);
+                    attackEffect.GetComponent<ParticleSystem>().Play();
+                    Destroy(attackEffect, 0.5f);
+                }
+                
+                if (bodyAttackEffectPrefab != null)
+                {
+                    GameObject bodyEffect = Instantiate(bodyAttackEffectPrefab, transform.position, 
+                                                       Quaternion.identity);
+                    bodyEffect.GetComponent<ParticleSystem>().Play();
+                    Destroy(bodyEffect, 2f);
+                    
+                }
+
+                // 포인트 비활성화
+                Color color = point.GetComponent<SpriteRenderer>().color;
+                color.a = 100f;
+                point.GetComponent<SpriteRenderer>().color = color;
+                clickedPoints.Add(point);
+                attackPointStates[point] = false;
+                
+                currentHitCount++;
+                UpdateSprite();
+                break;
+            }
+        }
+
+        // 파괴 체크
+        if (currentHitCount >= clicksToDestroy)
+        {
+            DestroyProjectile(true);
+        }
+    }
+
+    private IEnumerator DeactivateAllPointsTemporarily(float delay)
+    {
+        isRotating = false;
+
+        // 인디케이터 반투명화
+        if (timingIndicator != null)
+        {
+            SpriteRenderer indicatorRenderer = timingIndicator.GetComponent<SpriteRenderer>();
+            if (indicatorRenderer != null)
+            {
+                Color color = indicatorRenderer.color;
+                color.a = 0.2f;
+                indicatorRenderer.color = color;
+            }
+        }
+
+        // 모든 포인트 일시 비활성화
+        foreach (Transform point in attackPoints)
+        {
+            attackPointStates[point] = false;
+        }
+
+        yield return new WaitForSeconds(delay);
+
+        // 인디케이터 복구
+        if (timingIndicator != null)
+        {
+            SpriteRenderer indicatorRenderer = timingIndicator.GetComponent<SpriteRenderer>();
+            if (indicatorRenderer != null)
+            {
+                Color color = indicatorRenderer.color;
+                color.a = 1f;
+                indicatorRenderer.color = color;
+            }
+        }
+
+        // 클릭 안된 포인트만 재활성화
+        foreach (Transform point in attackPoints)
+        {
+            if (!clickedPoints.Contains(point))
+            {
+                attackPointStates[point] = true;
+            }
+        }
+
+        isRotating = true;
+    }
+
+    private void UpdateSprite()
+    {
+        if (damageSprites != null && currentHitCount < damageSprites.Length)
+        {
+            spriteRenderer.sprite = damageSprites[currentHitCount];
+        }
     }
 
     private void DestroyProjectile(bool countAsDestroyed)

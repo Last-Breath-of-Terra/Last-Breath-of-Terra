@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1915626253401144968}
   - component: {fileID: 3733003085823164037}
   - component: {fileID: 3550543626495492722}
+  - component: {fileID: -7412775081915653857}
   m_Layer: 0
   m_Name: IceDevil
   m_TagString: Untagged
@@ -165,3 +166,38 @@ MonoBehaviour:
   knockbackDuration: 0.5
   moveDisableDuration: 1
   damage: 1
+--- !u!58 &-7412775081915653857
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4321679519197034208}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.12, y: -0.04}
+  serializedVersion: 2
+  m_Radius: 0.77

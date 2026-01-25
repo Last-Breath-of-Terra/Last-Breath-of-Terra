@@ -1,43 +1,47 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using UnityEngine;
 using System.Linq;
-using System.IO;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using Cinemachine;
 using DG.Tweening;
 using Color = UnityEngine.Color;
 using Image = UnityEngine.UI.Image;
 
-
-
-
 public class StageClear : MonoBehaviour
 {
+    [Header("Assign in Inspector")]
     public Image fadeImage;
     public Sprite[] changeObjectImage;
-    public GameObject iceWall;
-    public DataManager dataManager;
+    public GameObject iceWall;                 // stage2에서만 필요
     public CinemachineVirtualCamera StageClearCamera;
+
+    [Header("Camera Move")]
     public float targetYOffset = 5f;
     public float duration = 2f;
 
+    [Header("Stage")]
+    public bool isStage1;
+
+    private bool isClearing = false;
+
     private void Start()
     {
-        dataManager = FindObjectOfType<DataManager>();
-        OnStageClear();
+        StartCoroutine(CoClearAndGo());
     }
 
     IEnumerator Fade(bool isCameraOn)
     {
+        if (fadeImage == null) yield break;
+
         for (float i = 0; i < 1f; i += 0.02f)
         {
             yield return new WaitForSeconds(0.01f);
             fadeImage.color = new Color(0f, 0f, 0f, i);
         }
-        StageClearCamera.gameObject.SetActive(isCameraOn);
+
+        if (StageClearCamera != null)
+            StageClearCamera.gameObject.SetActive(isCameraOn);
+
         for (float i = 1; i > 0f; i -= 0.02f)
         {
             yield return new WaitForSeconds(0.01f);
@@ -46,62 +50,80 @@ public class StageClear : MonoBehaviour
 
         fadeImage.color = new Color(0f, 0f, 0f, 0f);
     }
+
     IEnumerator MoveCamera()
     {
-        // 페이드 먼저 실행
-        yield return StartCoroutine(Fade(true)); // 코루틴 끝날 때까지 기다림
+        yield return StartCoroutine(Fade(true));
 
-        // 트윈 시작
+        if (StageClearCamera == null) yield break;
+
         var transposer = StageClearCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+        if (transposer == null) yield break;
+
         Vector3 currentOffset = transposer.m_TrackedObjectOffset;
 
         DOTween.To(
             () => currentOffset.y,
-            y => {
+            y =>
+            {
                 currentOffset.y = y;
                 transposer.m_TrackedObjectOffset = currentOffset;
             },
             targetYOffset,
             duration
         ).SetEase(Ease.OutCubic);
-        
+
         yield return new WaitForSeconds(duration);
 
-        StartCoroutine(Fade(false));
+        yield return StartCoroutine(Fade(false));
     }
 
     IEnumerator BreakIceWall()
     {
-        yield return StartCoroutine(Fade(true)); // 코루틴 끝날 때까지 기다림
-        iceWall.GetComponent<SpriteRenderer>().sprite = changeObjectImage[0];
-        yield return new WaitForSeconds(2f);
-        iceWall.GetComponent<SpriteRenderer>().sprite = changeObjectImage[1];
-        yield return new WaitForSeconds(2f);
-        
-        iceWall.GetComponent<BoxCollider2D>().enabled = false;
-        StartCoroutine(Fade(false));
+        if (iceWall == null)
+        {
+            Debug.LogError("StageClear: iceWall이 Inspector에 할당되지 않았습니다!");
+            yield break;
+        }
 
+        yield return StartCoroutine(Fade(true));
+
+        var sr = iceWall.GetComponent<SpriteRenderer>();
+        if (sr != null && changeObjectImage != null && changeObjectImage.Length >= 2)
+        {
+            sr.sprite = changeObjectImage[0];
+            yield return new WaitForSeconds(2f);
+            sr.sprite = changeObjectImage[1];
+            yield return new WaitForSeconds(2f);
+        }
+
+        var col = iceWall.GetComponent<BoxCollider2D>();
+        if (col != null) col.enabled = false;
+
+        yield return StartCoroutine(Fade(false));
     }
 
-    public void OnStageClear()
+    private IEnumerator CoClearAndGo()
     {
-        if (changeObjectImage != null)
-        {
-            StartCoroutine(BreakIceWall());
-        }
+        Debug.Log("stage cleared");
+
+        if (isStage1)
+            yield return StartCoroutine(MoveCamera());
         else
-        {
-            StartCoroutine(MoveCamera());
-        }
+            yield return StartCoroutine(BreakIceWall());
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isClearing) return;
+        if (!collision.CompareTag("Player")) return;
+
         int count = InfuserManager.Instance.activatedInfusers.Count(x => x);
         Debug.Log(count + " infusers activated");
-        if (count >= 10) //추후 변경 필요
+
+        if (count >= 10)
         {
-            Debug.Log("stage cleared");
+            isClearing = true; 
             DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 0, true);
             StoryManager.Instance.ActivateStoryForScene("Stage1ExitStory");
             SceneManager.LoadScene("StoryScene");

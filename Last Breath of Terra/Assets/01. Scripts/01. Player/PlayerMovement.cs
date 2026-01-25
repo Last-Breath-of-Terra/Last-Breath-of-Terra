@@ -46,11 +46,12 @@ public class PlayerMovement : MonoBehaviour
 
     public void HandleFixedUpdate()
     {
+        UpdateFallingState();
+        UpdateFallingSpeed();
+
         if (!controller.canMove) return;
 
         UpdateAcceleration();
-        UpdateFallingState();
-        UpdateFallingSpeed();
 
         if (isHoldingClick && !controller.WallClimb.IsClimbing() && !controller.WallClimb.IsFallingDelay() && !controller.WallClimb.IsOnWall())
         {
@@ -246,6 +247,8 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator HandleLandingDelay()
     {
         ResetState();
+
+        Debug.Log("Landing");
 
         controller.SetCanMove(false);
         controller.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Landing);

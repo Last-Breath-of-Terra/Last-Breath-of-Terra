@@ -12,6 +12,10 @@ public class IceDevilController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            PoolManager.Instance.ReturnObject(GimmickShooterManager.Instance.poolName, gameObject);
+        }
         if (!other.CompareTag("Player")) return;
 
         PlayerController player = other.GetComponent<PlayerController>();
@@ -29,14 +33,12 @@ public class IceDevilController : MonoBehaviour
 */
         
         float dirX = Mathf.Sign(player.transform.position.x - transform.position.x);
-// 좌우만: new Vector2(dirX, 0f)
-// 위로 살짝 띄우기:
+
         Vector2 knockbackDir = new Vector2(dirX, 1f).normalized;
 
         Rigidbody2D rb = player.Rb;
         rb.velocity = Vector2.zero;
 
-// knockbackForce를 "속도"처럼 쓰기 (예: 8~15 정도로 튜닝)
         rb.velocity = knockbackDir * knockbackForce;
         player.SetCanMove(false);
         player.StartCoroutine(EnablePlayerMovementAfterDelay(player));

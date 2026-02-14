@@ -354,4 +354,9 @@ public class PlayerMovement : MonoBehaviour
         get { return speedChangeRate; }
         set { speedChangeRate = value; }
     }
+    public void SetCurrentSpeed(float speed)
+    {
+        currentSpeed = Mathf.Max(0f, speed);
+    }
+
 }

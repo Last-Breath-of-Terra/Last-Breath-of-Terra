@@ -10,9 +10,16 @@ public class TutorialRevivalPractice : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<PlayerController>().SetCanMove(false);
+            PlayerController _playerController = other.GetComponent<PlayerController>();
+
+            _playerController.SetMoveLock(true);
+            _playerController.SetCanMove(false);
             obstacle.SetActive(true);
             gameObject.SetActive(false);
+
+        
         }
     }
+
+    
 }

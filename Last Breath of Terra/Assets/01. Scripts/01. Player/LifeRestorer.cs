@@ -185,6 +185,7 @@ public class LifeRestorer : MonoBehaviour
 
         var playerController = gameObject.GetComponent<PlayerController>();
         playerController.SetKnockdownState(false);
+        playerController.SetMoveLock(false);
         playerController.SetCanMove(true);
         obstacleManager.isRestoring = false;
         obstacleManager.ResetAllObstaclesSpeed();

@@ -38,7 +38,11 @@ public class LifeInfuser : MonoBehaviour
         if (collision.transform.CompareTag("Player") && InfuserManager.Instance.canInfusion[infuserNumber])
         {
             _playerController = collision.GetComponent<PlayerController>();
-            startTween = DOVirtual.DelayedCall(lifeInfuserData.infusionWaitTime, () => { PrepareInfusion(); });
+           // startTween = DOVirtual.DelayedCall(lifeInfuserData.infusionWaitTime, () => { PrepareInfusion(); });
+            startTween = DOVirtual.DelayedCall(
+                lifeInfuserData.infusionWaitTime,
+                PrepareInfusion
+            ).SetLink(gameObject);
 
             GameManager.Instance._shaderManager.TurnOnOutline(mat, 3f, 0.5f);
         }
@@ -53,12 +57,17 @@ public class LifeInfuser : MonoBehaviour
             AudioManager.Instance.PlaySFX("breath_action_start", gameObject.GetComponent<AudioSource>(),
                 gameObject.transform);
             _playerController.SetActivatingState(true);
+            _playerController.SetMoveLock(true);
             _playerController.SetCanMove(false);
         }
 
-        DOTween.To(() => lifeInfuserData.defaultLensSize,
-            x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x, lifeInfuserData.targetLensSize, 1f);
-        lifeInfuserData.StartInfusion(infuserNumber, gameObject);
+        DOTween.To(
+            () => lifeInfuserData.defaultLensSize,
+            x => InfuserManager.Instance.virtualCamera.m_Lens.OrthographicSize = x,
+            lifeInfuserData.targetLensSize,
+            1f
+        ).SetLink(gameObject);
+         lifeInfuserData.StartInfusion(infuserNumber, gameObject);
 
         if (obstacleSpawnCoroutine == null)
         {
@@ -113,6 +122,7 @@ public class LifeInfuser : MonoBehaviour
         if (_playerController != null)
         {
             _playerController.SetActivatingState(false);
+            _playerController.SetMoveLock(false);
             _playerController.SetCanMove(true);
         }
 
@@ -147,9 +157,17 @@ public class LifeInfuser : MonoBehaviour
         lifeInfuserData.StopInfusion(gameObject.GetComponent<AudioSource>());
         if (_playerController != null)
         {
+            _playerController.SetMoveLock(false);
             _playerController.SetCanMove(true);
         }
 
         GameManager.Instance._shaderManager.TurnOffOutline(mat, 0.5f);
     }
+    
+    private void OnDisable()
+    {
+        startTween?.Kill();
+        transform.DOKill();
+    }
+
 }

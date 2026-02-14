@@ -9,7 +9,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public PlayerSO data;
-
+    
     [Header("Movement Settings")]
     public Transform MovementGroundCheckPoint;
     public LayerMask MovementGroundLayer;
@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public Vector3 OriginalScale;
     [HideInInspector] public bool canMove = true;
     private float hp;
+    private bool moveLock = false;
 
     
     public PlayerInputHandler InputHandler { get; private set; }
@@ -68,7 +69,20 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance._ui.ReleaseClick();
         }
+        if (moveLock && value)
+            return;
         canMove = value;
+    }
+    
+    public void SetMoveLock(bool value)
+    {
+        if (value)
+        {
+            Movement.SetCurrentSpeed(0f);
+            AnimHandler.UpdateSpeedParameter(Movement.GetCurrentSpeed());
+        }
+
+        moveLock = value;
     }
 
     public void SetActivatingState(bool isActivating)

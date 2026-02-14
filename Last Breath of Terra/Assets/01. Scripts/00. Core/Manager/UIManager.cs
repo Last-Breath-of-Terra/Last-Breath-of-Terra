@@ -168,7 +168,6 @@ public class UIManager : Singleton<UIManager>
 
     public void UpdatePlayerHPUI(float playerHPAmount)
     {
-        Debug.Log("qkrnlsrj?");
         playerHP.fillAmount = playerHPAmount * 0.01f;
     }
 }

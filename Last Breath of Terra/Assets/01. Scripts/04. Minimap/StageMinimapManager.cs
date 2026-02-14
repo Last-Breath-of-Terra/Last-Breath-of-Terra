@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -25,6 +26,8 @@ public class StageMinimapManager : MonoBehaviour
     private InputAction minimapAction;
     private bool isFullMapActive = false;
     private bool isInitialized = false;
+    private bool _initialized;
+
 
     [SerializeField] private Transform left;
     [SerializeField] private Transform right;
@@ -67,6 +70,45 @@ public class StageMinimapManager : MonoBehaviour
 
     private void OnEnable()
     {
+        if (_initialized) return;
+        StartCoroutine(InitWhenPlayerReady());
+    }
+    private IEnumerator InitWhenPlayerReady()
+    {
+        for (int i = 0; i < 60; i++)
+        {
+            var gm = GameManager.Instance;
+            if (gm != null && gm.playerTr != null)
+            {
+                var playerInput = gm.playerTr.GetComponent<PlayerInput>();
+                if (playerInput != null)
+                {
+                    minimapAction = playerInput.actions["Minimap"];
+                    minimapAction.performed += ToggleMap;
+                    minimapAction.Enable();
+                    _initialized = true;
+                }
+                yield break;
+            }
+            yield return null;
+        }
+
+        Debug.LogWarning("[StageMinimapManager] Player not ready; minimap input not bound.");
+    }
+
+    private void OnDisable()
+    {
+        if (minimapAction != null)
+        {
+            minimapAction.performed -= ToggleMap;
+            minimapAction.Disable();
+        }
+        _initialized = false;
+    }
+
+/*
+    private void OnEnable()
+    {
         var playerInput = GameManager.Instance.playerTr.GetComponent<PlayerInput>();
         minimapAction = playerInput.actions["Minimap"];
         minimapAction.performed += ToggleMap;
@@ -78,7 +120,7 @@ public class StageMinimapManager : MonoBehaviour
         minimapAction.performed -= ToggleMap;
         minimapAction.Disable();
     }
-
+*/
     private void Update()
     {
         if (!isInitialized)

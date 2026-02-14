@@ -11,8 +11,6 @@ public class FrostThornTrap : MonoBehaviour
     [Tooltip("디버프 지속 시간 (초)")]
     public float slowDuration = 3f;
 
-    [Header("Sound Settings")]
-    [SerializeField] private string sfxName = "ice_break";
 
     private void Awake()
     {

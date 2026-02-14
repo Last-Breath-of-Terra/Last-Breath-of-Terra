@@ -24,9 +24,8 @@ public class ObstacleProjectile : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private InputAction clickAction;
     private bool isHovered = false;
-    private bool isRotating = true;
     private bool isDestroyed = false;
-    private int currentHitCount = 0;
+    //private int currentHitCount = 0;
     private List<Transform> clickedPoints = new List<Transform>();
     private Dictionary<Transform, bool> attackPointStates = new Dictionary<Transform, bool>();
     private Vector3 initialTimingIndicatorPos;

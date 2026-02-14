@@ -15,7 +15,7 @@ using UnityEngine.Rendering.Universal;
 public class LifeRestorer : MonoBehaviour
 {
     public LifeInfuserSO lifeInfuserData;
-    public CinemachineVirtualCamera camera;
+    public CinemachineVirtualCamera defaultTrackedCamera;
     public CinemachineVirtualCamera infuserTrackedCamera;
     public ObstacleManager obstacleManager;
     public bool isTutorial = false;
@@ -35,7 +35,7 @@ public class LifeRestorer : MonoBehaviour
 
     private void Start()
     {
-        InfuserManager.Instance.virtualCamera = camera.GetComponent<CinemachineVirtualCamera>();
+        InfuserManager.Instance.virtualCamera = defaultTrackedCamera.GetComponent<CinemachineVirtualCamera>();
         Transform[] transform = InfuserManager.Instance.infuserStatusChild;
         defaultSize = InfuserManager.Instance.infuserStatusChild[0].GetComponent<RectTransform>().sizeDelta;
         newSize = defaultSize * 1.2f;

@@ -76,7 +76,7 @@ public class TutorialClear : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
             fadeImage.color = new Color(0f, 0f, 0f, i);
         }
-
+        Debug.Log("playerIndex : " + DataManager.Instance.playerIndex);
         DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 0, true);
         SceneManager.LoadScene("StageSelection");
     }

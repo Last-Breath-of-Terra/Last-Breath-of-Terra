@@ -16,12 +16,7 @@ public enum SCENE_TYPE
 public class ScenesManager : Singleton<ScenesManager>
 {
     private SCENE_TYPE currentSceneType;
-
-    public ScenesManager()
-    {
-        UpdateCurrentSceneType();
-    }
-
+    
     public void UpdateCurrentSceneType()
     {
         string sceneName = SceneManager.GetActiveScene().name;

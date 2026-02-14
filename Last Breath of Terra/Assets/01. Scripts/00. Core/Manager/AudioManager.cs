@@ -24,20 +24,20 @@ public class AudioManager : Singleton<AudioManager>
 
     [Header("SFX")] private AudioClip[] SFXInitClips;
     private Dictionary<string, AudioClip> SFXAudioClips;
-    public AudioSource[] sfxSources;
     private float sfxVolume = 1.0f;
 
     [Header("Obstacle")] private AudioClip[] ObstacleInitClips;
     private Dictionary<string, AudioClip> ObstacleAudioClips;
-    public AudioSource[] ObstacleSources;
-    private float ObstacleVolume = 1.0f;
 
     private Tween currentTween;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        
         AudioInit();
-        scenesManager = new ScenesManager();
+        scenesManager = ScenesManager.Instance;
+        scenesManager.UpdateCurrentSceneType();//new ScenesManager();
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -122,9 +122,7 @@ public class AudioManager : Singleton<AudioManager>
     public void PlayBGMForCurrentScene()
     {
         SCENE_TYPE currentScene = scenesManager.GetCurrentSceneType();
-
-        Debug.Log(currentScene);
-
+        
         string bgmName = "";
 
         switch (currentScene)
@@ -238,10 +236,16 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
-    public void PlayRandomSFX(string sfxName, AudioSource audioSource, Transform soundTransform)
+    
+    
+
+    public void PlayRandomSFX(string sfxName, AudioSource audioSource, Transform soundTransform, int count)
     {
-        int randomIndex = UnityEngine.Random.Range(1, 3);
+        int randomIndex = UnityEngine.Random.Range(1, count);
         sfxName += randomIndex;
+
+        if (audioSource == null) return;
+
         if (SFXAudioClips.ContainsKey(sfxName))
         {
             float panValue = Mathf.Clamp((soundTransform.position.x - GameManager.Instance.playerTr.position.x) / 2.0f,

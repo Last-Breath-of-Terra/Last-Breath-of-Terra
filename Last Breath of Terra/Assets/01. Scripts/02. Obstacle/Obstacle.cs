@@ -61,9 +61,7 @@ public class Obstacle : MonoBehaviour
 
         if (GameManager.ScenesManager.GetCurrentSceneType() == SCENE_TYPE.Tutorial)
         {
-            GameManager.Instance._obstacleManager.RegisterObstacle(this);
-            AudioManager.Instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(),
-                transform);
+            StartCoroutine(RegisterWhenReady());
         }
 
         currentHitCount = 0;
@@ -75,6 +73,25 @@ public class Obstacle : MonoBehaviour
             attackPointStates[point] = true;
         }
     }
+    
+    private IEnumerator RegisterWhenReady()
+    {
+        for (int i = 0; i < 60; i++) // 최대 60프레임 대기
+        {
+            var gm = GameManager.Instance;
+            if (gm != null && gm._obstacleManager != null)
+            {
+                gm._obstacleManager.RegisterObstacle(this);
+                AudioManager.Instance.PlayRandomSFX("obstacle_dark_move_", gameObject.GetComponent<AudioSource>(),
+                    transform, 2);
+                yield break;
+            }
+            yield return null;
+        }
+
+        Debug.LogWarning("[Obstacle] ObstacleManager still not ready.");
+    }
+
 
     private void OnDisable()
     {
@@ -363,7 +380,7 @@ public class Obstacle : MonoBehaviour
             Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
             PlayerController controller = collision.GetComponent<PlayerController>();
             controller.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Knockback);
-            AudioManager.Instance.PlayRandomSFX("knockback_", collision.GetComponent<AudioSource>(), transform);
+            AudioManager.Instance.PlayRandomSFX("knockback_", collision.GetComponent<AudioSource>(), transform, 3);
             playerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
 
             collision.transform.GetComponent<PlayerController>().HP -= data.demage;

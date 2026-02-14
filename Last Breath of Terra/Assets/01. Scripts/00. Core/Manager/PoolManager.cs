@@ -53,7 +53,7 @@ public class PoolManager : Singleton<PoolManager>
     public void ReturnObject(string poolName, GameObject obj)
     {
         obj.SetActive(false);
-        if (poolDictionary.ContainsKey(poolName) != null)
+        if (poolDictionary.ContainsKey(poolName))
         {
             Debug.Log("return obj");
             if (activeObjects.ContainsKey(poolName))
@@ -61,6 +61,7 @@ public class PoolManager : Singleton<PoolManager>
             poolDictionary[poolName].Enqueue(obj);
         }
     }
+    
     public void ReturnAll(string poolName)
     {
         if (activeObjects.TryGetValue(poolName, out var list) && list != null)

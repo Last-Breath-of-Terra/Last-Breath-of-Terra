@@ -11,7 +11,7 @@ public class GimmickManager : Singleton<GimmickManager>
 
     [Header("SFX")] private AudioClip[] gimmickSFXInitClips;
     private Dictionary<string, AudioClip> gimmickSFXAudioClips;
-    private float sfxVolume = 1.0f;
+//    private float sfxVolume = 1.0f;
 
     protected override void Awake()
     {

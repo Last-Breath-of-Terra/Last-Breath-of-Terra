@@ -21,18 +21,26 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-    void Awake()
+    protected override void Awake()
     {
-        _scenesManager = new ScenesManager();
+        base.Awake();
+        _scenesManager = ScenesManager.Instance;
+        _scenesManager.UpdateCurrentSceneType();
     }
 
     void Start()
     {
-        playerTr = GameObject.FindWithTag("Player").GetComponent<Transform>();
+        GameObject playerObj = GameObject.FindWithTag("Player");
+
+        if (playerObj != null)
+        {
+            playerTr = playerObj.transform;
+        }
+
         AudioManager.Instance.PlayAmbience("map_1_stage_ambience");
 
-        UpdateManagersReference();
-        UpdatePlayerReference();
+      //  UpdateManagersReference();
+      //  UpdatePlayerReference();
     }
 
 

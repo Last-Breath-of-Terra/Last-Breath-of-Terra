@@ -27,7 +27,6 @@ public class LifeInfuser : MonoBehaviour
         mat = GetComponent<Renderer>().material;
         mat.SetFloat("_Enabled", 0f);
         mat.SetFloat("_Thickness", 0f);
-        Debug.Log(InfuserManager.Instance.gameObject.name);
 
         InfuserManager.Instance.canInfusion[infuserNumber] = true;
         InfuserManager.Instance.infuser[infuserNumber] = gameObject;

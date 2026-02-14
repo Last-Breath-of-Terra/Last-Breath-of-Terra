@@ -14,7 +14,7 @@ public class PlayerIcicleResponder : MonoBehaviour
     public ParticleSystem freezedParticles;
     private PlayerInput playerInput;
     private Coroutine freezeCoroutine;
-    private ParticleSystem particleSystem;
+    private ParticleSystem ps;
 
 
     private void Awake()
@@ -25,9 +25,9 @@ public class PlayerIcicleResponder : MonoBehaviour
     private void Start()
     {
         unfreezeActionCount = 0;
-        particleSystem = new ParticleSystem();
-        particleSystem = freezedParticles;
-        particleSystem.Stop();
+        ps = new ParticleSystem();
+        ps = freezedParticles;
+        ps.Stop();
     }
 
     private void OnEnable()

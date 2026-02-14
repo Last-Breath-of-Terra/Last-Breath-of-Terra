@@ -31,8 +31,9 @@ public class InfuserManager : Singleton<InfuserManager>
     public LineRenderer backLineRenderer;
     public ParticleSystem gaugeParticle;   
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
 
         infuser = new GameObject[infusionCount];
         activatedInfusers = new bool[infusionCount];

@@ -1739,6 +1739,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2009628674}
     - target: {fileID: 5590019560954141733, guid: 509fb979c84fc498f8353de77b8dae40, type: 3}
+      propertyPath: defaultTrackedCamera
+      value: 
+      objectReference: {fileID: 651167934}
+    - target: {fileID: 5590019560954141733, guid: 509fb979c84fc498f8353de77b8dae40, type: 3}
       propertyPath: infuserTrackedCamera
       value: 
       objectReference: {fileID: 754961215}
@@ -276384,9 +276388,6 @@ MonoBehaviour:
   dontDestroyOnLoad: 0
   bgmGroup: {fileID: 0}
   ambientGroup: {fileID: 0}
-  sfxSources:
-  - {fileID: 0}
-  ObstacleSources: []
 --- !u!4 &2848998765047323089
 Transform:
   m_ObjectHideFlags: 0

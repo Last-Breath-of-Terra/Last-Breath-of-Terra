@@ -154,9 +154,29 @@ public class Obstacle : MonoBehaviour
         }
         else
         {
+            var sr = attackGroup != null ? attackGroup.GetComponent<SpriteRenderer>() : null;
+            if (sr == null) return;
+
+            DOTween.To(() => 1f,
+                    x =>
+                    {
+                        if (sr == null) return; // 씬전환/파괴 대비
+                        var c = sr.color;
+                        c.a = x;
+                        sr.color = c;
+                    },
+                    0f,
+                    0.2f)
+                .SetLink(attackGroup) // attackGroup이 Destroy되면 트윈 자동 Kill
+                .OnComplete(() =>
+                {
+                    if (attackGroup != null) attackGroup.SetActive(isHovered);
+                });
+
+            /*
             DOTween.To(() => 1f, x => attackGroup.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, x), 0f,
                     0.2f)
-                .OnComplete(() => { attackGroup.SetActive(isHovered); });
+                .OnComplete(() => { attackGroup.SetActive(isHovered); }); */
         }
     }
 

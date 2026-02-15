@@ -25,6 +25,7 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         _scenesManager = ScenesManager.Instance;
+        UpdateManagersReference();
         _scenesManager.UpdateCurrentSceneType();
     }
 

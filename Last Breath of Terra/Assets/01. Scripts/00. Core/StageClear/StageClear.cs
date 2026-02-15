@@ -124,7 +124,7 @@ public class StageClear : MonoBehaviour
         if (count >= 10)
         {
             isClearing = true; 
-            DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 0, true);
+            DataManager.Instance.ModifyPlayerData(DataManager.Instance.playerIndex, 1, true);
             StoryManager.Instance.ActivateStoryForScene("Stage1ExitStory");
             SceneManager.LoadScene("StoryScene");
             //SceneManager.LoadScene("StageSelection");

@@ -248,7 +248,6 @@ public class PlayerMovement : MonoBehaviour
     {
         ResetState();
 
-        Debug.Log("Landing");
 
         controller.SetCanMove(false);
         controller.AnimHandler.ChangeState(PlayerAnimationHandler.AnimationState.Landing);

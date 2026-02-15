@@ -90,6 +90,11 @@ public class GameManager : Singleton<GameManager>
         {
             _shaderManager = GameObject.FindObjectOfType<ShaderManager>();
         }
+
+        if (_stageminimapManager == null)
+        {
+            _stageminimapManager = GameObject.FindObjectOfType<StageMinimapManager>();
+        }
     }
 
     private void UpdatePlayerReference()

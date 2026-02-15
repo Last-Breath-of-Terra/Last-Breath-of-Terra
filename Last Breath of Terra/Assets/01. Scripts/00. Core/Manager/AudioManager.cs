@@ -310,13 +310,11 @@ public class AudioManager : Singleton<AudioManager>
         AudioSource audioSource = GameManager.Instance.playerTr.gameObject.GetComponent<AudioSource>();
         audioSource.Stop();
         audioSource.panStereo = panValue;
-        Debug.Log(audioName);
         audioSource.PlayOneShot(SFXAudioClips[audioName]);
     }
 
     public void PlayCancelable(string audioName, AudioSource audioSource, Transform soundTransform)
     {
-        Debug.Log("playing cancelable");
         if (SFXAudioClips.ContainsKey(audioName))
         {
             audioSource.clip = SFXAudioClips[audioName];
